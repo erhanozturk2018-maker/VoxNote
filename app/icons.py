@@ -73,6 +73,14 @@ _SHAPES: dict[str, str] = {
         '<rect x="3" y="6.5" width="18" height="11" rx="2"/>'
         '<path d="M7 10.500h.01M10.500 10.500h.01M14 10.500h.01M17.500 10.500h.01M8 14h8"/>'
     ),
+    "window": (
+        '<rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 9.500h17"/>'
+        '<path d="M6.500 7.300h.01M9 7.300h.01"/>'
+    ),
+    "document": (
+        '<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>'
+        '<path d="M14 3v5h5"/><path d="M8.500 12.500l1.500 1.500 2.500-3"/><path d="M8.500 17.500h7"/>'
+    ),
     "chevron-right": '<path d="M9.5 6l6 6-6 6"/>',
     "chevron-down": '<path d="M6 9.5l6 6 6-6"/>',
     "chip": (

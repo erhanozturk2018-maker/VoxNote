@@ -74,6 +74,8 @@ areas, icons were added, and a Help window was introduced.
 - **Novices** can ignore everything except two large buttons. The empty
   transcript area says what to do ("Press 'Start Recording' to begin").
   Sensible defaults mean no configuration is required.
+- **Frequent users do not need the window at all:** a global shortcut and an
+  edge bar start and stop recordings from any application.
 - **Frequent users** have keyboard shortcuts for every main action
   (`Ctrl+R`, `Ctrl+E`, `Ctrl+Shift+S`, `Ctrl+Shift+C`, `Ctrl+O`, `Ctrl+,`),
   shown in the tooltips so they can be discovered. Microphone, format and
@@ -253,6 +255,8 @@ areas, icons were added, and a Help window was introduced.
 
 - **Nothing starts by itself.** The microphone is opened only when the user
   presses Start and released when they press Stop.
+- **The user decides what a document contains** (layout, headings, each
+  metadata row), also during a recording.
 - **The user decides where files go**, what they are called and which format
   they have, and can change each of these at any time, including after the
   recording.

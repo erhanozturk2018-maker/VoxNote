@@ -157,24 +157,33 @@ class PdfExporter(Exporter):
             text = printable(text)
             return Paragraph(escape(text), style(name, size, text, **extra))
 
-        story = [paragraph(document.title, "Title", 20, spaceAfter=10)]
+        story = []
+        if document.show_headings:
+            story.append(paragraph(document.title, "Title", 20, spaceAfter=10))
         for name, value in document.metadata:
             story.append(paragraph(f"{name}: {value}", "Meta", 10.5, textColor=HexColor("#333333")))
-        story.append(Spacer(1, 8))
-        story.append(paragraph(TRANSCRIPT_HEADING, "Heading", 15, spaceBefore=8, spaceAfter=6))
+        if document.metadata:
+            story.append(Spacer(1, 8))
+        if document.show_headings:
+            story.append(
+                paragraph(TRANSCRIPT_HEADING, "Heading", 15, spaceBefore=8, spaceAfter=6)
+            )
         if not document.blocks:
             story.append(paragraph(EMPTY_NOTICE, "Empty", 11, textColor=HexColor("#555555")))
-        for block in document.blocks:
-            story.append(
-                paragraph(
-                    block.language_name,
-                    "Language",
-                    12,
-                    spaceBefore=10,
-                    spaceAfter=4,
-                    textColor=HexColor("#1f4e8c"),
+        elif document.as_paragraph:
+            story.append(paragraph(document.paragraph, "Body", 11, spaceAfter=4))
+        for block in () if document.as_paragraph else document.blocks:
+            if document.show_language_headings:
+                story.append(
+                    paragraph(
+                        block.language_name,
+                        "Language",
+                        12,
+                        spaceBefore=10,
+                        spaceAfter=4,
+                        textColor=HexColor("#4f2aa6"),
+                    )
                 )
-            )
             for segment in block.segments:
                 story.append(paragraph(document.line(segment), "Body", 11, spaceAfter=4))
 

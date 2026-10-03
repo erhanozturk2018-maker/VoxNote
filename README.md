@@ -13,7 +13,7 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.3.0, pre-release.** The application and its Windows
+> **Project status: 0.4.0, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
 > machine. The installer is **not code-signed**, so Windows blocks or warns
 > about it on other computers; see
@@ -59,6 +59,10 @@ your choice.
   grammar correction, no translation, no rewriting.
 - **Five export formats:** Markdown, plain text, JSON, Microsoft Word (DOCX)
   and PDF, all with full Unicode support.
+- **You decide what a document contains:** one line per sentence or one
+  continuous paragraph; with or without timestamps, language headings, title
+  and each metadata row (date, languages, duration, session ID, model). The
+  choice can be changed at any time, also during a recording.
 - **You decide where files go:** selectable save folder, configurable file
   name template with live preview, and automatic handling of name collisions
   (existing files are never overwritten).
@@ -72,6 +76,12 @@ your choice.
   you speak.
 - **Built-in help** with a five-step introduction (shown once on first
   start), answers to common questions and an About page.
+- **Edge bar:** a small bar that waits at the screen edge and slides out when
+  the pointer touches it, to start and stop recording without opening the
+  window.
+- **Global shortcut:** `Ctrl+Alt+R` starts and stops recording from any
+  application; `Ctrl+Alt+V` on the installed shortcut starts VoxNote or
+  brings it to the front.
 - **Light, dark or system appearance**, switchable with one click or `Ctrl+T`.
 - **Keyboard shortcuts** for every main action, tooltips and icons.
 - **Windows installer** with Start menu and desktop shortcuts.
@@ -182,6 +192,10 @@ in them is fixed sample text, not the result of a recognition run.
 | --- | --- |
 | ![Settings, Recognition tab](docs/images/settings-recognition.png) | ![Settings, Recording tab](docs/images/settings-recording.png) |
 
+| Document content | Edge bar |
+| --- | --- |
+| ![Document content panel](docs/images/content-panel.png) | ![Edge bar](docs/images/edge-bar.png) |
+
 | Help: Getting Started | Help: Questions and Answers |
 | --- | --- |
 | ![Introduction](docs/images/help-start.png) | ![Help window](docs/images/help-questions.png) |
@@ -283,8 +297,10 @@ The complete guide is in [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 | Microsoft Word | `.docx` | Opens in Word, LibreOffice and Google Docs. |
 | PDF | `.pdf` | Embeds a Unicode font from the system. |
 
-Every format contains the same metadata (date, languages, duration, session
-ID, model) and the same transcript. Example Markdown output:
+By default every format contains the same metadata (date, languages,
+duration, session ID, model) and the same transcript; the **Document Content**
+button lets you leave parts out or save the transcript as a single paragraph.
+Example Markdown output with the default options:
 
 ```markdown
 # Speaking Session
@@ -409,7 +425,11 @@ VoxNote/
 │   ├── workers.py              Background threads
 │   ├── main_window.py          Main window
 │   ├── settings_dialog.py      Settings dialog and language chooser
-│   ├── help_dialog.py          Questions and answers, About
+│   ├── help_dialog.py          Introduction, questions and answers, About
+│   ├── content_panel.py        Choice of document layout and content
+│   ├── dock.py                 Sliding bar at the screen edge
+│   ├── global_hotkeys.py       System-wide shortcut (Windows)
+│   ├── single_instance.py      One running instance per user
 │   ├── icons.py                Vector icons
 │   ├── theme.py                Colours and style sheet
 │   ├── i18n/                   Interface translations

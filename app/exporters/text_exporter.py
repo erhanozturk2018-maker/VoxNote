@@ -21,15 +21,24 @@ class TextExporter(Exporter):
 
     def render(self, session: Session, options: ExportOptions) -> str:
         document = build_document(session, options)
-        lines = [document.title, "=" * len(document.title), ""]
-        lines += [f"{name}: {value}" for name, value in document.metadata]
-        lines += ["", TRANSCRIPT_HEADING, "-" * len(TRANSCRIPT_HEADING), ""]
+        lines: list[str] = []
+        if document.show_headings:
+            lines += [document.title, "=" * len(document.title), ""]
+        if document.metadata:
+            lines += [f"{name}: {value}" for name, value in document.metadata]
+            lines.append("")
+        if document.show_headings:
+            lines += [TRANSCRIPT_HEADING, "-" * len(TRANSCRIPT_HEADING), ""]
         if not document.blocks:
             lines += [EMPTY_NOTICE, ""]
-        for block in document.blocks:
-            lines.append(f"[{block.language_name}]")
+        elif document.as_paragraph:
+            lines += [document.paragraph, ""]
+        for block in () if document.as_paragraph else document.blocks:
+            if document.show_language_headings:
+                lines.append(f"[{block.language_name}]")
             lines += [document.line(segment) for segment in block.segments]
-            lines.append("")
+            if document.show_language_headings:
+                lines.append("")
         return "\n".join(lines).rstrip("\n") + "\n"
 
     def write(self, session: Session, path: Path, options: ExportOptions) -> None:

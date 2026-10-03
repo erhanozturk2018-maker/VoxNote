@@ -39,6 +39,7 @@ from PySide6.QtWidgets import (
 
 from app import APP_NAME, APP_VERSION
 from app.audio_recorder import AudioError, list_input_devices
+from app.content_panel import ContentPanel
 from app.export_manager import ExportError, check_directory
 from app.exporters import EXPORTERS
 from app.filename_template import render_filename
@@ -212,6 +213,9 @@ class MainWindow(QMainWindow):
         # re-rendered when the interface language changes.
         self._banner_state: tuple | None = None
         self._result_state: tuple | None = None
+        # Created by enable_desktop_integration(); absent in tests.
+        self.dock = None
+        self.hotkeys = None
 
         self._build_ui()
         polish_combos(self)
@@ -397,9 +401,15 @@ class MainWindow(QMainWindow):
         row.addWidget(self.format_label)
         row.addWidget(self.format_combo)
         layout.addLayout(row)
+        row = QHBoxLayout()
+        row.setSpacing(10)
         self.filename_hint = QLabel()
         self.filename_hint.setObjectName("hint")
-        layout.addWidget(self.filename_hint)
+        self.content_button = self._icon_button("document")
+        row.addWidget(self.filename_hint, 1)
+        row.addWidget(self.content_button)
+        layout.addLayout(row)
+        self.content_panel: ContentPanel | None = None
         self.result_banner = Banner(closable=False)
         layout.addWidget(self.result_banner)
         root.addWidget(card)
@@ -467,6 +477,7 @@ class MainWindow(QMainWindow):
         self.open_folder_button.clicked.connect(self.open_folder)
         self.save_button.clicked.connect(self.save_now)
         self.save_as_button.clicked.connect(self.save_as)
+        self.content_button.clicked.connect(self.show_content_panel)
 
         # Shortcuts for frequent users; each one is also shown in a tooltip.
         for sequence, slot in (
@@ -531,6 +542,11 @@ class MainWindow(QMainWindow):
         self.save_button.setToolTip(tr("main.save.tip"))
         self.save_as_button.setText(tr("main.save_as"))
         self.save_as_button.setToolTip(tr("main.save_as.tip", shortcut="Ctrl+Shift+S"))
+        self.content_button.setText(tr("main.content"))
+        self.content_button.setToolTip(tr("main.content.tip"))
+        self.content_panel = None  # rebuilt in the current language when opened
+        if self.dock is not None:
+            self.dock.refresh()
         self.banner.close_button.setToolTip(tr("main.dismiss"))
         self.banner.close_button.setAccessibleName(tr("main.dismiss"))
         self.timer_label.setAccessibleName(tr("main.elapsed"))
@@ -757,6 +773,81 @@ class MainWindow(QMainWindow):
         if self.controller.state is AppState.PROCESSING:
             self._update_controls()
 
+    # -- document content ------------------------------------------------
+
+    def show_content_panel(self) -> None:
+        """Open the panel that decides what saved documents contain."""
+        if self.content_panel is None:
+            self.content_panel = ContentPanel(self.settings, self)
+            self.content_panel.changed.connect(self._on_content_changed)
+        panel = self.content_panel
+        panel.load()
+        panel.adjustSize()
+        anchor = self.content_button.mapToGlobal(self.content_button.rect().topRight())
+        panel.move(anchor.x() - panel.width(), anchor.y() - panel.height() - 6)
+        panel.show()
+
+    def _on_content_changed(self) -> None:
+        self._persist()
+        self._rebuild_transcript()  # the preview follows the timestamp option
+
+    def _rebuild_transcript(self) -> None:
+        self.transcript_view.clear()
+        self._last_language = None
+        if self.controller.session.segments:
+            self._on_segments_added(list(self.controller.session.segments))
+
+    # -- desktop integration ---------------------------------------------
+
+    def toggle_recording(self) -> None:
+        """Start a recording, or stop the one in progress."""
+        if self.controller.can_stop:
+            self.stop_recording()
+        else:
+            self.start_recording()
+
+    def bring_to_front(self) -> None:
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+
+    def enable_desktop_integration(self) -> None:
+        """Create the edge bar and the global hotkey. Called once at start-up."""
+        from app.global_hotkeys import GlobalHotkeys
+
+        self.hotkeys = GlobalHotkeys(QApplication.instance())
+        self.hotkeys.toggle_recording.connect(self.toggle_recording)
+        self._apply_integration_settings()
+
+    def _apply_integration_settings(self) -> None:
+        if self.hotkeys is None:
+            return
+        from app.dock import EdgeDock
+        from app.global_hotkeys import TOGGLE_RECORDING
+
+        if self.settings.global_hotkeys:
+            if not self.hotkeys.enable():
+                self._show_banner(
+                    "warning", "notice.hotkey_unavailable", {"shortcut": TOGGLE_RECORDING[3]}
+                )
+        else:
+            self.hotkeys.disable()
+
+        edge = self.settings.dock_edge
+        if edge == "off":
+            if self.dock is not None:
+                self.dock.close()
+                self.dock.deleteLater()
+                self.dock = None
+        elif self.dock is None:
+            self.dock = EdgeDock(self.controller, edge)
+            self.dock.start_requested.connect(self.start_recording)
+            self.dock.stop_requested.connect(self.stop_recording)
+            self.dock.show_window_requested.connect(self.bring_to_front)
+            self.dock.show()
+        else:
+            self.dock.set_edge(edge)
+
     # -- appearance ------------------------------------------------------
 
     def apply_appearance(self) -> None:
@@ -766,10 +857,7 @@ class MainWindow(QMainWindow):
         clear_cache()
         self.retranslate()
         # The transcript carries its colours inline, so it is rendered again.
-        self.transcript_view.clear()
-        self._last_language = None
-        if self.controller.session.segments:
-            self._on_segments_added(list(self.controller.session.segments))
+        self._rebuild_transcript()
 
     def cycle_theme(self) -> None:
         """Switch between system, light and dark appearance."""
@@ -1004,6 +1092,7 @@ class MainWindow(QMainWindow):
             self.apply_appearance()
         else:
             self.retranslate()
+        self._apply_integration_settings()
         self._flash(tr("settings.saved"), 4000)
 
     def open_help(self, tab: int = 0) -> None:
@@ -1072,4 +1161,8 @@ class MainWindow(QMainWindow):
                 event.ignore()
                 return
         c.shutdown()
+        if self.dock is not None:
+            self.dock.close()
+        if self.hotkeys is not None:
+            self.hotkeys.disable()
         event.accept()

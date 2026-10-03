@@ -108,6 +108,14 @@ export keep working.
 The Qt framework and the other libraries are used without any of their
 networking features.
 
+## Keyboard shortcut that works in other applications
+
+VoxNote registers one key combination, `Ctrl+Alt+R`, with Windows so that
+recording can be started and stopped while another program is in front.
+Windows notifies VoxNote only when exactly that combination is pressed.
+VoxNote does not install a keyboard hook and cannot see anything else you
+type. The shortcut can be switched off in Settings › General.
+
 ## What the application does not do
 
 - It does not upload, share or synchronise recordings or transcripts.

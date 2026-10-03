@@ -10,6 +10,9 @@
 - [Changing the save folder](#changing-the-save-folder)
 - [Changing the file name](#changing-the-file-name)
 - [Selecting the export format](#selecting-the-export-format)
+- [Choosing what a document contains](#choosing-what-a-document-contains)
+- [The edge bar](#the-edge-bar)
+- [Shortcuts that work everywhere](#shortcuts-that-work-everywhere)
 - [Finding and opening exported files](#finding-and-opening-exported-files)
 - [If saving fails](#if-saving-fails)
 - [Recovering a session after a crash](#recovering-a-session-after-a-crash)
@@ -35,8 +38,8 @@ From top to bottom:
    symbol), the **Copy Text** and **Save As…** buttons, and the text
    recognised so far, grouped by language.
 4. **Output** – the save folder with a button to open it and one to change
-   it, the file format, the file name that will be used, and the result of
-   the last save. After a successful save, **Open File** and **Open Folder**
+   it, the file format, the file name that will be used, the **Document
+   Content** button, and the result of the last save. After a successful save, **Open File** and **Open Folder**
    appear right inside that message.
 5. **Footer** – short confirmations on the left; on the right, the speech
    model and the device it runs on.
@@ -239,14 +242,89 @@ To get the same session in another format, use **Save As…** after the
 recording: pick the format in the file dialog. You can do this as often as
 you like until you start the next recording.
 
-**Settings › General › Documents** offers two more options:
-
-- *Show the time at the start of each transcript line* – adds `[00:01:23]`
-  in front of every line (on by default).
-- *Open the document after it has been saved* – opens the file with the
-  program Windows associates with its type.
+**Settings › General › Documents** offers *Open the document after it has
+been saved*, which opens the file with the program Windows associates with
+its type.
 
 See [EXPORT_FORMATS.md](EXPORT_FORMATS.md) for what each format looks like.
+
+## Choosing what a document contains
+
+The **Document Content** button in the Output section opens a small panel.
+It can be opened at any time, also while a recording is running; the choices
+apply to the next document that is saved and are remembered.
+
+![Document content panel](images/content-panel.png)
+
+**Layout**
+
+| Option | Result |
+| --- | --- |
+| One line per sentence | Each recognised sentence on its own line (default) |
+| One continuous paragraph | The whole transcript as a single paragraph, sentences separated by a space |
+| Time at the start of each line | `[00:01:23]` in front of every line (line layout only) |
+| Language headings | A heading whenever the language changes (line layout only) |
+
+**Include**
+
+| Option | What is written |
+| --- | --- |
+| Title and section headings | "Speaking Session" and "Transcript" |
+| Date | Start of the recording |
+| Languages | Detected languages |
+| Duration | Length of the recording |
+| Session ID | Random identifier of the session |
+| Speech model | Model that produced the transcript |
+
+To get a file that contains nothing but your words as one paragraph, choose
+*One continuous paragraph* and untick everything under *Include*.
+
+Notes:
+
+- The words themselves are never changed, whatever you choose.
+- The transcript preview in the window always shows one line per sentence; it
+  follows only the timestamp option.
+- JSON files always contain everything, because they are meant for programs.
+- **Save As…** uses the same choices, so you can change them after a recording
+  and save the same session again.
+
+## The edge bar
+
+The edge bar is a small bar that waits at the left or right edge of the
+screen, on top of other windows. Only a thin coloured strip is visible. Move
+the pointer onto the strip and the bar slides out; move away and it slides
+back after a moment.
+
+![Edge bar](images/edge-bar.png)
+
+| Element | Function |
+| --- | --- |
+| Round button | Starts a recording; while recording it turns red and stops it |
+| Time | Elapsed recording time |
+| Window button | Brings the VoxNote window to the front |
+| Coloured strip | Violet normally, red while a recording is running, so you can see the state without opening the bar |
+
+Choose the edge, or switch the bar off, in **Settings › General › Edge bar**.
+The bar exists while VoxNote is running; closing the main window ends
+VoxNote and removes the bar. Minimise the window instead if you want to keep
+working with the bar only.
+
+## Shortcuts that work everywhere
+
+| Shortcut | Works | Action |
+| --- | --- | --- |
+| `Ctrl+Alt+R` | In any application, while VoxNote is running | Start a recording, or stop the running one and save it |
+| `Ctrl+Alt+V` | In Windows, also when VoxNote is not running | Start VoxNote, or bring its window to the front if it is already running |
+
+- `Ctrl+Alt+R` can be switched off in **Settings › General › Shortcuts**. If
+  another program already uses this combination, VoxNote says so and works
+  without it.
+- `Ctrl+Alt+V` is a property of the VoxNote shortcut in the Start menu and on
+  the desktop, set by the installer and by `tools\install_local.ps1`. To
+  change it, right-click the shortcut, choose **Properties** and edit
+  **Shortcut key**. Windows only honours it while the shortcut file exists.
+- Only one VoxNote runs at a time: starting it again shows the existing
+  window.
 
 ## Finding and opening exported files
 
@@ -310,8 +388,9 @@ as tall as the selected tab needs.
 | Save folder | Where transcripts are saved automatically | `Documents\VoxNote` |
 | File format | Format used for automatic saving | Markdown |
 | File name | File name template | `{date}_{time}_{languages}` |
-| Show the time at the start of each transcript line | Timestamps in the document and the preview | On |
 | Open the document after it has been saved | Opens the file automatically | Off |
+| Edge bar | Off, left screen edge or right screen edge | Right screen edge |
+| Shortcuts | Start and stop recording with `Ctrl+Alt+R` from any application | On |
 
 ### Recognition
 
@@ -386,7 +465,11 @@ The **Help** button (`F1`) opens a window with three tabs:
   statement, the components it is built with, the license, a button to the
   project website and a button that opens the log folder.
 
+![Help, Getting Started](images/help-start.png)
+
 ![Help, Questions and Answers](images/help-questions.png)
+
+![Help, About](images/help-about.png)
 
 ## Keyboard shortcuts
 
@@ -400,6 +483,8 @@ The **Help** button (`F1`) opens a window with three tabs:
 | `Ctrl+,` | Open Settings |
 | `F1` | Open Help |
 | `Ctrl+T` | Switch appearance: system, light, dark |
+| `Ctrl+Alt+R` | Start or stop recording from any application |
+| `Ctrl+Alt+V` | Start VoxNote or bring it to the front (shortcut key of the installed icon) |
 | `Tab` / `Shift+Tab` | Move between controls |
 | `Space` / `Enter` | Activate the focused button |
 

@@ -73,7 +73,11 @@ developer who is new to the code base.
 | `main.py` | Start-up: logging, theme, settings, controller, window | yes |
 | `app/main_window.py` | Main window; shows state, never does blocking work | yes |
 | `app/settings_dialog.py` | Settings form with validation; language chooser | yes |
-| `app/help_dialog.py` | Questions and answers, About page | yes |
+| `app/help_dialog.py` | Introduction, questions and answers, About page | yes |
+| `app/content_panel.py` | Pop-up for document layout and content | yes |
+| `app/dock.py` | Sliding bar at the screen edge | yes |
+| `app/global_hotkeys.py` | System-wide hotkey through the Windows API | yes |
+| `app/single_instance.py` | One instance per user; later launches activate the first | yes |
 | `app/icons.py` | Vector icons rendered in the theme colours | yes |
 | `app/theme.py` | Colour tokens and style sheet (light and dark) | yes |
 | `app/recording_controller.py` | State machine; owns the model, the session and the workers | yes (signals) |
@@ -389,9 +393,10 @@ Session ──▶ export_manager.export_session(session, directory, template, fo
               5. os.replace(temp, target)   publish the finished file
 ```
 
-- `build_document` (`app/exporters/base.py`) converts a `Session` into a
-  format-independent `ExportDocument` (title, metadata rows, language
-  blocks). Every exporter renders this object, which is what keeps the
+- `build_document` (`app/exporters/base.py`) converts a `Session` and the
+  user's `ExportOptions` into a format-independent `ExportDocument` (title,
+  the selected metadata rows, language blocks, and the transcript as one
+  paragraph). Every exporter renders this object, which is what keeps the
   formats equivalent.
 - **Collisions.** `_reserve` opens candidate names with mode `x` (create,
   fail if it exists). The first success is ours even if another program
@@ -449,7 +454,10 @@ each line. The cost is negligible at the rate of a few utterances per minute.
 - The settings dialog sizes itself to the visible tab (`_fit_to_tab`), because
   a `QTabWidget` is otherwise as tall as its tallest page.
 - Informational and error messages are shown inline (`Banner`), not in modal
-  dialogs. A banner can carry actions, for example *Open File* after saving. Modal dialogs are reserved for decisions that must not be skipped:
+  dialogs. A banner can carry actions, for example *Open File* after saving.
+- Document content (`content_panel.py`) is a pop-up that writes straight into
+  the settings and is therefore usable during a recording; the settings
+  dialog, which is locked while recording, does not repeat these options. Modal dialogs are reserved for decisions that must not be skipped:
   discarding an unsaved transcript, closing during a recording, and recovery.
 - **Strings.** `app/i18n/locales/<code>.py` each contain a dictionary.
   `tr(key, **values)` looks up the current language and falls back to
@@ -461,6 +469,41 @@ each line. The cost is negligible at the rate of a few utterances per minute.
   `TranscriberError.code`, `ExportError.code`) and are turned into text only
   in the window (`error_text`), which keeps engine modules free of
   user-facing language.
+
+## Desktop integration
+
+Three small pieces let the application be used without its main window in
+the foreground. They are created by `MainWindow.enable_desktop_integration`,
+which only `main.py` calls, so tests and tools are unaffected.
+
+**Edge bar (`dock.py`).** A separate top-level `QWidget` with the flags
+`Tool | FramelessWindowHint | WindowStaysOnTopHint`: no border, no taskbar
+entry, above other windows. `WA_TranslucentBackground` allows the rounded
+shape, `WA_ShowWithoutActivating` keeps it from stealing the keyboard focus.
+Hidden, the window is positioned so that all but an 8-pixel strip lies
+outside the screen. `enterEvent` starts a `QPropertyAnimation` on the window
+position (160 ms, ease-out) that slides it in; `leaveEvent` starts a 450 ms
+timer, after which the bar slides back if the pointer is really gone. The
+delay prevents flicker when the pointer crosses the border. The bar does not
+talk to the engine itself: it emits `start_requested`, `stop_requested` and
+`show_window_requested`, which the main window connects to the same methods
+its own buttons use, so all checks (folder, unsaved transcript) apply.
+
+**Global hotkey (`global_hotkeys.py`).** `RegisterHotKey` from the Windows
+API registers exactly one combination, `Ctrl+Alt+R`, for the GUI thread.
+Windows then posts a `WM_HOTKEY` message when it is pressed, whatever
+application has the focus. A `QAbstractNativeEventFilter` installed on the
+application sees every native message and turns that one into a Qt signal.
+No keyboard hook is installed and no other keystrokes are observed. If the
+combination is taken, registration fails and a notice is shown.
+
+**Single instance (`single_instance.py`).** At start, `main.py` tries to
+connect to a `QLocalServer` named after the user. If that succeeds, another
+VoxNote is running: the new process sends a short message and exits, and the
+running one brings its window to the front. Otherwise it creates the server.
+This is what makes the `Ctrl+Alt+V` shortcut key of the desktop icon usable
+as "show VoxNote": Windows starts the shortcut, and the second start only
+activates the first.
 
 ## Error handling and logging
 

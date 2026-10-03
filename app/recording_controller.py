@@ -321,7 +321,14 @@ class RecordingController(QObject):
     # -- saving ----------------------------------------------------------
 
     def _options(self) -> ExportOptions:
-        return ExportOptions(include_timestamps=self.settings.include_timestamps)
+        s = self.settings
+        return ExportOptions(
+            include_timestamps=s.include_timestamps,
+            layout=s.document_layout,
+            language_headings=s.language_headings,
+            headings=s.document_headings,
+            metadata=tuple(s.document_metadata),
+        )
 
     def save(self) -> bool:
         """Export the current transcript using the configured folder,

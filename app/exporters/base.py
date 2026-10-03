@@ -32,10 +32,27 @@ class ExportError(Exception):
         self.detail = detail
 
 
+# Metadata rows a document can contain, in display order.
+METADATA_FIELDS = ("date", "languages", "duration", "session_id", "model")
+LAYOUTS = ("lines", "paragraph")
+
+
 @dataclass(frozen=True)
 class ExportOptions:
-    # Prefix every transcript line with its start time.
+    """What a saved document contains. The words of the transcript are never
+    affected; only how they are arranged and which extras accompany them."""
+
+    # Prefix every transcript line with its start time ("lines" layout only).
     include_timestamps: bool = True
+    # "lines": one entry per recognised sentence, grouped by language.
+    # "paragraph": the whole transcript as one continuous paragraph.
+    layout: str = "lines"
+    # Show a heading whenever the language changes ("lines" layout only).
+    language_headings: bool = True
+    # Show the document title and the "Transcript" heading.
+    headings: bool = True
+    # Metadata rows to include; a subset of METADATA_FIELDS.
+    metadata: tuple[str, ...] = METADATA_FIELDS
 
 
 @dataclass(frozen=True)
@@ -55,6 +72,20 @@ class ExportDocument:
     metadata: tuple[tuple[str, str], ...]
     blocks: tuple[LanguageBlock, ...]
     options: ExportOptions
+    # The whole transcript as a single paragraph, in spoken order.
+    paragraph: str = ""
+
+    @property
+    def as_paragraph(self) -> bool:
+        return self.options.layout == "paragraph"
+
+    @property
+    def show_headings(self) -> bool:
+        return self.options.headings
+
+    @property
+    def show_language_headings(self) -> bool:
+        return self.options.language_headings
 
     def line(self, segment: TranscriptSegment) -> str:
         """Transcript line for a segment, with the timestamp if enabled."""
@@ -66,13 +97,14 @@ class ExportDocument:
 def build_document(session: Session, options: ExportOptions | None = None) -> ExportDocument:
     options = options or ExportOptions()
     model = session.model or "unknown"
-    metadata = (
-        ("Date", session.started_at.strftime("%Y-%m-%d %H:%M:%S")),
-        ("Languages", language_list(session.languages) or "None detected"),
-        ("Duration", format_clock(session.duration_seconds)),
-        ("Session ID", session.session_id),
-        ("Model", f"Whisper {model} (faster-whisper)"),
-    )
+    rows = {
+        "date": ("Date", session.started_at.strftime("%Y-%m-%d %H:%M:%S")),
+        "languages": ("Languages", language_list(session.languages) or "None detected"),
+        "duration": ("Duration", format_clock(session.duration_seconds)),
+        "session_id": ("Session ID", session.session_id),
+        "model": ("Model", f"Whisper {model} (faster-whisper)"),
+    }
+    metadata = tuple(rows[key] for key in METADATA_FIELDS if key in options.metadata)
 
     blocks: list[LanguageBlock] = []
     current: list[TranscriptSegment] = []
@@ -85,7 +117,10 @@ def build_document(session: Session, options: ExportOptions | None = None) -> Ex
         current.append(segment)
     if current:
         blocks.append(_block(current))
-    return ExportDocument(TITLE, metadata, tuple(blocks), options)
+    paragraph = " ".join(
+        segment.text.strip() for block in blocks for segment in block.segments
+    )
+    return ExportDocument(TITLE, metadata, tuple(blocks), options, paragraph)
 
 
 def _block(segments: list[TranscriptSegment]) -> LanguageBlock:

@@ -34,17 +34,22 @@ class DocxExporter(Exporter):
         properties.comments = ""
         properties.created = session.started_at.replace(tzinfo=None)
 
-        output.add_heading(document.title, level=0)
+        if document.show_headings:
+            output.add_heading(document.title, level=0)
         for name, value in document.metadata:
             paragraph = output.add_paragraph(style="List Bullet")
             paragraph.add_run(f"{name}: ").bold = True
             paragraph.add_run(printable(value))
 
-        output.add_heading(TRANSCRIPT_HEADING, level=1)
+        if document.show_headings:
+            output.add_heading(TRANSCRIPT_HEADING, level=1)
         if not document.blocks:
             output.add_paragraph().add_run(EMPTY_NOTICE).italic = True
-        for block in document.blocks:
-            output.add_heading(block.language_name, level=2)
+        elif document.as_paragraph:
+            output.add_paragraph(printable(document.paragraph))
+        for block in () if document.as_paragraph else document.blocks:
+            if document.show_language_headings:
+                output.add_heading(block.language_name, level=2)
             for segment in block.segments:
                 output.add_paragraph(printable(document.line(segment)))
 

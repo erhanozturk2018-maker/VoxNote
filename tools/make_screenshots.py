@@ -131,6 +131,15 @@ def main() -> int:
             dialog.advanced_toggle.setChecked(True)
             grab(dialog, "settings-recording-advanced.png")
             dialog.close()
+            window.show_content_panel()
+            grab(window.content_panel, "content-panel.png")
+            window.content_panel.hide()
+            from app.dock import EdgeDock
+
+            dock = EdgeDock(controller, "right")
+            dock.show()
+            grab(dock, "edge-bar.png")
+            dock.close()
             help_dialog = HelpDialog(window)
             help_dialog.show()
             grab(help_dialog, "help-start.png")

@@ -43,6 +43,14 @@ def main() -> int:
     icon = icon_path()
     if icon is not None:
         app.setWindowIcon(QIcon(str(icon)))
+    # A second start (for example through the shortcut key of the desktop
+    # icon) brings the running window to the front instead.
+    from app.single_instance import InstanceServer, notify_running_instance
+
+    if notify_running_instance():
+        return 0
+    instance_server = InstanceServer()
+
     settings_manager = SettingsManager()
     settings = settings_manager.load()
     set_language(settings.ui_language)
@@ -52,6 +60,8 @@ def main() -> int:
     controller = RecordingController(settings)
     window = MainWindow(controller, settings_manager)
     window.show()
+    instance_server.activation_requested.connect(window.bring_to_front)
+    window.enable_desktop_integration()
 
     # Start slow work only after the window is visible.
     QTimer.singleShot(0, controller.load_model)

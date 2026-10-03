@@ -19,6 +19,7 @@ EXPORT_FORMATS = ("md", "txt", "json", "docx", "pdf")
 UI_LANGUAGES = ("en", "tr", "de", "ru", "it", "fr")
 DEVICE_PREFERENCES = ("auto", "cuda", "cpu")
 THEMES = ("system", "light", "dark")
+DOCK_EDGES = ("off", "left", "right")
 
 # (minimum, maximum) for every numeric option; values outside are clamped.
 LIMITS: dict[str, tuple[float, float]] = {
@@ -45,6 +46,20 @@ class Settings:
     export_format: str = "md"
     filename_template: str = DEFAULT_TEMPLATE
     include_timestamps: bool = True
+    # "lines" (one entry per sentence) or "paragraph" (one continuous text).
+    document_layout: str = "lines"
+    # Language headings between sentences of different languages.
+    language_headings: bool = True
+    # Document title and "Transcript" heading.
+    document_headings: bool = True
+    # Metadata rows written into documents.
+    document_metadata: list[str] = field(
+        default_factory=lambda: ["date", "languages", "duration", "session_id", "model"]
+    )
+    # Floating bar at the screen edge: "off", "left" or "right".
+    dock_edge: str = "right"
+    # Ctrl+Alt+R starts and stops recording from any application.
+    global_hotkeys: bool = True
     open_after_save: bool = False
     # Empty means "system default input device".
     microphone: str = ""
@@ -84,7 +99,7 @@ class Settings:
         for key, default in defaults.items():
             value = data.get(key)
             if isinstance(default, list):
-                items = value if isinstance(value, list) else []
+                items = value if isinstance(value, list) else default
                 data[key] = list(dict.fromkeys(item for item in items if isinstance(item, str)))
             elif isinstance(default, bool):
                 if not isinstance(value, bool):
@@ -110,6 +125,12 @@ class Settings:
             data["ui_language"] = defaults["ui_language"]
         if data["export_format"] not in EXPORT_FORMATS:
             data["export_format"] = defaults["export_format"]
+        if data["document_layout"] not in ("lines", "paragraph"):
+            data["document_layout"] = defaults["document_layout"]
+        allowed_fields = ("date", "languages", "duration", "session_id", "model")
+        data["document_metadata"] = [f for f in allowed_fields if f in data["document_metadata"]]
+        if data["dock_edge"] not in DOCK_EDGES:
+            data["dock_edge"] = defaults["dock_edge"]
         if data["theme"] not in THEMES:
             data["theme"] = defaults["theme"]
         if data["model"] not in MODELS:

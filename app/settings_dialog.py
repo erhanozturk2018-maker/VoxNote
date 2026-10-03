@@ -44,7 +44,7 @@ from app.i18n import available_languages, has, tr
 from app.icons import set_button_icon
 from app.language_names import LANGUAGE_NAMES, language_list
 from app.recording_controller import RecordingController
-from app.settings_manager import LIMITS, THEMES, Settings
+from app.settings_manager import DOCK_EDGES, LIMITS, THEMES, Settings
 from app.theme import polish_combos, refresh_style
 from app.workers import _directory_bytes
 
@@ -282,9 +282,18 @@ class SettingsDialog(QDialog):
             ),
         )
 
-        self.timestamps_check = QCheckBox(tr("settings.timestamps"))
         self.open_after_check = QCheckBox(tr("settings.open_after_save"))
-        form.addRow(tr("settings.documents"), _column(self.timestamps_check, self.open_after_check))
+        form.addRow(tr("settings.documents"), self.open_after_check)
+
+        self.dock_combo = QComboBox()
+        for name in DOCK_EDGES:
+            self.dock_combo.addItem(tr(f"settings.dock.{name}"), name)
+        form.addRow(
+            tr("settings.dock"), _column(self.dock_combo, _hint(tr("settings.dock.hint")))
+        )
+
+        self.hotkey_check = QCheckBox(tr("settings.hotkey", shortcut="Ctrl+Alt+R"))
+        form.addRow(tr("settings.shortcuts"), self.hotkey_check)
         return page
 
     def _build_recognition(self) -> QWidget:
@@ -478,8 +487,9 @@ class SettingsDialog(QDialog):
         self.folder_edit.setText(str(settings.resolved_save_directory()))
         select(self.format_combo, settings.export_format)
         self.template_edit.setText(settings.filename_template)
-        self.timestamps_check.setChecked(settings.include_timestamps)
         self.open_after_check.setChecked(settings.open_after_save)
+        select(self.dock_combo, settings.dock_edge)
+        self.hotkey_check.setChecked(settings.global_hotkeys)
         select(self.model_combo, settings.model)
         self._spoken = list(settings.spoken_languages)
         self._update_spoken_label()
@@ -502,6 +512,12 @@ class SettingsDialog(QDialog):
                 Settings(),
                 ui_language=self.language_combo.currentData(),
                 tutorial_seen=self._original.tutorial_seen,
+                # Document content is chosen in the main window, not here.
+                include_timestamps=self._original.include_timestamps,
+                document_layout=self._original.document_layout,
+                language_headings=self._original.language_headings,
+                document_headings=self._original.document_headings,
+                document_metadata=list(self._original.document_metadata),
             )
         )
         self._validate()
@@ -593,8 +609,9 @@ class SettingsDialog(QDialog):
             save_directory="" if directory is None or directory == default else str(directory),
             export_format=self.format_combo.currentData(),
             filename_template=self.template_edit.text().strip(),
-            include_timestamps=self.timestamps_check.isChecked(),
             open_after_save=self.open_after_check.isChecked(),
+            dock_edge=self.dock_combo.currentData(),
+            global_hotkeys=self.hotkey_check.isChecked(),
             model=self.model_combo.currentData(),
             spoken_languages=list(self._spoken),
             vocabulary=self.vocabulary_edit.text(),

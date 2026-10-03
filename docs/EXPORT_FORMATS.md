@@ -5,6 +5,7 @@ PDF. All formats are produced from the same internal document, so they
 contain the same information.
 
 - [Common rules](#common-rules)
+- [Content options](#content-options)
 - [Metadata](#metadata)
 - [Markdown](#markdown-md)
 - [Plain text](#plain-text-txt)
@@ -15,7 +16,8 @@ contain the same information.
 
 ## Common rules
 
-- **The transcript is not modified.** The text of every segment is exactly
+- **The transcript is not modified.** Content options decide how the text is
+  arranged and what accompanies it, never the words. The text of every segment is exactly
   what the recogniser returned, apart from leading and trailing spaces. There
   is no spelling or grammar correction and no translation.
 - **Language information is kept separate from the text.** Languages appear
@@ -41,6 +43,26 @@ contain the same information.
   moved into place only when complete, so an interrupted export never leaves
   a half-written document. Automatic saving never overwrites an existing
   file; it appends `_2`, `_3`, … to the name.
+
+## Content options
+
+The user can choose what Markdown, text, Word and PDF documents contain
+(**Document Content** in the main window). The options are described by
+`ExportOptions` in `app/exporters/base.py`:
+
+| Option | Values | Default | Effect |
+| --- | --- | --- | --- |
+| `layout` | `lines`, `paragraph` | `lines` | One entry per recognised sentence, or the whole transcript joined with single spaces into one paragraph |
+| `include_timestamps` | on, off | on | `[HH:MM:SS]` before each line (`lines` only) |
+| `language_headings` | on, off | on | A heading whenever the language changes (`lines` only) |
+| `headings` | on, off | on | The title and the "Transcript" heading |
+| `metadata` | any subset of `date`, `languages`, `duration`, `session_id`, `model` | all | Which metadata rows are written; their order is fixed |
+
+With `layout = paragraph`, `headings` off and no metadata, a plain text file
+contains exactly the transcript as one paragraph and nothing else.
+
+The examples below show the default options. **JSON is not affected by these
+options**: it always contains the complete session.
 
 ## Metadata
 
@@ -121,7 +143,7 @@ Transcript
   "schema_version": 1,
   "application": {
     "name": "VoxNote",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "session": {
     "id": "3f9a1c2e",

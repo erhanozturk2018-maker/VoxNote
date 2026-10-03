@@ -205,6 +205,17 @@ To start VoxNote without a console window, use `pythonw`:
 .\.venv\Scripts\pythonw.exe main.py
 ```
 
+### Desktop icon and start key
+
+To get a desktop icon and a Start menu entry when running from source:
+
+```powershell
+.\tools\install_local.ps1 -FromSource
+```
+
+The shortcuts start VoxNote from this folder and carry the shortcut key
+`Ctrl+Alt+V`, which starts VoxNote or brings it to the front.
+
 ## 10. First start: model download and cache
 
 The first time VoxNote starts, it downloads the selected Whisper model. The

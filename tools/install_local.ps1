@@ -59,6 +59,8 @@ function New-VoxNoteShortcuts($targetPath, $arguments, $workingDirectory, $iconP
         $link.WorkingDirectory = $workingDirectory
         $link.IconLocation = $iconPath
         $link.Description = "VoxNote - speech to text on your own computer"
+        # Windows starts the shortcut when this key combination is pressed.
+        $link.Hotkey = "CTRL+ALT+V"
         $link.Save()
     }
     Write-Host "Shortcuts: $($links -join ', ')"

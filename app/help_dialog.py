@@ -33,6 +33,7 @@ PROJECT_URL = "https://github.com/erhanozturk2018-maker/VoxNote"
 SHORTCUTS = (
     ("Ctrl+R", "shortcut.start"),
     ("Ctrl+E", "shortcut.stop"),
+    ("Ctrl+Alt+R", "shortcut.global"),
     ("Ctrl+Shift+C", "shortcut.copy"),
     ("Ctrl+Shift+S", "shortcut.save_as"),
     ("Ctrl+O", "shortcut.open_folder"),

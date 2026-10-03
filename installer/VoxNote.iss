@@ -3,13 +3,13 @@
 ; Build the application first (pyinstaller VoxNote.spec), then compile this
 ; script with Inno Setup 6:
 ;
-;     ISCC.exe /DAppVersion=0.3.0 installer\VoxNote.iss
+;     ISCC.exe /DAppVersion=0.4.0 installer\VoxNote.iss
 ;
 ; or run tools\build_release.ps1, which does both. The installer is written
 ; to dist\installer. See docs\RELEASE.md.
 
 #ifndef AppVersion
-  #define AppVersion "0.3.0"
+  #define AppVersion "0.4.0"
 #endif
 #define AppName "VoxNote"
 #define AppExe "VoxNote.exe"
@@ -67,7 +67,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "..\dist\VoxNote\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"; HotKey: "ctrl+alt+v"
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 

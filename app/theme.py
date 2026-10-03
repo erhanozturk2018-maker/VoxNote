@@ -113,6 +113,10 @@ QPushButton#flat:hover {{ background: {info_bg}; border-color: {border}; }}
 QPushButton#flat:focus {{ border: 2px solid {accent}; padding: 4px 7px; }}
 QPushButton#flat:disabled {{ background: transparent; border-color: transparent; }}
 
+QFrame#popupPanel {{ background: {card}; border: 1px solid {border}; border-radius: 8px; }}
+QFrame#popupPanel QLabel {{ background: transparent; }}
+QRadioButton {{ spacing: 8px; }}
+
 QListWidget, QTextBrowser#help {{ background: {field}; border: 1px solid {border};
     border-radius: 6px; padding: 6px; }}
 QTextBrowser#help {{ padding: 4px 14px 14px 14px; font-size: 10.5pt; }}

@@ -21,13 +21,21 @@ class MarkdownExporter(Exporter):
 
     def render(self, session: Session, options: ExportOptions) -> str:
         document = build_document(session, options)
-        lines = [f"# {document.title}", ""]
-        lines += [f"- {name}: {value}" for name, value in document.metadata]
-        lines += ["", f"## {TRANSCRIPT_HEADING}", ""]
+        lines: list[str] = []
+        if document.show_headings:
+            lines += [f"# {document.title}", ""]
+        if document.metadata:
+            lines += [f"- {name}: {value}" for name, value in document.metadata]
+            lines.append("")
+        if document.show_headings:
+            lines += [f"## {TRANSCRIPT_HEADING}", ""]
         if not document.blocks:
             lines += [f"_{EMPTY_NOTICE}_", ""]
-        for block in document.blocks:
-            lines += [f"### {block.language_name}", ""]
+        elif document.as_paragraph:
+            lines += [document.paragraph, ""]
+        for block in () if document.as_paragraph else document.blocks:
+            if document.show_language_headings:
+                lines += [f"### {block.language_name}", ""]
             for segment in block.segments:
                 # A blank line between entries keeps each one on its own
                 # line in rendered Markdown without altering the text.

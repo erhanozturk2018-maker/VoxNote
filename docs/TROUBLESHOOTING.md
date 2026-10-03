@@ -428,6 +428,27 @@ Your settings, transcripts and downloaded models are not affected.
 
 ## Application behaviour
 
+### "The shortcut Ctrl+Alt+R is used by another program"
+
+Another application registered the same combination first. VoxNote works
+without it; use the edge bar or the window instead, or close the other
+program and restart VoxNote. The message can be avoided by switching the
+shortcut off in **Settings › General › Shortcuts**.
+
+### Ctrl+Alt+V does not start VoxNote
+
+This key belongs to the VoxNote shortcut file in the Start menu or on the
+desktop. It stops working if that file is deleted or moved. Recreate it with
+`tools\install_local.ps1 -FromSource`, or set a **Shortcut key** in the
+shortcut's properties. Windows can take a second or two to react to shortcut
+keys.
+
+### The edge bar is in the way or does not appear
+
+Choose another edge or *Off* in **Settings › General › Edge bar**. The bar is
+shown on the primary screen, vertically centred. Some full-screen programs
+(games, video players) cover always-on-top windows.
+
 ### "Start Recording" is disabled
 
 Hover over the button: the tooltip gives the reason. Either the speech model

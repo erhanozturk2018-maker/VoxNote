@@ -30,14 +30,15 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_vad_processor.py` | Segmentation with a scripted detector: silence, pre-roll and post-roll, short and long pauses, minimum speech, hysteresis, flush on stop, maximum length, no overlapping or duplicated audio, independence from block size; resampler length and continuity |
 | `tests/test_session_journal.py` | Journal round trip, durability before close, truncated lines, deletion, unreadable files |
 | `tests/test_i18n.py` | Every language has exactly the keys and placeholders of the English table |
+| `tests/test_document_content.py` | Paragraph layout and content options in every document format; settings for them; the content panel; edge bar positions and requests; start/stop toggle; single-instance activation |
 | `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders; introduction shown once; theme cycling and persistence |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`167 passed`.
+`194 passed`.
 
 ## Verification status
 
-Honest status of each area at version 0.3.0. "Verified" means it was actually
+Honest status of each area at version 0.4.0. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 
@@ -71,6 +72,9 @@ RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 | Large v3 Turbo model, language restriction, vocabulary | Verified with synthetic speech | See the comparison below |
 | Switching the model in the running application | Verified | Recorded, switched from Large v3 Turbo to Small through the settings path, recorded again, closed with exit code 0 |
 | Destroying a GPU model after decoding | Verified | With sampling fallback the process aborted (`0xC0000409`); with deterministic decoding it does not |
+| Global hotkey | Partly verified | `RegisterHotKey` succeeded and a posted `WM_HOTKEY` message reached the application; the keys were not physically pressed in the test |
+| Edge bar | Partly verified | Shown on the real desktop; sliding in and out was triggered from code and the positions checked; hovering with a real pointer was not tested |
+| Start key of the shortcut (`Ctrl+Alt+V`) | **Not verified** | The property is written into the shortcut; pressing it was not tested |
 | **Medium model** | **Not verified** | Was not downloaded |
 | **Screen readers, high contrast** | **Not verified** | |
 
@@ -200,7 +204,10 @@ observed.
 | C9 | **Open File**, **Open Folder**, **Copy Text** | Each does what it says |
 | C10 | **Export failure.** Choose a folder on a USB drive, start recording, remove the drive, stop | Status "Error" with an explanation; transcript still visible; **Save As…** to another folder succeeds |
 | C11 | Enable "Open the document after it has been saved" and record | The document opens automatically |
-| C12 | Disable timestamps and record | No `[00:00:00]` prefixes in preview and file |
+| C12 | Disable timestamps in **Document Content** and record | No `[00:00:00]` prefixes in preview and file |
+| C13 | Choose *One continuous paragraph*, untick everything under *Include*, record three sentences | The file contains exactly the three sentences as one paragraph |
+| C14 | Open **Document Content** during a recording and change options | The panel opens; the saved file follows the new options |
+| C15 | Untick only *Session ID* | Every format except JSON lacks the session ID |
 
 ### D. Devices and failures
 
@@ -233,6 +240,10 @@ observed.
 | E10 | **Appearance.** Press `Ctrl+T` three times, also during a recording | Light, dark, system in turn; transcript stays; choice is kept after restart |
 | E11 | With "Same as system", switch Windows between light and dark while VoxNote runs | VoxNote follows |
 | E12 | Delete `settings.json` and start VoxNote | The introduction opens once; not on the next start |
+| E13 | **Edge bar.** Move the pointer to the strip at the screen edge | The bar slides out; it slides back when the pointer leaves |
+| E14 | Start and stop a recording from the edge bar | Same result as with the window buttons; the strip is red while recording |
+| E15 | **Global shortcut.** With another program in front, press `Ctrl+Alt+R` twice | Recording starts, then stops and saves |
+| E16 | Press `Ctrl+Alt+V` with VoxNote closed, then again with it open but covered | VoxNote starts; the second press brings the window to the front, no second window |
 
 ### F. Privacy checks
 

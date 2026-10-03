@@ -43,7 +43,6 @@ excludes = [
     "tkinter",
     "pytest",
     "pypdf",
-    "PySide6.QtNetwork",
     "PySide6.QtQml",
     "PySide6.QtQuick",
     "PySide6.QtWebEngineCore",
