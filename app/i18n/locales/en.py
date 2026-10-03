@@ -38,6 +38,7 @@ STRINGS = {
     "main.folder.changed": "Save folder changed.",
     "main.format": "Format:",
     "main.filename_hint": "File name for this session: {name}",
+    "main.filename_example": "Example file name: {name}",
     "main.open_file": "Open File",
     "main.open_folder": "Open Folder",
     "main.open_folder.tip": "Show the saved file in its folder ({shortcut})",

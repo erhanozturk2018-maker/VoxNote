@@ -39,6 +39,7 @@ STRINGS = {
     "main.folder.changed": "Cartella di salvataggio modificata.",
     "main.format": "Formato:",
     "main.filename_hint": "Nome del file per questa sessione: {name}",
+    "main.filename_example": "Esempio di nome del file: {name}",
     "main.open_file": "Apri file",
     "main.open_folder": "Apri cartella",
     "main.open_folder.tip": "Mostra il file salvato nella sua cartella ({shortcut})",

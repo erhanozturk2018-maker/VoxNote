@@ -465,7 +465,10 @@ class MainWindow(QMainWindow):
         self.format_combo.setCurrentIndex(max(index, 0))
         example = render_filename(self.settings.filename_template, self.controller.session)
         extension = EXPORTERS[self.settings.export_format].extension
-        self.filename_hint.setText(tr("main.filename_hint", name=f"{example}.{extension}"))
+        # Before anything was recorded the name is only an example.
+        in_session = self.controller.is_busy or self.controller.has_transcript
+        key = "main.filename_hint" if in_session else "main.filename_example"
+        self.filename_hint.setText(tr(key, name=f"{example}.{extension}"))
 
     def _persist(self) -> None:
         try:
@@ -546,6 +549,7 @@ class MainWindow(QMainWindow):
         if state in (AppState.COMPLETED, AppState.ERROR) and self.controller.session.duration_seconds:
             self.timer_label.setText(format_clock(self.controller.session.duration_seconds))
         self._update_controls()
+        self._update_output_fields()
         if self._close_when_idle and not self.controller.is_busy:
             if state is AppState.COMPLETED:
                 self.close()

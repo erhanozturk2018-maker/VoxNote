@@ -7,6 +7,8 @@ operating system setting.
 
 from __future__ import annotations
 
+import os
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QGuiApplication, QPalette
 from PySide6.QtWidgets import QApplication
@@ -24,13 +26,14 @@ LIGHT = {
     "accent_text": "#ffffff",
     "record": "#c62828",
     "record_hover": "#a81f1f",
-    "success": "#1b7f3b",
+    "record_text": "#ffffff",
+    "success": "#17703a",
     "success_bg": "#e6f4ea",
     "warning": "#8a5a00",
     "warning_bg": "#fff4d6",
     "error": "#b3261e",
     "error_bg": "#fdecea",
-    "info_bg": "#e8effd",
+    "info_bg": "#eef3fe",
     "field": "#ffffff",
     "disabled_bg": "#e6e8ec",
     "disabled_text": "#8b929c",
@@ -47,13 +50,14 @@ DARK = {
     "accent_text": "#0d1117",
     "record": "#ef5350",
     "record_hover": "#f27573",
+    "record_text": "#1b1d21",
     "success": "#6fcf8b",
     "success_bg": "#1e3326",
     "warning": "#f0c060",
     "warning_bg": "#3a3018",
     "error": "#f28b82",
-    "error_bg": "#3b2220",
-    "info_bg": "#222c40",
+    "error_bg": "#301c1a",
+    "info_bg": "#1c2536",
     "field": "#1f2226",
     "disabled_bg": "#2c3036",
     "disabled_text": "#6f7782",
@@ -94,7 +98,7 @@ QPushButton:disabled {{ background: {disabled_bg}; color: {disabled_text}; borde
 QPushButton#primary {{ background: {accent}; color: {accent_text}; border-color: {accent};
     font-weight: 600; padding: 8px 18px; }}
 QPushButton#primary:hover {{ background: {accent_hover}; }}
-QPushButton#record {{ background: {record}; color: #ffffff; border-color: {record};
+QPushButton#record {{ background: {record}; color: {record_text}; border-color: {record};
     font-weight: 600; padding: 8px 18px; }}
 QPushButton#record:hover {{ background: {record_hover}; }}
 QPushButton#stop {{ font-weight: 600; padding: 8px 18px; }}
@@ -133,6 +137,14 @@ QCheckBox {{ spacing: 8px; }}
 
 
 def is_dark() -> bool:
+    """Whether the dark variant applies.
+
+    Follows the operating system. The ``VOXNOTE_THEME`` environment variable
+    (``light`` or ``dark``) overrides it.
+    """
+    forced = os.environ.get("VOXNOTE_THEME", "").lower()
+    if forced in ("light", "dark"):
+        return forced == "dark"
     try:
         return QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark
     except Exception:

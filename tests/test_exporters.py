@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -154,6 +155,26 @@ def test_pdf_export_keeps_turkish_characters(session, tmp_path):
     # Every Turkish-specific letter must survive the round trip.
     for word in ("arkadaşımı", "gördüm", "Çığlık", "öğün", "şişe", "İstanbul", "ILIK", "ığdır"):
         assert word in text, f"{word!r} was corrupted in the PDF"
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="relies on fonts shipped with Windows")
+def test_pdf_mixes_scripts_in_one_document(session, tmp_path):
+    from dataclasses import replace
+
+    samples = {
+        "de": "Ich habe gestern einen schönen Spaziergang gemacht, über die Straße.",
+        "fr": "Ensuite, nous sommes allés au marché, ça coûte très cher.",
+        "ru": "Вчера вечером мы долго гуляли по городу.",
+        "el": "Καλημέρα σε όλους.",
+        "zh": "昨天我去了健身房。",
+    }
+    session.segments = [
+        replace(session.segments[0], language=code, text=text) for code, text in samples.items()
+    ]
+    session.languages = list(samples)
+    text = read_pdf(export_session(session, tmp_path, DEFAULT_TEMPLATE, "pdf"))
+    for sample in samples.values():
+        assert sample in text
 
 
 def test_pdf_embeds_a_unicode_font(session, tmp_path):

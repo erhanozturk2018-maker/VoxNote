@@ -39,6 +39,7 @@ STRINGS = {
     "main.folder.changed": "Dossier d'enregistrement modifié.",
     "main.format": "Format :",
     "main.filename_hint": "Nom du fichier pour cette session : {name}",
+    "main.filename_example": "Exemple de nom de fichier : {name}",
     "main.open_file": "Ouvrir le fichier",
     "main.open_folder": "Ouvrir le dossier",
     "main.open_folder.tip": "Afficher le fichier enregistré dans son dossier ({shortcut})",

@@ -68,7 +68,13 @@ def main() -> int:
     OUTPUT.mkdir(parents=True, exist_ok=True)
 
     documents = Path("C:/Users/Alex/Documents/VoxNote")
-    for language in ("en", "tr", "de"):
+    for language in ("en", "tr", "de", "dark"):
+        # The last pass renders the English interface in the dark variant.
+        dark = language == "dark"
+        if dark:
+            language = "en"
+            os.environ["VOXNOTE_THEME"] = "dark"
+            apply_theme(app)
         set_language(language)
         settings = Settings(ui_language=language, save_directory=str(documents))
         controller = RecordingController(settings)
@@ -80,9 +86,9 @@ def main() -> int:
         window.resize(900, 760)
         window.show()
         window._update_model_label()
-        suffix = "" if language == "en" else f"-{language}"
+        suffix = "-dark" if dark else "" if language == "en" else f"-{language}"
 
-        if language == "en":
+        if language == "en" and not dark:
             grab(window, "main-ready.png")
 
         # Recording
@@ -96,7 +102,7 @@ def main() -> int:
         window.timer_label.setText("00:00:14")
         window._on_speech_active(True)
         window._on_level(0.22)
-        if language == "en":
+        if language == "en" and not dark:
             grab(window, "main-recording.png")
 
         # Completed
@@ -110,7 +116,7 @@ def main() -> int:
         window._show_result("success", "result.saved", {"path": str(controller.saved_path)})
         grab(window, f"main-completed{suffix}.png")
 
-        if language == "en":
+        if language == "en" and not dark:
             dialog = SettingsDialog(settings, controller, window)
             dialog.show()
             for index, name in enumerate(("general", "recording", "system")):
@@ -120,7 +126,53 @@ def main() -> int:
         controller.discard_session()
         controller.state = AppState.READY
         window.close()
+
+    render_multilingual(app, documents)
     return 0
+
+
+MULTILINGUAL_SAMPLE = [
+    (1.5, 4.2, "en", "Good morning everyone, let's get started."),
+    (5.6, 9.1, "de", "Ich habe gestern einen sehr interessanten Artikel gelesen."),
+    (10.4, 13.8, "fr", "Ensuite, nous sommes allés au marché pour acheter des légumes."),
+    (15.0, 18.3, "tr", "Akşam yemeğinden sonra biraz yürüyüşe çıktık."),
+    (19.6, 23.0, "it", "Domani andiamo al mare con tutta la famiglia."),
+    (24.2, 27.5, "es", "El próximo verano quiero aprender a tocar la guitarra."),
+    (28.8, 32.4, "ru", "Вчера вечером мы долго гуляли по городу."),
+]
+
+
+def render_multilingual(app, documents: Path) -> None:
+    """A session with many languages, to show how language blocks look."""
+    os.environ["VOXNOTE_THEME"] = "light"
+    apply_theme(app)
+    set_language("en")
+    controller = RecordingController(Settings(save_directory=str(documents)))
+    controller.transcriber.device_info = DeviceInfo("cuda", "float16")
+    controller.model_ready = True
+    controller.model_state = "ready"
+    window = MainWindow(controller, SettingsManager())
+    window.resize(900, 1060)
+    window.show()
+    window._update_model_label()
+
+    controller.session = sample_session()
+    controller.session.duration_seconds = 36.0
+    controller.state = AppState.RECORDING
+    controller.session_reset.emit()
+    codes = [code for _, _, code, _ in MULTILINGUAL_SAMPLE]
+    segments = [TranscriptSegment(a, b, c, text, 0.98) for a, b, c, text in MULTILINGUAL_SAMPLE]
+    controller._on_recognized(segments, codes)
+    controller.state = AppState.COMPLETED
+    controller._unsaved = False
+    controller.saved_path = documents / f"2026-10-03_14-30-00_{'-'.join(codes)}.md"
+    window._on_state_changed(AppState.COMPLETED)
+    window._show_result("success", "result.saved", {"path": str(controller.saved_path)})
+    window.transcript_view.verticalScrollBar().setValue(0)
+    grab(window, "main-multilingual.png")
+    controller.discard_session()
+    controller.state = AppState.READY
+    window.close()
 
 
 if __name__ == "__main__":

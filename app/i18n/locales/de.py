@@ -39,6 +39,7 @@ STRINGS = {
     "main.folder.changed": "Speicherordner geändert.",
     "main.format": "Format:",
     "main.filename_hint": "Dateiname für diese Sitzung: {name}",
+    "main.filename_example": "Beispiel für den Dateinamen: {name}",
     "main.open_file": "Datei öffnen",
     "main.open_folder": "Ordner öffnen",
     "main.open_folder.tip": "Gespeicherte Datei im Ordner anzeigen ({shortcut})",

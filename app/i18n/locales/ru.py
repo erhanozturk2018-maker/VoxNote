@@ -39,6 +39,7 @@ STRINGS = {
     "main.folder.changed": "Папка сохранения изменена.",
     "main.format": "Формат:",
     "main.filename_hint": "Имя файла для этого сеанса: {name}",
+    "main.filename_example": "Пример имени файла: {name}",
     "main.open_file": "Открыть файл",
     "main.open_folder": "Открыть папку",
     "main.open_folder.tip": "Показать сохранённый файл в его папке ({shortcut})",

@@ -38,6 +38,7 @@ STRINGS = {
     "main.folder.changed": "Kayıt klasörü değiştirildi.",
     "main.format": "Biçim:",
     "main.filename_hint": "Bu oturumun dosya adı: {name}",
+    "main.filename_example": "Örnek dosya adı: {name}",
     "main.open_file": "Dosyayı Aç",
     "main.open_folder": "Klasörü Aç",
     "main.open_folder.tip": "Kaydedilen dosyayı klasöründe göster ({shortcut})",
