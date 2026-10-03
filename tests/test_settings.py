@@ -28,6 +28,9 @@ def test_round_trip(tmp_path):
         silence_ms=1200,
         device_preference="cpu",
         retain_audio=True,
+        model="medium",
+        spoken_languages=["tr", "en"],
+        vocabulary="Gesi, Erhan",
     )
     manager.save(original)
     assert manager.load() == original
@@ -82,6 +85,9 @@ def test_invalid_values_are_normalised(tmp_path):
                 "max_segment_s": "long",
                 "retain_audio": "yes",
                 "microphone": 42,
+                "model": "gigantic",
+                "spoken_languages": ["tr", "tr", "klingon", 7, "en"],
+                "vocabulary": 12,
             }
         ),
         encoding="utf-8",
@@ -96,6 +102,9 @@ def test_invalid_values_are_normalised(tmp_path):
     assert settings.max_segment_s == Settings().max_segment_s
     assert settings.retain_audio is False
     assert settings.microphone == ""
+    assert settings.model == Settings().model
+    assert settings.spoken_languages == ["tr", "en"]
+    assert settings.vocabulary == ""
 
 
 def test_default_save_directory_is_inside_documents():

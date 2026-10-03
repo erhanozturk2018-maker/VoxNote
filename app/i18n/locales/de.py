@@ -2,16 +2,17 @@
 
 STRINGS = {
     "app.version": "Version {version}",
+
     "unit.ms": "ms",
     "unit.s": "s",
-    # Main window
+
     "main.settings": "Einstellungen",
     "main.settings.tip": "Einstellungen öffnen ({shortcut})",
-    "main.start": "\u25cf  Aufnahme starten",
+    "main.start": "Aufnahme starten",
     "main.start.tip": "Neue Aufnahme starten ({shortcut})",
     "main.start.tip.model": "Verfügbar, sobald das Sprachmodell geladen ist",
     "main.start.tip.busy": "Verfügbar, sobald die aktuelle Sitzung abgeschlossen ist",
-    "main.stop": "\u25a0  Aufnahme stoppen",
+    "main.stop": "Aufnahme stoppen",
     "main.stop.tip": "Stoppen, Transkript fertigstellen und speichern ({shortcut})",
     "main.microphone": "Mikrofon:",
     "main.microphone.default": "Standardmikrofon des Systems",
@@ -22,18 +23,15 @@ STRINGS = {
     "main.elapsed": "Bisherige Aufnahmedauer",
     "main.status": "Status: {status}",
     "main.transcript": "Transkript",
-    "main.transcript.placeholder": (
-        "Ihre Worte erscheinen hier, während Sie sprechen. "
-        "Klicken Sie zum Beginnen auf \u201eAufnahme starten\u201c."
-    ),
+    "main.transcript.placeholder": "Ihre Worte erscheinen hier, während Sie sprechen. Klicken Sie zum Beginnen auf „Aufnahme starten“.",
     "main.languages": "Sprachen: {languages}",
-    "main.languages.none": "noch keine erkannt",
+    "main.languages.none": "Noch keine Sprache erkannt",
     "main.copy": "Text kopieren",
     "main.copy.tip": "Transkripttext in die Zwischenablage kopieren ({shortcut})",
     "main.copy.done": "Transkript in die Zwischenablage kopiert.",
     "main.output": "Ausgabe",
     "main.folder": "Speicherordner:",
-    "main.folder.change": "Ändern\u2026",
+    "main.folder.change": "Ändern…",
     "main.folder.change.tip": "Festlegen, wo Transkripte gespeichert werden",
     "main.folder.dialog": "Ordner für gespeicherte Transkripte auswählen",
     "main.folder.changed": "Speicherordner geändert.",
@@ -45,195 +43,101 @@ STRINGS = {
     "main.open_folder.tip": "Gespeicherte Datei im Ordner anzeigen ({shortcut})",
     "main.save": "Speichern",
     "main.save.tip": "Transkript im Speicherordner speichern",
-    "main.save_as": "Speichern unter\u2026",
+    "main.save_as": "Speichern unter…",
     "main.save_as.tip": "Transkript an einem anderen Ort oder in einem anderen Format speichern ({shortcut})",
     "main.save_as.dialog": "Transkript speichern unter",
     "main.dismiss": "Diese Meldung schließen",
-    # States
+
     "state.ready": "Bereit",
     "state.recording": "Aufnahme läuft",
-    "state.recording.speech": "Aufnahme läuft \u00b7 Sprache erkannt",
+    "state.recording.speech": "Aufnahme läuft · Sprache erkannt",
     "state.processing": "Sprache wird verarbeitet",
-    "state.processing.pending": "Sprache wird verarbeitet \u00b7 noch {seconds} s",
+    "state.processing.pending": "Sprache wird verarbeitet · noch {seconds} s",
     "state.saving": "Datei wird gespeichert",
     "state.completed": "Abgeschlossen",
     "state.error": "Fehler",
-    # Results and notices
+
     "result.saved": "Gespeichert: {path}",
-    "result.file_missing": (
-        "Die gespeicherte Datei befindet sich nicht mehr an ihrem Ort. "
-        "Mit \u201eSpeichern unter\u2026\u201c können Sie sie erneut speichern."
-    ),
+    "result.file_missing": "Die gespeicherte Datei befindet sich nicht mehr an ihrem Ort. Mit „Speichern unter…“ können Sie sie erneut speichern.",
     "result.open_failed": "Es ist keine Anwendung zum Öffnen von {path} vorhanden.",
+
     "notice.no_speech": "Es wurde keine Sprache erkannt, daher wurde keine Datei erstellt.",
-    "notice.microphone_disconnected": (
-        "Das Mikrofon liefert kein Audio mehr, daher wurde die Aufnahme gestoppt. "
-        "Alles bis dahin Gesprochene bleibt erhalten."
-    ),
-    "notice.backlog_limit": (
-        "Die Spracherkennung kam nicht mehr hinterher, daher wurde die Aufnahme gestoppt. "
-        "Alles bisher Aufgenommene wird transkribiert."
-    ),
-    "notice.silent_input": (
-        "Das Mikrofon liefert nur Stille. Prüfen Sie, ob es stummgeschaltet ist und ob "
-        "Windows Desktop-Apps den Zugriff auf das Mikrofon erlaubt "
-        "(Einstellungen \u203a Datenschutz und Sicherheit \u203a Mikrofon)."
-    ),
-    "notice.audio_dropped": (
-        "Der Computer war zu stark ausgelastet, ein kurzes Stück Audio ging verloren."
-    ),
-    "notice.transcription_failed": (
-        "Ein Teil der Aufnahme konnte nicht transkribiert werden und wurde übersprungen. "
-        "Details stehen in der Protokolldatei."
-    ),
-    "notice.gpu_fallback": (
-        "Die Grafikkarte kann nicht mehr verwendet werden. Die Erkennung läuft auf dem "
-        "Prozessor weiter und wird langsamer."
-    ),
+    "notice.microphone_disconnected": "Das Mikrofon liefert kein Audio mehr, daher wurde die Aufnahme gestoppt. Alles bis dahin Gesprochene bleibt erhalten.",
+    "notice.backlog_limit": "Die Spracherkennung kam nicht mehr hinterher, daher wurde die Aufnahme gestoppt. Alles bisher Aufgenommene wird transkribiert.",
+    "notice.silent_input": "Das Mikrofon liefert nur Stille. Prüfen Sie, ob es stummgeschaltet ist und ob Windows Desktop-Apps den Zugriff auf das Mikrofon erlaubt (Einstellungen › Datenschutz und Sicherheit › Mikrofon).",
+    "notice.audio_dropped": "Der Computer war zu stark ausgelastet, ein kurzes Stück Audio ging verloren.",
+    "notice.transcription_failed": "Ein Teil der Aufnahme konnte nicht transkribiert werden und wurde übersprungen. Details stehen in der Protokolldatei.",
+    "notice.gpu_fallback": "Die Grafikkarte kann nicht mehr verwendet werden. Die Erkennung läuft auf dem Prozessor weiter und wird langsamer.",
     "notice.session_recovered": "Eine nicht gespeicherte Sitzung wurde wiederhergestellt.",
-    # Errors
+
     "error.unknown": "Etwas ist schiefgelaufen. Details wurden in die Protokolldatei geschrieben:\n{log}",
     "error.settings_save_failed": "Die Einstellungen konnten nicht gespeichert werden: {detail}",
-    "error.no_microphone": (
-        "Es wurde kein Mikrofon gefunden. Schließen Sie ein Mikrofon an und klicken Sie "
-        "auf \u201eAktualisieren\u201c."
-    ),
-    "error.microphone_open_failed": (
-        "Das Mikrofon konnte nicht geöffnet werden. Stellen Sie sicher, dass kein anderes "
-        "Programm es exklusiv verwendet und dass Windows Desktop-Apps den Zugriff auf das "
-        "Mikrofon erlaubt (Einstellungen \u203a Datenschutz und Sicherheit \u203a Mikrofon)."
-    ),
-    "error.audio_backend_unavailable": (
-        "Audioaufnahme ist auf diesem Computer nicht verfügbar. Details wurden in die "
-        "Protokolldatei geschrieben:\n{log}"
-    ),
-    "error.engine_blocked_by_policy": (
-        "Windows hat die Spracherkennung blockiert (Smart App Control oder eine andere "
-        "Richtlinie zur Anwendungssteuerung). Siehe \u201eTroubleshooting\u201c in der Dokumentation."
-    ),
-    "error.engine_import_failed": (
-        "Die Spracherkennung konnte nicht gestartet werden. Die Installation ist "
-        "möglicherweise unvollständig. Details wurden in die Protokolldatei geschrieben:\n{log}"
-    ),
-    "error.model_cache_unwritable": (
-        "In den Ordner für das Sprachmodell kann nicht geschrieben werden: {detail}"
-    ),
-    "error.no_disk_space": (
-        "Es ist nicht genügend freier Speicherplatz vorhanden, um das Sprachmodell "
-        "herunterzuladen (etwa 1 GB wird benötigt)."
-    ),
-    "error.model_download_failed": (
-        "Das Sprachmodell konnte nicht heruntergeladen werden. Eine Internetverbindung "
-        "wird nur beim ersten Mal benötigt. Prüfen Sie die Verbindung und versuchen Sie es erneut."
-    ),
-    "error.model_load_failed": (
-        "Das Sprachmodell konnte nicht geladen werden. Details wurden in die "
-        "Protokolldatei geschrieben:\n{log}"
-    ),
+    "error.no_microphone": "Es wurde kein Mikrofon gefunden. Schließen Sie ein Mikrofon an und klicken Sie auf „Aktualisieren“.",
+    "error.microphone_open_failed": "Das Mikrofon konnte nicht geöffnet werden. Stellen Sie sicher, dass kein anderes Programm es exklusiv verwendet und dass Windows Desktop-Apps den Zugriff auf das Mikrofon erlaubt (Einstellungen › Datenschutz und Sicherheit › Mikrofon).",
+    "error.audio_backend_unavailable": "Audioaufnahme ist auf diesem Computer nicht verfügbar. Details wurden in die Protokolldatei geschrieben:\n{log}",
+    "error.engine_blocked_by_policy": "Windows hat die Spracherkennung blockiert (Smart App Control oder eine andere Richtlinie zur Anwendungssteuerung). Siehe „Troubleshooting“ in der Dokumentation.",
+    "error.engine_import_failed": "Die Spracherkennung konnte nicht gestartet werden. Die Installation ist möglicherweise unvollständig. Details wurden in die Protokolldatei geschrieben:\n{log}",
+    "error.model_cache_unwritable": "In den Ordner für das Sprachmodell kann nicht geschrieben werden: {detail}",
+    "error.no_disk_space": "Es ist nicht genügend freier Speicherplatz vorhanden, um das Sprachmodell herunterzuladen (je nach Modell werden bis zu etwa 2 GB benötigt).",
+    "error.model_download_failed": "Das Sprachmodell konnte nicht heruntergeladen werden. Eine Internetverbindung wird nur beim ersten Mal benötigt. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "error.model_load_failed": "Das Sprachmodell konnte nicht geladen werden. Details wurden in die Protokolldatei geschrieben:\n{log}",
     "error.model_not_loaded": "Das Sprachmodell ist noch nicht geladen.",
     "error.directory_missing": "Der Speicherordner ist nicht vorhanden: {detail}",
     "error.directory_invalid": "Der Speicherort ist kein Ordner: {detail}",
-    "error.directory_not_writable": (
-        "In den Speicherordner kann nicht geschrieben werden. Wählen Sie einen anderen "
-        "Ordner. Ihr Transkript ist noch vorhanden und nicht verloren."
-    ),
-    "error.export_failed": (
-        "Die Datei konnte nicht gespeichert werden. Ihr Transkript ist noch vorhanden: "
-        "Mit \u201eSpeichern\u201c versuchen Sie es erneut, mit \u201eSpeichern unter\u2026\u201c "
-        "wählen Sie einen anderen Ort."
-    ),
+    "error.directory_not_writable": "In den Speicherordner kann nicht geschrieben werden. Wählen Sie einen anderen Ordner. Ihr Transkript ist noch vorhanden und nicht verloren.",
+    "error.export_failed": "Die Datei konnte nicht gespeichert werden. Ihr Transkript ist noch vorhanden: Mit „Speichern“ versuchen Sie es erneut, mit „Speichern unter…“ wählen Sie einen anderen Ort.",
     "error.unknown_format": "Das ausgewählte Dateiformat wird nicht unterstützt.",
-    "error.pdf_font_missing": (
-        "Es wurde keine Schriftart gefunden, die alle Zeichen unterstützt, daher wurde "
-        "kein PDF erstellt. Wählen Sie ein anderes Format oder lesen Sie "
-        "\u201eTroubleshooting\u201c in der Dokumentation."
-    ),
-    # Model and device
+    "error.pdf_font_missing": "Es wurde keine Schriftart gefunden, die alle Zeichen unterstützt, daher wurde kein PDF erstellt. Wählen Sie ein anderes Format oder lesen Sie „Troubleshooting“ in der Dokumentation.",
+
     "model.idle": "Sprachmodell: nicht geladen",
-    "model.checking": "Sprachmodell wird geprüft\u2026",
-    "model.downloading": "Sprachmodell wird heruntergeladen (nur beim ersten Start)\u2026",
-    "model.downloading.progress": "Sprachmodell wird heruntergeladen\u2026 {megabytes} MB",
-    "model.initializing": "Sprachmodell wird geladen\u2026",
-    "model.ready": "Modell: {model} \u00b7 {device}",
+    "model.checking": "Sprachmodell wird geprüft…",
+    "model.downloading": "Sprachmodell wird heruntergeladen (nur beim ersten Start)…",
+    "model.downloading.progress": "Sprachmodell wird heruntergeladen… {megabytes} MB",
+    "model.initializing": "Sprachmodell wird geladen…",
+    "model.ready": "Modell: {model} · {device}",
     "model.failed": "Sprachmodell nicht verfügbar",
     "model.retry": "Erneut versuchen",
     "model.tip": "Sprache wird auf diesem Computer erkannt. Es wird kein Audio versendet.",
+
     "device.gpu": "GPU (NVIDIA CUDA, {compute_type})",
     "device.cpu": "CPU ({compute_type})",
-    "device.reason.cpu_selected": (
-        "Der Prozessor wird verwendet, weil er in den Einstellungen ausgewählt ist."
-    ),
-    "device.reason.cuda_unavailable": (
-        "Der Prozessor wird verwendet, weil keine kompatible NVIDIA-Grafikkarte gefunden wurde."
-    ),
-    "device.reason.cuda_unsupported_compute_type": (
-        "Der Prozessor wird verwendet, weil die Grafikkarte kein geeignetes Zahlenformat unterstützt."
-    ),
-    "device.reason.cuda_init_failed": (
-        "Der Prozessor wird verwendet, weil die Grafikkarte nicht initialisiert werden "
-        "konnte. Möglicherweise fehlen die NVIDIA-Bibliotheken (cuBLAS, cuDNN)."
-    ),
-    "device.reason.cuda_out_of_memory": (
-        "Der Prozessor wird verwendet, weil der Speicher der Grafikkarte nicht ausreichte."
-    ),
-    "device.reason.cuda_runtime_error": (
-        "Der Prozessor wird verwendet, weil die Grafikkarte einen Fehler gemeldet hat."
-    ),
-    # Dialogs
+    "device.reason.cpu_selected": "Der Prozessor wird verwendet, weil er in den Einstellungen ausgewählt ist.",
+    "device.reason.cuda_unavailable": "Der Prozessor wird verwendet, weil keine kompatible NVIDIA-Grafikkarte gefunden wurde.",
+    "device.reason.cuda_unsupported_compute_type": "Der Prozessor wird verwendet, weil die Grafikkarte kein geeignetes Zahlenformat unterstützt.",
+    "device.reason.cuda_init_failed": "Der Prozessor wird verwendet, weil die Grafikkarte nicht initialisiert werden konnte. Möglicherweise fehlen die NVIDIA-Bibliotheken (cuBLAS, cuDNN).",
+    "device.reason.cuda_out_of_memory": "Der Prozessor wird verwendet, weil der Speicher der Grafikkarte nicht ausreichte.",
+    "device.reason.cuda_runtime_error": "Der Prozessor wird verwendet, weil die Grafikkarte einen Fehler gemeldet hat.",
+
     "dialog.unsaved.title": "Nicht gespeichertes Transkript",
-    "dialog.unsaved.text": (
-        "Das aktuelle Transkript wurde nicht gespeichert. Beim Start einer neuen Aufnahme "
-        "wird es verworfen."
-    ),
+    "dialog.unsaved.text": "Das aktuelle Transkript wurde nicht gespeichert. Beim Start einer neuen Aufnahme wird es verworfen.",
     "dialog.recover.title": "Nicht gespeicherte Sitzungen wiederherstellen",
-    "dialog.recover.text": (
-        "Beim letzten Programmlauf wurden {count} Sitzung(en) nicht gespeichert. "
-        "Möchten Sie sie jetzt wiederherstellen und speichern?"
-    ),
+    "dialog.recover.text": "Beim letzten Programmlauf wurden {count} Sitzung(en) nicht gespeichert. Möchten Sie sie jetzt wiederherstellen und speichern?",
     "dialog.recover.recover": "Wiederherstellen und speichern",
     "dialog.recover.discard": "Verwerfen",
     "dialog.recover.later": "Später entscheiden",
     "dialog.close.title": "Aufnahme läuft",
-    "dialog.close.recording": (
-        "Eine Aufnahme läuft. Soll sie vor dem Schließen gestoppt und das Transkript "
-        "gespeichert werden?"
-    ),
+    "dialog.close.recording": "Eine Aufnahme läuft. Soll sie vor dem Schließen gestoppt und das Transkript gespeichert werden?",
     "dialog.close.stop_save": "Stoppen, speichern und schließen",
     "dialog.close.keep": "Weiter aufnehmen",
-    "dialog.close.wait": (
-        "Das Transkript wird fertiggestellt. Das Fenster schließt sich nach dem Speichern\u2026"
-    ),
-    "dialog.close.unsaved": (
-        "Das Transkript wurde nicht gespeichert. Wenn Sie jetzt schließen, wird es beim "
-        "nächsten Start zur Wiederherstellung angeboten."
-    ),
-    # Settings
+    "dialog.close.wait": "Das Transkript wird fertiggestellt. Das Fenster schließt sich nach dem Speichern…",
+    "dialog.close.unsaved": "Das Transkript wurde nicht gespeichert. Wenn Sie jetzt schließen, wird es beim nächsten Start zur Wiederherstellung angeboten.",
+
     "settings.title": "Einstellungen",
     "settings.tab.general": "Allgemein",
     "settings.tab.recording": "Aufnahme",
-    "settings.tab.system": "System",
     "settings.save": "Speichern",
     "settings.cancel": "Abbrechen",
     "settings.defaults": "Standardwerte",
-    "settings.defaults.tip": (
-        "Füllt das Formular mit den Standardwerten. Es ändert sich nichts, bevor Sie speichern."
-    ),
+    "settings.defaults.tip": "Füllt das Formular mit den Standardwerten. Es ändert sich nichts, bevor Sie speichern.",
     "settings.saved": "Einstellungen gespeichert.",
     "settings.ui_language": "Sprache der Oberfläche:",
-    "settings.ui_language.hint": (
-        "Ändert nur die Sprache dieser Anwendung. Erkannt wird die Sprache, "
-        "die tatsächlich gesprochen wird."
-    ),
+    "settings.ui_language.hint": "Ändert nur die Sprache dieser Anwendung. Erkannt wird die Sprache, die tatsächlich gesprochen wird.",
     "settings.folder": "Speicherordner:",
-    "settings.folder.hint": (
-        "Transkripte werden hier automatisch gespeichert, wenn eine Aufnahme endet."
-    ),
-    "settings.folder.error.relative": (
-        "Geben Sie einen vollständigen Pfad ein, zum Beispiel C:\\Users\\Name\\Documents\\Transkripte."
-    ),
+    "settings.folder.hint": "Transkripte werden hier automatisch gespeichert, wenn eine Aufnahme endet.",
+    "settings.folder.error.relative": "Geben Sie einen vollständigen Pfad ein, zum Beispiel C:\\Users\\Name\\Documents\\Transkripte.",
     "settings.folder.create.title": "Ordner erstellen",
     "settings.folder.create.text": "Dieser Ordner ist nicht vorhanden:\n{path}\n\nSoll er erstellt werden?",
-    "settings.browse": "Durchsuchen\u2026",
+    "settings.browse": "Durchsuchen…",
     "settings.format": "Dateiformat:",
     "settings.template": "Dateiname:",
     "settings.template.hint": "Verfügbare Platzhalter: {placeholders}",
@@ -244,60 +148,88 @@ STRINGS = {
     "settings.documents": "Dokumente:",
     "settings.timestamps": "Zeit am Anfang jeder Transkriptzeile anzeigen",
     "settings.open_after_save": "Dokument nach dem Speichern öffnen",
-    "settings.microphone": "Mikrofon:",
     "settings.silence": "Pause, die ein Segment beendet:",
-    "settings.silence.hint": (
-        "Stille dieser Länge beendet das aktuelle Segment. Kürzere Pausen bleiben darin "
-        "enthalten. Erhöhen Sie den Wert, wenn Sätze zu oft geteilt werden."
-    ),
+    "settings.silence.hint": "Stille dieser Länge beendet das aktuelle Segment. Kürzere Pausen bleiben darin enthalten. Erhöhen Sie den Wert, wenn Sätze zu oft geteilt werden.",
     "settings.threshold": "Sprachempfindlichkeit:",
-    "settings.threshold.hint": (
-        "Niedrigere Werte erfassen leise Sprache, aber auch mehr Hintergrundgeräusche. "
-        "Höhere Werte ignorieren mehr Geräusche."
-    ),
+    "settings.threshold.hint": "Niedrigere Werte erfassen leise Sprache, aber auch mehr Hintergrundgeräusche. Höhere Werte ignorieren mehr Geräusche.",
     "settings.min_speech": "Kürzeste Sprache:",
     "settings.min_speech.hint": "Kürzere Geräusche, etwa ein Klicken, werden ignoriert.",
     "settings.max_segment": "Längstes Segment:",
-    "settings.max_segment.hint": (
-        "Durchgehende Sprache wird bei der nächsten kurzen Pause geteilt, wenn sie sich "
-        "dieser Länge nähert."
-    ),
+    "settings.max_segment.hint": "Durchgehende Sprache wird bei der nächsten kurzen Pause geteilt, wenn sie sich dieser Länge nähert.",
     "settings.pre_roll": "Vorlauf:",
-    "settings.pre_roll.hint": (
-        "Audio, das vor erkannter Sprache behalten wird, damit die erste Silbe nicht fehlt."
-    ),
+    "settings.pre_roll.hint": "Audio, das vor erkannter Sprache behalten wird, damit die erste Silbe nicht fehlt.",
     "settings.post_roll": "Nachlauf:",
-    "settings.post_roll.hint": (
-        "Audio, das nach dem Ende der Sprache behalten wird, damit die letzte Silbe nicht fehlt."
-    ),
+    "settings.post_roll.hint": "Audio, das nach dem Ende der Sprache behalten wird, damit die letzte Silbe nicht fehlt.",
     "settings.debugging": "Fehlersuche:",
     "settings.retain_audio": "Rohaudio jeder Sitzung behalten",
-    "settings.retain_audio.hint": (
-        "Standardmäßig aus. Wenn aktiviert, wird das Mikrofonaudio jeder Sitzung als "
-        "WAV-Datei auf diesem Computer gespeichert, bis Sie es löschen."
-    ),
+    "settings.retain_audio.hint": "Standardmäßig aus. Wenn aktiviert, wird das Mikrofonaudio jeder Sitzung als WAV-Datei auf diesem Computer gespeichert, bis Sie es löschen.",
     "settings.open_audio_folder": "Audioordner öffnen",
     "settings.device": "Rechengerät:",
-    "settings.device.hint": (
-        "\u201eAutomatisch\u201c verwendet eine funktionierende NVIDIA-Grafikkarte und sonst den Prozessor."
-    ),
+    "settings.device.hint": "„Automatisch“ verwendet eine funktionierende NVIDIA-Grafikkarte und sonst den Prozessor.",
     "settings.device.auto": "Automatisch (empfohlen)",
     "settings.device.cuda": "Grafikkarte (NVIDIA CUDA)",
     "settings.device.cpu": "Prozessor (CPU)",
-    "settings.device.in_use": "Derzeit verwendet:",
+    "settings.device.in_use": "Derzeit verwendet: {device}.",
     "settings.model": "Sprachmodell:",
-    "settings.model.cached": "Whisper {model} \u00b7 auf diesem Computer gespeichert ({megabytes} MB)",
-    "settings.model.missing": "Whisper {model} \u00b7 noch nicht heruntergeladen",
-    "settings.model.location": "Speicherort des Modells:",
     "settings.model.open": "Modellordner öffnen",
-    "settings.logs": "Protokolldateien:",
     "settings.logs.open": "Protokollordner öffnen",
-    "settings.logs.hint": (
-        "Protokolle enthalten nur technische Details, niemals Audio oder Transkripttext."
-    ),
-    "settings.privacy": "Datenschutz:",
-    "settings.privacy.text": (
-        "Audio und Transkripte bleiben auf diesem Computer. Das Internet wird nur einmal "
-        "genutzt, um das Sprachmodell herunterzuladen."
-    ),
+    "settings.logs.hint": "Protokolle enthalten nur technische Details, niemals Audio oder Transkripttext.",
+
+    "main.help": "Hilfe",
+    "main.help.tip": "Fragen, Antworten und Informationen zu VoxNote ({shortcut})",
+    "main.languages.tip": "In dieser Sitzung erkannte Sprachen",
+
+    "settings.tab.recognition": "Erkennung",
+    "settings.model.option.small": "Small · am schnellsten, am ungenauesten (0,5 GB)",
+    "settings.model.option.medium": "Medium · genauer, langsamer (1,5 GB)",
+    "settings.model.option.large-v3-turbo": "Large v3 Turbo · am genauesten, empfohlen (1,6 GB)",
+    "settings.model.status.cached": "Auf diesem Computer gespeichert ({megabytes} MB).",
+    "settings.model.status.missing": "Noch nicht auf diesem Computer. Nach dem Speichern werden einmalig etwa {megabytes} MB heruntergeladen.",
+    "settings.model.hint": "Größere Modelle machen weniger Fehler, brauchen aber mehr Speicher und sind ohne Grafikkarte langsam.",
+    "settings.spoken": "Gesprochene Sprachen:",
+    "settings.spoken.all": "Alle Sprachen (automatisch erkannt)",
+    "settings.spoken.choose": "Auswählen…",
+    "settings.spoken.hint": "Beschränken Sie die Erkennung auf die Sprachen, die Sie tatsächlich sprechen. Kurze Äußerungen werden dann nicht mehr mit anderen Sprachen verwechselt.",
+
+    "dialog.languages.title": "Gesprochene Sprachen",
+    "dialog.languages.text": "Markieren Sie die Sprachen, die Sie sprechen. Ohne Markierung sind alle Sprachen zugelassen.",
+    "dialog.languages.filter": "Suchen…",
+    "dialog.languages.clear": "Auswahl aufheben",
+    "dialog.ok": "OK",
+
+    "settings.vocabulary": "Namen und Fachwörter:",
+    "settings.vocabulary.placeholder": "zum Beispiel: Gesi, Kayseri, Erhan",
+    "settings.vocabulary.hint": "Optional, durch Kommas getrennt. Diese Wörter werden zuverlässiger erkannt. Das Transkript selbst wird nie nachbearbeitet.",
+    "settings.advanced": "Erweiterte Optionen",
+    "settings.folders": "Ordner:",
+
+    "help.title": "Hilfe",
+    "help.tab.faq": "Fragen und Antworten",
+    "help.tab.about": "Über",
+    "help.close": "Schließen",
+
+    "about.description": "VoxNote nimmt Sprache über Ihr Mikrofon auf, wandelt sie auf Ihrem eigenen Computer in Text um und speichert das Transkript als Dokument. Es schreibt auf, was gesagt wurde, in der Sprache, in der es gesagt wurde, ohne es zu korrigieren oder zu übersetzen.",
+    "about.privacy.title": "Datenschutz",
+    "about.privacy.text": "Audio und Transkripte bleiben auf diesem Computer. Es wird nichts hochgeladen, es gibt kein Konto und keine Nutzungsauswertung. Das Internet wird nur genutzt, um ein Sprachmodell herunterzuladen, wenn es zum ersten Mal benötigt wird.",
+    "about.credits.title": "Erstellt mit",
+    "about.credits.text": "Spracherkennung: OpenAI-Whisper-Modelle über faster-whisper und CTranslate2. Spracherfassung: Silero VAD. Oberfläche: Qt for Python (PySide6). Dokumente: python-docx und ReportLab.",
+    "about.license": "VoxNote ist freie Software unter der MIT-Lizenz.",
+    "about.website": "Projektseite",
+
+    "faq.1.q": "Brauche ich eine Internetverbindung?",
+    "faq.1.a": "Nur einmal. Das Sprachmodell wird heruntergeladen, wenn es zum ersten Mal benötigt wird. Danach funktionieren Aufnahme, Erkennung und Speichern vollständig offline.",
+    "faq.2.q": "Wird meine Stimme irgendwohin gesendet?",
+    "faq.2.a": "Nein. Die Erkennung läuft auf diesem Computer. Audio bleibt nur während der Verarbeitung im Arbeitsspeicher und wird nicht gespeichert, außer Sie aktivieren in den Einstellungen „Rohaudio jeder Sitzung behalten“.",
+    "faq.3.q": "Welche Sprachen kann ich sprechen?",
+    "faq.3.a": "Rund hundert, darunter Deutsch, Englisch, Türkisch, Französisch, Spanisch, Italienisch und Russisch. Die Sprache wird für jeden Satz einzeln erkannt, Sie können also während einer Aufnahme wechseln. Machen Sie beim Wechsel eine kurze Pause.",
+    "faq.4.q": "Wörter oder die Sprache werden falsch erkannt. Was kann ich tun?",
+    "faq.4.a": "Wählen Sie unter Einstellungen › Erkennung die Sprachen aus, die Sie tatsächlich sprechen, verwenden Sie das Modell Large v3 Turbo und tragen Sie Namen oder Fachbegriffe unter „Namen und Fachwörter“ ein. Sprechen Sie in ganzen Sätzen: Ein einzelnes Wort ist schwer zu erkennen. Ein Headset funktioniert deutlich besser als ein Laptop-Mikrofon.",
+    "faq.5.q": "Warum erscheint der Text erst, wenn ich aufhöre zu sprechen?",
+    "faq.5.a": "Ein Satz wird erkannt, sobald er endet, also nach einer kurzen Pause. Soll der Text früher erscheinen, verringern Sie unter Einstellungen › Aufnahme den Wert „Pause, die ein Segment beendet“.",
+    "faq.6.q": "Wo werden meine Transkripte gespeichert?",
+    "faq.6.a": "Automatisch beim Stoppen der Aufnahme im Speicherordner, der im Hauptfenster angezeigt wird. Mit „Speichern unter…“ können Sie dasselbe Transkript erneut an einem anderen Ort oder in einem anderen Format speichern.",
+    "faq.7.q": "Warum wird meine Grafikkarte nicht verwendet?",
+    "faq.7.a": "Erforderlich ist eine NVIDIA-Grafikkarte mit aktuellem Treiber. Kann sie nicht verwendet werden, arbeitet VoxNote auf dem Prozessor weiter, was langsamer ist. Einstellungen › Erkennung zeigt, welches Gerät verwendet wird und warum.",
+    "faq.8.q": "Was passiert, wenn die Anwendung oder der Computer abstürzt?",
+    "faq.8.a": "Alles, was bereits im Transkript erschienen war, bleibt erhalten. Beim nächsten Start bietet VoxNote an, die Sitzung wiederherzustellen und zu speichern.",
 }

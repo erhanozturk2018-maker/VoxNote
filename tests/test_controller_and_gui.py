@@ -174,12 +174,13 @@ def test_main_window_controls_follow_state(qapp, tmp_path, session):
         text = window.transcript_view.toPlainText()
         assert "Yesterday I went to the gym." in text and "arkadaşımı" in text
         assert text.count("English") == 2 and text.count("Turkish") == 1
-        assert window.languages_label.text() == "Languages: English, Turkish"
+        assert window.languages_label.text() == "English, Turkish"
         assert "en-tr" in window.filename_hint.text()
 
         controller.state = AppState.ERROR
         controller.state_changed.emit(AppState.ERROR)
         assert window.save_button.isVisibleTo(window) and window.save_as_button.isEnabled()
+        assert not window.result_banner.buttons
         assert window.copy_button.isEnabled()
     finally:
         controller.discard_session()
@@ -245,6 +246,9 @@ def test_settings_dialog_round_trip_and_validation(qapp, tmp_path):
         assert dialog.template_preview.text().endswith(".docx")
         dialog.silence_spin.setValue(1500)
         dialog.language_combo.setCurrentIndex(dialog.language_combo.findData("de"))
+        dialog.model_combo.setCurrentIndex(dialog.model_combo.findData("small"))
+        dialog._spoken = ["en", "tr"]
+        dialog.vocabulary_edit.setText("  Gesi,   Erhan ")
         dialog.retain_check.setChecked(True)
         dialog._accept()
 
@@ -253,6 +257,9 @@ def test_settings_dialog_round_trip_and_validation(qapp, tmp_path):
         assert result.export_format == "docx"
         assert result.silence_ms == 1500
         assert result.ui_language == "de"
+        assert result.model == "small"
+        assert result.spoken_languages == ["en", "tr"]
+        assert result.vocabulary == "Gesi, Erhan"
         assert result.retain_audio is True
         assert result.save_directory == str(tmp_path / "out")
         # The dialog does not modify the live settings object.
@@ -291,3 +298,91 @@ def test_settings_dialog_rejects_unwritable_folder(qapp, tmp_path):
         assert dialog.folder_error.text()
     finally:
         dialog.close()
+
+
+def test_saved_message_offers_to_open_the_file(qapp, tmp_path, session):
+    controller = make_controller(tmp_path)
+    window = make_window(controller, tmp_path)
+    try:
+        window._on_saved(str(tmp_path / "x.md"))
+        assert [button.text().strip() for button in window.result_banner.buttons] == [
+            "Open File",
+            "Open Folder",
+        ]
+        # The actions follow the interface language.
+        i18n.set_language("de")
+        window.retranslate()
+        assert window.result_banner.buttons[0].text().strip() == "Datei öffnen"
+    finally:
+        window.close()
+
+
+def test_settings_dialog_height_follows_the_visible_tab(qapp, tmp_path):
+    from app.settings_dialog import SettingsDialog
+
+    dialog = SettingsDialog(Settings(save_directory=str(tmp_path)), make_controller(tmp_path))
+    try:
+        dialog.tabs.setCurrentIndex(2)
+        collapsed = dialog.height()
+        dialog.advanced_toggle.setChecked(True)
+        assert dialog.height() > collapsed
+        dialog.advanced_toggle.setChecked(False)
+        assert dialog.height() == collapsed
+    finally:
+        dialog.close()
+
+
+def test_language_chooser(qapp):
+    from PySide6.QtCore import Qt
+
+    from app.settings_dialog import LanguageChooser
+
+    chooser = LanguageChooser(["tr", "en"])
+    try:
+        assert chooser.selected() == ["en", "tr"]
+        assert chooser.list.item(0).text() == "English"
+        chooser.filter_edit.setText("germ")
+        visible = [
+            chooser.list.item(i).text()
+            for i in range(chooser.list.count())
+            if not chooser.list.item(i).isHidden()
+        ]
+        assert visible == ["German"]
+        chooser.list.item(2).setCheckState(Qt.CheckState.Checked)
+        assert chooser.selected() == ["en", "tr", "de"]
+        chooser._clear()
+        assert chooser.selected() == []
+    finally:
+        chooser.close()
+
+
+def test_help_dialog_shows_questions_and_about(qapp):
+    from app import APP_VERSION
+    from app.help_dialog import HelpDialog, faq_entries
+
+    assert len(faq_entries()) >= 8
+    dialog = HelpDialog()
+    try:
+        text = dialog.faq_view.toPlainText()
+        assert "Do I need an internet connection?" in text
+        assert dialog.tabs.count() == 2
+        about = dialog.tabs.widget(1)
+        from PySide6.QtWidgets import QLabel
+
+        labels = " ".join(label.text() for label in about.findChildren(QLabel))
+        assert APP_VERSION in labels and "MIT" in labels
+    finally:
+        dialog.close()
+
+
+def test_every_icon_renders(qapp):
+    from app.icons import _SHAPES, pixmap
+
+    for name in _SHAPES:
+        image = pixmap(name, "#000000", 18).toImage()
+        assert not image.isNull()
+        assert any(
+            image.pixelColor(x, y).alpha() > 0
+            for x in range(0, image.width(), 3)
+            for y in range(0, image.height(), 3)
+        ), name

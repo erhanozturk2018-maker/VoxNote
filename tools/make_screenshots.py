@@ -23,6 +23,7 @@ os.environ["VOXNOTE_HOME"] = tempfile.mkdtemp(prefix="voxnote-shots-")
 
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
+from app.help_dialog import HelpDialog  # noqa: E402
 from app.i18n import set_language  # noqa: E402
 from app.main_window import MainWindow  # noqa: E402
 from app.recording_controller import AppState, RecordingController  # noqa: E402
@@ -76,14 +77,19 @@ def main() -> int:
             os.environ["VOXNOTE_THEME"] = "dark"
             apply_theme(app)
         set_language(language)
-        settings = Settings(ui_language=language, save_directory=str(documents))
+        settings = Settings(
+            ui_language=language,
+            save_directory=str(documents),
+            spoken_languages=["en", "tr"],
+            vocabulary="Gesi, Kayseri",
+        )
         controller = RecordingController(settings)
         # Present the model as loaded without loading it.
         controller.transcriber.device_info = DeviceInfo("cuda", "float16")
         controller.model_ready = True
         controller.model_state = "ready"
         window = MainWindow(controller, SettingsManager())
-        window.resize(900, 760)
+        window.resize(880, 720)
         window.show()
         window._update_model_label()
         suffix = "-dark" if dark else "" if language == "en" else f"-{language}"
@@ -113,16 +119,24 @@ def main() -> int:
         controller._unsaved = False
         controller.saved_path = documents / "2026-10-03_14-30-00_en-tr.md"
         window._on_state_changed(AppState.COMPLETED)
-        window._show_result("success", "result.saved", {"path": str(controller.saved_path)})
+        window._on_saved(str(controller.saved_path))
         grab(window, f"main-completed{suffix}.png")
 
         if language == "en" and not dark:
             dialog = SettingsDialog(settings, controller, window)
             dialog.show()
-            for index, name in enumerate(("general", "recording", "system")):
+            for index, name in enumerate(("general", "recognition", "recording")):
                 dialog.tabs.setCurrentIndex(index)
                 grab(dialog, f"settings-{name}.png")
+            dialog.advanced_toggle.setChecked(True)
+            grab(dialog, "settings-recording-advanced.png")
             dialog.close()
+            help_dialog = HelpDialog(window)
+            help_dialog.show()
+            grab(help_dialog, "help-questions.png")
+            help_dialog.tabs.setCurrentIndex(1)
+            grab(help_dialog, "help-about.png")
+            help_dialog.close()
         controller.discard_session()
         controller.state = AppState.READY
         window.close()
@@ -152,7 +166,7 @@ def render_multilingual(app, documents: Path) -> None:
     controller.model_ready = True
     controller.model_state = "ready"
     window = MainWindow(controller, SettingsManager())
-    window.resize(900, 1060)
+    window.resize(880, 1000)
     window.show()
     window._update_model_label()
 
@@ -167,7 +181,7 @@ def render_multilingual(app, documents: Path) -> None:
     controller._unsaved = False
     controller.saved_path = documents / f"2026-10-03_14-30-00_{'-'.join(codes)}.md"
     window._on_state_changed(AppState.COMPLETED)
-    window._show_result("success", "result.saved", {"path": str(controller.saved_path)})
+    window._on_saved(str(controller.saved_path))
     window.transcript_view.verticalScrollBar().setValue(0)
     grab(window, "main-multilingual.png")
     controller.discard_session()

@@ -16,6 +16,7 @@ from PySide6.QtGui import (
     QFontMetrics,
     QGuiApplication,
     QKeySequence,
+    QPixmap,
     QShortcut,
     QTextBlockFormat,
 )
@@ -23,7 +24,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
     QFrame,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -36,20 +36,30 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from app import APP_NAME, APP_VERSION, MODEL_NAME
+from app import APP_NAME, APP_VERSION
 from app.audio_recorder import AudioError, list_input_devices
 from app.export_manager import ExportError, check_directory
 from app.exporters import EXPORTERS
 from app.filename_template import render_filename
 from app.i18n import has, set_language, tr
+from app.icons import icon, icon_size, pixmap, set_button_icon
 from app.language_names import language_list, language_name
 from app.logging_config import log_file
 from app.recording_controller import AppState, RecordingController
+from app.resources import assets_dir
 from app.settings_manager import Settings, SettingsManager
 from app.theme import refresh_style, tokens
 from app.transcript_models import format_clock
 
 log = logging.getLogger(__name__)
+
+# Icon and text colour token for each kind of inline message.
+_BANNER_ICONS = {
+    "info": ("info", "accent"),
+    "success": ("success", "success"),
+    "warning": ("warning", "warning"),
+    "error": ("error", "error"),
+}
 
 
 def error_text(code: str, detail: str = "") -> str:
@@ -70,6 +80,13 @@ def reveal_in_file_manager(path: Path) -> None:
             pass
     folder = path if path.is_dir() else path.parent
     QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
+
+
+def device_text(info) -> str:
+    """Short description of the device used for recognition."""
+    if info.device == "cuda":
+        return tr("device.gpu", compute_type=info.compute_type)
+    return tr("device.cpu", compute_type=info.compute_type)
 
 
 class ElidedLabel(QLabel):
@@ -100,39 +117,55 @@ class ElidedLabel(QLabel):
 
 
 class Banner(QFrame):
-    """Inline message with an optional action. Used instead of modal
-    dialogs so information never blocks the user."""
+    """Inline message with an icon and optional actions. Used instead of
+    modal dialogs so information never blocks the user."""
 
-    def __init__(self) -> None:
+    def __init__(self, closable: bool = True) -> None:
         super().__init__()
         self.setObjectName("banner")
         layout = QHBoxLayout(self)
         layout.setContentsMargins(12, 8, 8, 8)
+        layout.setSpacing(10)
+        self.icon_label = QLabel()
+        self.icon_label.setFixedSize(20, 20)
         self.label = QLabel()
         self.label.setWordWrap(True)
         self.label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.action = QPushButton()
-        self.close_button = QPushButton("✕")
-        self.close_button.setFixedWidth(34)
+        self._actions = QHBoxLayout()
+        self._actions.setSpacing(6)
+        self.buttons: list[QPushButton] = []
+        self.close_button = QPushButton()
+        self.close_button.setObjectName("flat")
+        self.close_button.setFixedSize(30, 30)
         self.close_button.clicked.connect(self.hide)
+        self.close_button.setVisible(closable)
+        layout.addWidget(self.icon_label, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.label, 1)
-        layout.addWidget(self.action)
-        layout.addWidget(self.close_button)
-        self._callback = None
-        self.action.clicked.connect(self._run)
+        layout.addLayout(self._actions)
+        layout.addWidget(self.close_button, 0, Qt.AlignmentFlag.AlignTop)
         self.hide()
 
-    def _run(self) -> None:
-        if self._callback:
-            self._callback()
-
-    def show_message(self, text: str, kind: str = "info", action: str = "", callback=None) -> None:
+    def show_message(self, text: str, kind: str = "info", actions=()) -> None:
+        """``actions`` is a sequence of ``(label, icon name, callback)``."""
+        colors = tokens()
+        icon_name, color_token = _BANNER_ICONS.get(kind, _BANNER_ICONS["info"])
+        self.icon_label.setPixmap(pixmap(icon_name, colors[color_token], 20))
+        self.close_button.setIcon(icon("close"))
         self.label.setText(text)
         self.setProperty("kind", kind)
         refresh_style(self)
-        self._callback = callback
-        self.action.setText(action)
-        self.action.setVisible(bool(action and callback))
+
+        for button in self.buttons:
+            self._actions.removeWidget(button)
+            button.deleteLater()
+        self.buttons = []
+        for label, icon_name, callback in actions:
+            button = QPushButton(label)
+            if icon_name:
+                set_button_icon(button, icon_name)
+            button.clicked.connect(callback)
+            self._actions.addWidget(button)
+            self.buttons.append(button)
         self.setAccessibleName(text)
         self.show()
 
@@ -146,8 +179,8 @@ class MainWindow(QMainWindow):
         self._last_language: str | None = None
         self._speech = False
         self._pending_seconds = 0.0
-        # Messages are stored as (key, values) so they can be re-rendered
-        # when the interface language changes.
+        # Messages are stored as (kind, key, values, actions) so they can be
+        # re-rendered when the interface language changes.
         self._banner_state: tuple | None = None
         self._result_state: tuple | None = None
 
@@ -160,8 +193,8 @@ class MainWindow(QMainWindow):
         self.retranslate()
         self.refresh_devices()
         self._update_controls()
-        self.resize(900, 760)
-        self.setMinimumSize(720, 620)
+        self.resize(880, 720)
+        self.setMinimumSize(700, 560)
 
     @property
     def settings(self) -> Settings:
@@ -174,26 +207,51 @@ class MainWindow(QMainWindow):
         card.setObjectName("card")
         layout = QVBoxLayout(card)
         layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
+        layout.setSpacing(12)
         return card, layout
+
+    def _icon_button(self, name: str, object_name: str = "") -> QPushButton:
+        button = QPushButton()
+        button.setProperty("iconName", name)
+        button.setIconSize(icon_size())
+        if object_name:
+            button.setObjectName(object_name)
+        return button
 
     def _build_ui(self) -> None:
         central = QWidget()
         root = QVBoxLayout(central)
-        root.setContentsMargins(20, 16, 20, 8)
+        root.setContentsMargins(20, 16, 20, 6)
         root.setSpacing(12)
         self.setCentralWidget(central)
 
         # Header
         header = QHBoxLayout()
+        header.setSpacing(10)
+        self.logo_label = QLabel()
+        logo = QPixmap(str(assets_dir() / "voxnote.png"))
+        if not logo.isNull():
+            self.logo_label.setPixmap(
+                logo.scaled(
+                    64,
+                    64,
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+            )
+            self.logo_label.setFixedSize(32, 32)
+            self.logo_label.setScaledContents(True)
         self.title_label = QLabel(APP_NAME)
         self.title_label.setObjectName("title")
         self.version_label = QLabel()
         self.version_label.setObjectName("version")
-        self.settings_button = QPushButton()
+        self.help_button = self._icon_button("help")
+        self.settings_button = self._icon_button("settings")
+        header.addWidget(self.logo_label)
         header.addWidget(self.title_label)
         header.addWidget(self.version_label, 0, Qt.AlignmentFlag.AlignBottom)
         header.addStretch(1)
+        header.addWidget(self.help_button)
         header.addWidget(self.settings_button)
         root.addLayout(header)
 
@@ -204,10 +262,8 @@ class MainWindow(QMainWindow):
         card, layout = self._card()
         row = QHBoxLayout()
         row.setSpacing(10)
-        self.start_button = QPushButton()
-        self.start_button.setObjectName("record")
-        self.stop_button = QPushButton()
-        self.stop_button.setObjectName("stop")
+        self.start_button = self._icon_button("microphone", "record")
+        self.stop_button = self._icon_button("stop", "stop")
         self.status_pill = QLabel()
         self.status_pill.setObjectName("statusPill")
         self.status_pill.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -221,94 +277,88 @@ class MainWindow(QMainWindow):
         row.addWidget(self.timer_label)
         layout.addLayout(row)
 
-        grid = QGridLayout()
-        grid.setHorizontalSpacing(10)
-        grid.setVerticalSpacing(8)
+        row = QHBoxLayout()
+        row.setSpacing(10)
         self.mic_label = QLabel()
         self.mic_combo = QComboBox()
-        self.mic_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
-        self.mic_combo.setMinimumContentsLength(20)
-        self.mic_refresh = QPushButton()
+        self.mic_combo.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon
+        )
+        self.mic_combo.setMinimumContentsLength(18)
+        self.mic_combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.mic_label.setBuddy(self.mic_combo)
-        self.level_label = QLabel()
+        self.mic_refresh = self._icon_button("refresh", "flat")
+        self.mic_refresh.setFixedSize(34, 34)
         self.level_bar = QProgressBar()
         self.level_bar.setObjectName("level")
         self.level_bar.setRange(0, 100)
         self.level_bar.setTextVisible(False)
-        grid.addWidget(self.mic_label, 0, 0)
-        grid.addWidget(self.mic_combo, 0, 1)
-        grid.addWidget(self.mic_refresh, 0, 2)
-        grid.addWidget(self.level_label, 1, 0)
-        grid.addWidget(self.level_bar, 1, 1, 1, 2)
-        grid.setColumnStretch(1, 1)
-        layout.addLayout(grid)
+        self.level_bar.setFixedWidth(170)
+        row.addWidget(self.mic_label)
+        row.addWidget(self.mic_combo, 1)
+        row.addWidget(self.mic_refresh)
+        row.addSpacing(6)
+        row.addWidget(self.level_bar)
+        layout.addLayout(row)
         root.addWidget(card)
 
         # Transcript
         card, layout = self._card()
         row = QHBoxLayout()
+        row.setSpacing(8)
         self.transcript_title = QLabel()
         self.transcript_title.setObjectName("sectionTitle")
+        self.languages_icon = QLabel()
+        self.languages_icon.setFixedSize(16, 16)
         self.languages_label = QLabel()
         self.languages_label.setObjectName("muted")
         self.languages_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.copy_button = QPushButton()
+        self.copy_button = self._icon_button("copy")
+        self.save_button = self._icon_button("save", "primary")
+        self.save_as_button = self._icon_button("save")
         row.addWidget(self.transcript_title)
-        row.addStretch(1)
+        row.addSpacing(10)
+        row.addWidget(self.languages_icon)
         row.addWidget(self.languages_label)
-        row.addSpacing(8)
+        row.addStretch(1)
         row.addWidget(self.copy_button)
+        row.addWidget(self.save_as_button)
+        row.addWidget(self.save_button)
         layout.addLayout(row)
         self.transcript_view = QTextEdit()
         self.transcript_view.setObjectName("transcript")
         self.transcript_view.setReadOnly(True)
-        self.transcript_view.setMinimumHeight(160)
+        self.transcript_view.setMinimumHeight(150)
         layout.addWidget(self.transcript_view, 1)
         root.addWidget(card, 1)
 
         # Output
         card, layout = self._card()
-        self.output_title = QLabel()
-        self.output_title.setObjectName("sectionTitle")
-        layout.addWidget(self.output_title)
-        grid = QGridLayout()
-        grid.setHorizontalSpacing(10)
-        grid.setVerticalSpacing(8)
+        row = QHBoxLayout()
+        row.setSpacing(10)
         self.folder_label = QLabel()
         self.folder_value = ElidedLabel()
+        self.open_folder_button = self._icon_button("folder-open", "flat")
+        self.open_folder_button.setFixedSize(34, 34)
         self.folder_button = QPushButton()
         self.format_label = QLabel()
         self.format_combo = QComboBox()
         for format_id, exporter in EXPORTERS.items():
             self.format_combo.addItem(exporter.label, format_id)
         self.format_label.setBuddy(self.format_combo)
+        row.addWidget(self.folder_label)
+        row.addWidget(self.folder_value, 1)
+        row.addWidget(self.open_folder_button)
+        row.addWidget(self.folder_button)
+        row.addSpacing(10)
+        row.addWidget(self.format_label)
+        row.addWidget(self.format_combo)
+        layout.addLayout(row)
         self.filename_hint = QLabel()
         self.filename_hint.setObjectName("hint")
-        grid.addWidget(self.folder_label, 0, 0)
-        grid.addWidget(self.folder_value, 0, 1)
-        grid.addWidget(self.folder_button, 0, 2)
-        grid.addWidget(self.format_label, 1, 0)
-        grid.addWidget(self.format_combo, 1, 1, Qt.AlignmentFlag.AlignLeft)
-        grid.addWidget(self.filename_hint, 2, 1, 1, 2)
-        grid.setColumnStretch(1, 1)
-        layout.addLayout(grid)
-
-        self.result_banner = Banner()
-        self.result_banner.close_button.hide()
+        layout.addWidget(self.filename_hint)
+        self.result_banner = Banner(closable=False)
         layout.addWidget(self.result_banner)
-
-        row = QHBoxLayout()
-        self.open_file_button = QPushButton()
-        self.open_folder_button = QPushButton()
-        self.save_button = QPushButton()
-        self.save_button.setObjectName("primary")
-        self.save_as_button = QPushButton()
-        row.addWidget(self.open_file_button)
-        row.addWidget(self.open_folder_button)
-        row.addStretch(1)
-        row.addWidget(self.save_button)
-        row.addWidget(self.save_as_button)
-        layout.addLayout(row)
         root.addWidget(card)
 
         # Status bar
@@ -316,8 +366,12 @@ class MainWindow(QMainWindow):
         self.model_progress.setRange(0, 0)
         self.model_progress.setFixedWidth(110)
         self.model_progress.setTextVisible(False)
+        self.model_icon = QLabel()
+        self.model_icon.setFixedSize(16, 16)
+        self.model_icon.setStyleSheet("padding: 0;")
         self.model_label = QLabel()
         self.statusBar().addPermanentWidget(self.model_progress)
+        self.statusBar().addPermanentWidget(self.model_icon)
         self.statusBar().addPermanentWidget(self.model_label)
         self.statusBar().setSizeGripEnabled(False)
 
@@ -344,12 +398,12 @@ class MainWindow(QMainWindow):
         self.start_button.clicked.connect(self.start_recording)
         self.stop_button.clicked.connect(self.stop_recording)
         self.settings_button.clicked.connect(self.open_settings)
+        self.help_button.clicked.connect(self.open_help)
         self.mic_refresh.clicked.connect(lambda: self.refresh_devices(rescan=True))
         self.mic_combo.activated.connect(self._on_mic_selected)
         self.format_combo.activated.connect(self._on_format_selected)
         self.folder_button.clicked.connect(self.choose_folder)
         self.copy_button.clicked.connect(self.copy_transcript)
-        self.open_file_button.clicked.connect(self.open_saved_file)
         self.open_folder_button.clicked.connect(self.open_folder)
         self.save_button.clicked.connect(self.save_now)
         self.save_as_button.clicked.connect(self.save_as)
@@ -359,40 +413,51 @@ class MainWindow(QMainWindow):
             ("Ctrl+R", self.start_recording),
             ("Ctrl+E", self.stop_recording),
             ("Ctrl+,", self.open_settings),
+            ("F1", self.open_help),
             ("Ctrl+Shift+S", self.save_as),
             ("Ctrl+Shift+C", self.copy_transcript),
             ("Ctrl+O", self.open_folder),
         ):
             QShortcut(QKeySequence(sequence), self, activated=slot)
 
-    # -- texts -----------------------------------------------------------
+    # -- texts and icons -------------------------------------------------
+
+    def _apply_icons(self) -> None:
+        colors = tokens()
+        special = {"record": colors["record_text"], "primary": colors["accent_text"]}
+        for button in self.findChildren(QPushButton):
+            name = button.property("iconName")
+            if name:
+                set_button_icon(button, name, special.get(button.objectName()))
+        self.languages_icon.setPixmap(pixmap("languages", colors["muted"], 16))
+        self.model_icon.setPixmap(pixmap("chip", colors["muted"], 16))
 
     def retranslate(self) -> None:
         self.setWindowTitle(APP_NAME)
         self.version_label.setText(tr("app.version", version=APP_VERSION))
         self.settings_button.setText(tr("main.settings"))
         self.settings_button.setToolTip(tr("main.settings.tip", shortcut="Ctrl+,"))
+        self.help_button.setText(tr("main.help"))
+        self.help_button.setToolTip(tr("main.help.tip", shortcut="F1"))
         self.start_button.setText(tr("main.start"))
         self.stop_button.setText(tr("main.stop"))
         self.stop_button.setToolTip(tr("main.stop.tip", shortcut="Ctrl+E"))
         self.mic_label.setText(tr("main.microphone"))
-        self.mic_refresh.setText(tr("main.refresh"))
         self.mic_refresh.setToolTip(tr("main.refresh.tip"))
-        self.level_label.setText(tr("main.level"))
+        self.mic_refresh.setAccessibleName(tr("main.refresh"))
+        self.level_bar.setToolTip(tr("main.level"))
         self.level_bar.setAccessibleName(tr("main.level"))
         self.transcript_title.setText(tr("main.transcript"))
         self.transcript_view.setPlaceholderText(tr("main.transcript.placeholder"))
         self.transcript_view.setAccessibleName(tr("main.transcript"))
         self.copy_button.setText(tr("main.copy"))
         self.copy_button.setToolTip(tr("main.copy.tip", shortcut="Ctrl+Shift+C"))
-        self.output_title.setText(tr("main.output"))
         self.folder_label.setText(tr("main.folder"))
         self.folder_button.setText(tr("main.folder.change"))
         self.folder_button.setToolTip(tr("main.folder.change.tip"))
         self.format_label.setText(tr("main.format"))
-        self.open_file_button.setText(tr("main.open_file"))
-        self.open_folder_button.setText(tr("main.open_folder"))
         self.open_folder_button.setToolTip(tr("main.open_folder.tip", shortcut="Ctrl+O"))
+        self.open_folder_button.setAccessibleName(tr("main.open_folder"))
         self.save_button.setText(tr("main.save"))
         self.save_button.setToolTip(tr("main.save.tip"))
         self.save_as_button.setText(tr("main.save_as"))
@@ -401,6 +466,7 @@ class MainWindow(QMainWindow):
         self.banner.close_button.setAccessibleName(tr("main.dismiss"))
         self.timer_label.setAccessibleName(tr("main.elapsed"))
         self.timer_label.setToolTip(tr("main.elapsed"))
+        self._apply_icons()
         self._refresh_default_device_text()
         self._update_output_fields()
         self._update_languages()
@@ -411,16 +477,22 @@ class MainWindow(QMainWindow):
         if self._result_state:
             self._show_result(*self._result_state)
 
-    def _show_banner(self, kind: str, key: str, values: dict, action_key: str = "", callback=None):
-        self._banner_state = (kind, key, values, action_key, callback)
-        is_error = key in ("@error", "@model")
-        text = error_text(values["code"], values.get("detail", "")) if is_error else tr(key, **values)
-        self.banner.show_message(text, kind, tr(action_key) if action_key else "", callback)
+    def _render(self, key: str, values: dict) -> str:
+        if key in ("@error", "@model"):
+            return error_text(values["code"], values.get("detail", ""))
+        return tr(key, **values)
 
-    def _show_result(self, kind: str, key: str, values: dict) -> None:
-        self._result_state = (kind, key, values)
-        text = error_text(values["code"], values.get("detail", "")) if key == "@error" else tr(key, **values)
-        self.result_banner.show_message(text, kind)
+    def _actions(self, specs) -> list:
+        """Turn ``(label key, icon name, callback)`` into translated actions."""
+        return [(tr(label_key), icon_name, callback) for label_key, icon_name, callback in specs]
+
+    def _show_banner(self, kind: str, key: str, values: dict, actions=()) -> None:
+        self._banner_state = (kind, key, values, actions)
+        self.banner.show_message(self._render(key, values), kind, self._actions(actions))
+
+    def _show_result(self, kind: str, key: str, values: dict, actions=()) -> None:
+        self._result_state = (kind, key, values, actions)
+        self.result_banner.show_message(self._render(key, values), kind, self._actions(actions))
 
     def _clear_result(self) -> None:
         self._result_state = None
@@ -487,7 +559,7 @@ class MainWindow(QMainWindow):
         self._update_output_fields()
 
     def choose_folder(self) -> None:
-        if self.controller.state in (AppState.SAVING,):
+        if self.controller.state is AppState.SAVING:
             return
         start = self.settings.resolved_save_directory()
         while not start.exists() and start != start.parent:
@@ -528,8 +600,7 @@ class MainWindow(QMainWindow):
                 "error",
                 "@error",
                 {"code": exc.code, "detail": exc.detail},
-                "main.folder.change",
-                self.choose_folder,
+                (("main.folder.change", "folder", self.choose_folder),),
             )
             return
         self._clear_banner()
@@ -579,9 +650,6 @@ class MainWindow(QMainWindow):
         self.folder_button.setEnabled(state is not AppState.SAVING)
         self.settings_button.setEnabled(idle)
         self.copy_button.setEnabled(c.has_transcript)
-
-        saved = c.saved_path is not None and c.saved_path.exists()
-        self.open_file_button.setEnabled(saved)
         self.save_as_button.setEnabled(idle and c.has_transcript)
         # "Save" is only offered when the automatic save did not happen.
         self.save_button.setVisible(idle and c.has_unsaved_transcript)
@@ -672,7 +740,11 @@ class MainWindow(QMainWindow):
 
     def _update_languages(self) -> None:
         names = language_list(self.controller.session.languages)
-        self.languages_label.setText(tr("main.languages", languages=names or tr("main.languages.none")))
+        self.languages_label.setText(names or tr("main.languages.none"))
+        self.languages_label.setToolTip(tr("main.languages.tip"))
+        self.languages_label.setAccessibleName(
+            tr("main.languages", languages=names or tr("main.languages.none"))
+        )
 
     def copy_transcript(self) -> None:
         if not self.controller.has_transcript:
@@ -684,7 +756,15 @@ class MainWindow(QMainWindow):
     # -- saving ----------------------------------------------------------
 
     def _on_saved(self, path: str) -> None:
-        self._show_result("success", "result.saved", {"path": path})
+        self._show_result(
+            "success",
+            "result.saved",
+            {"path": path},
+            (
+                ("main.open_file", "file", self.open_saved_file),
+                ("main.open_folder", "folder-open", self.open_folder),
+            ),
+        )
         self._update_controls()
         if self.settings.open_after_save and not self._close_when_idle:
             self.open_saved_file()
@@ -775,8 +855,7 @@ class MainWindow(QMainWindow):
             "error",
             "@model",
             {"code": code, "detail": detail},
-            "model.retry",
-            self.controller.load_model,
+            (("model.retry", "refresh", self.controller.load_model),),
         )
 
     def _update_model_label(self) -> None:
@@ -786,7 +865,7 @@ class MainWindow(QMainWindow):
         self.model_progress.setVisible(state in ("checking", "downloading", "initializing"))
         tooltip = tr("model.tip")
         if state == "ready" and info is not None:
-            text = tr("model.ready", model=MODEL_NAME, device=device_text(info))
+            text = tr("model.ready", model=c.transcriber.model_name, device=device_text(info))
             if info.fallback_reason and has(f"device.reason.{info.fallback_reason}"):
                 tooltip = tr(f"device.reason.{info.fallback_reason}")
         elif state == "idle":
@@ -796,7 +875,7 @@ class MainWindow(QMainWindow):
         self.model_label.setText(text)
         self.model_label.setToolTip(tooltip)
 
-    # -- settings and lifecycle ------------------------------------------
+    # -- dialogs and lifecycle -------------------------------------------
 
     def open_settings(self) -> None:
         if self.controller.is_busy:
@@ -813,8 +892,12 @@ class MainWindow(QMainWindow):
         if language_changed:
             set_language(new_settings.ui_language)
         self.retranslate()
-        self.refresh_devices()
         self.statusBar().showMessage(tr("settings.saved"), 4000)
+
+    def open_help(self) -> None:
+        from app.help_dialog import HelpDialog
+
+        HelpDialog(self).exec()
 
     def check_recovery(self) -> None:
         """Offer to restore transcripts that were never saved (after a crash)."""
@@ -870,10 +953,3 @@ class MainWindow(QMainWindow):
                 return
         c.shutdown()
         event.accept()
-
-
-def device_text(info) -> str:
-    """Short description of the device used for recognition."""
-    if info.device == "cuda":
-        return tr("device.gpu", compute_type=info.compute_type)
-    return tr("device.cpu", compute_type=info.compute_type)

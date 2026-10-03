@@ -16,7 +16,7 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
 
-from app import MODEL_NAME, paths
+from app import paths
 from app.audio_recorder import CAPTURE_QUEUE_BLOCKS, AudioError, AudioRecorder
 from app.exporters import ExportOptions
 from app.language_tracker import LanguageTracker
@@ -76,7 +76,7 @@ class RecordingController(QObject):
         self.saved_path: Path | None = None
         self.model_ready = False
         self.model_state = "idle"
-        self.transcriber = Transcriber(MODEL_NAME, settings.device_preference)
+        self.transcriber = Transcriber(settings.model, settings.device_preference)
         self.transcriber.on_device_changed = self._on_device_fallback
         self.started_monotonic = 0.0
 
@@ -170,13 +170,18 @@ class RecordingController(QObject):
 
     def apply_settings(self, settings: Settings) -> None:
         """Adopt new settings. Takes effect for the next recording."""
-        device_changed = settings.device_preference != self.settings.device_preference
+        reload_needed = (
+            settings.device_preference != self.settings.device_preference
+            or settings.model != self.settings.model
+        )
         self.settings = settings
-        if device_changed and not self.is_busy:
+        if reload_needed and not self.is_busy:
             if self._loader and self._loader.is_running():
                 return  # the running load finishes first; restart to apply
             self.transcriber.unload()
             self.transcriber.device_preference = settings.device_preference
+            self.transcriber.model_name = settings.model
+            self.model_state = "checking"
             self.model_ready = False
             self.state_changed.emit(self.state)
             self.load_model()
@@ -200,6 +205,8 @@ class RecordingController(QObject):
         self.saved_path = None
         self._unsaved = False
         self._tracker.reset()
+        self._tracker.allowed = frozenset(self.settings.spoken_languages)
+        self.transcriber.vocabulary = self.settings.vocabulary
         self.session_reset.emit()
 
         blocks: queue.Queue = queue.Queue(maxsize=CAPTURE_QUEUE_BLOCKS)

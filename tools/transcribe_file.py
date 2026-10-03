@@ -6,6 +6,7 @@ small blocks, exactly as microphone audio would arrive, and prints the
 resulting segments with timing information.
 
     python tools/transcribe_file.py path/to/audio.wav [--device auto|cuda|cpu]
+        [--model small|medium|large-v3-turbo] [--languages en,tr] [--vocabulary "Gesi, Erhan"]
 
 Only uncompressed 16-bit PCM WAV files are supported.
 """
@@ -22,7 +23,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app import MODEL_NAME  # noqa: E402
+from app import DEFAULT_MODEL, MODELS  # noqa: E402
 from app.audio_recorder import Resampler  # noqa: E402
 from app.language_names import language_list, language_name  # noqa: E402
 from app.language_tracker import LanguageTracker  # noqa: E402
@@ -48,13 +49,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("wav", type=Path)
     parser.add_argument("--device", default="auto", choices=("auto", "cuda", "cpu"))
+    parser.add_argument("--model", default=DEFAULT_MODEL, choices=tuple(MODELS))
+    parser.add_argument(
+        "--languages", default="", help="comma separated codes to restrict to, e.g. en,tr"
+    )
+    parser.add_argument("--vocabulary", default="", help="names and terms to favour")
     parser.add_argument("--silence-ms", type=int, default=VadConfig.silence_ms)
     args = parser.parse_args()
 
     audio, rate = read_wav(args.wav)
     print(f"Input: {len(audio) / rate:.1f} s at {rate} Hz")
 
-    transcriber = Transcriber(MODEL_NAME, args.device)
+    transcriber = Transcriber(args.model, args.device)
+    transcriber.vocabulary = args.vocabulary
     started = time.perf_counter()
     info = transcriber.load(lambda code: print(f"Model: {code}"))
     print(
@@ -65,6 +72,7 @@ def main() -> int:
     resampler = Resampler(rate)
     vad = VadProcessor(VadConfig(silence_ms=args.silence_ms), create_detector())
     tracker = LanguageTracker()
+    tracker.allowed = frozenset(code.strip() for code in args.languages.split(",") if code.strip())
     block = max(1, rate // 20)
     segments = []
     for offset in range(0, len(audio), block):

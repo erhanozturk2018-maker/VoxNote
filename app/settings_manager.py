@@ -5,10 +5,11 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
-from app import paths
+from app import DEFAULT_MODEL, MODELS, paths
+from app.language_names import LANGUAGE_NAMES
 from app.filename_template import DEFAULT_TEMPLATE, template_errors
 
 log = logging.getLogger(__name__)
@@ -54,6 +55,12 @@ class Settings:
     pre_roll_ms: int = 300
     # Audio kept after detected speech so the last syllable is not lost.
     post_roll_ms: int = 300
+    # Whisper model used for recognition; one of ``app.MODELS``.
+    model: str = DEFAULT_MODEL
+    # Languages recognition is limited to. Empty means every language.
+    spoken_languages: list[str] = field(default_factory=list)
+    # Comma separated names and terms recognition should favour.
+    vocabulary: str = ""
     # "auto" uses the GPU when it works and falls back to the CPU.
     device_preference: str = "auto"
     # Debug option: keep the raw microphone audio of each session.
@@ -71,7 +78,10 @@ class Settings:
 
         for key, default in defaults.items():
             value = data.get(key)
-            if isinstance(default, bool):
+            if isinstance(default, list):
+                items = value if isinstance(value, list) else []
+                data[key] = list(dict.fromkeys(item for item in items if isinstance(item, str)))
+            elif isinstance(default, bool):
                 if not isinstance(value, bool):
                     data[key] = default
             elif isinstance(default, int):
@@ -95,6 +105,10 @@ class Settings:
             data["ui_language"] = defaults["ui_language"]
         if data["export_format"] not in EXPORT_FORMATS:
             data["export_format"] = defaults["export_format"]
+        if data["model"] not in MODELS:
+            data["model"] = defaults["model"]
+        data["spoken_languages"] = [c for c in data["spoken_languages"] if c in LANGUAGE_NAMES]
+        data["vocabulary"] = " ".join(data["vocabulary"].split())[:500]
         if data["device_preference"] not in DEVICE_PREFERENCES:
             data["device_preference"] = defaults["device_preference"]
         if template_errors(data["filename_template"]):

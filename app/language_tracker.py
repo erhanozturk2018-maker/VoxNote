@@ -46,6 +46,26 @@ class LanguageTracker:
         self.sticky_ratio = sticky_ratio
         self._confident: list[str] = []
         self._tentative: list[str] = []
+        # Languages the user said they speak. Empty means "any language".
+        self.allowed: frozenset[str] = frozenset()
+
+    def _restrict(self, ranked: list[tuple[str, float]]) -> list[tuple[str, float]]:
+        """Keep only allowed languages and rescale their probabilities.
+
+        Choosing between two or three languages is far more reliable than
+        choosing between a hundred, which is what makes short utterances
+        land in the right language.
+        """
+        if not self.allowed:
+            return ranked
+        kept = [(code, prob) for code, prob in ranked if code in self.allowed]
+        if not kept:
+            # The recogniser does not know any of the allowed codes.
+            return ranked
+        total = sum(prob for _, prob in kept)
+        if total <= 0:
+            return [(code, 1.0 / len(kept)) for code, _ in kept]
+        return [(code, prob / total) for code, prob in kept]
 
     def reset(self) -> None:
         self._confident.clear()
@@ -59,10 +79,12 @@ class LanguageTracker:
         ``probabilities`` is the list of ``(language_code, probability)``
         pairs reported by the recogniser. Returns ``None`` when it is empty.
         """
-        ranked: Sequence[tuple[str, float]] = sorted(
-            ((code, float(prob)) for code, prob in probabilities),
-            key=lambda item: item[1],
-            reverse=True,
+        ranked: Sequence[tuple[str, float]] = self._restrict(
+            sorted(
+                ((code, float(prob)) for code, prob in probabilities),
+                key=lambda item: item[1],
+                reverse=True,
+            )
         )
         if not ranked:
             return None

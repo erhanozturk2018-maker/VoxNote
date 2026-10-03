@@ -20,14 +20,15 @@ from typing import Callable
 
 import numpy as np
 
+from app import DEFAULT_MODEL, MODELS
 from app.language_tracker import LanguageDecision, LanguageTracker
 
 log = logging.getLogger(__name__)
 
 SAMPLE_RATE = 16000
-# Free disk space required before a model download is attempted. The
-# ``small`` model is roughly 0.5 GB; the margin covers temporary files.
-REQUIRED_FREE_BYTES = 1_000_000_000
+# Free disk space required before a model download is attempted, on top of
+# the size of the model itself. The margin covers temporary files.
+FREE_SPACE_MARGIN_BYTES = 500_000_000
 
 # A recognised piece is dropped only when the model itself reports that it
 # probably heard no speech *and* is unsure about the text, or when the text
@@ -127,8 +128,11 @@ def is_out_of_memory(error: BaseException) -> bool:
 class Transcriber:
     """Owns the Whisper model."""
 
-    def __init__(self, model_name: str = "small", device_preference: str = "auto") -> None:
+    def __init__(self, model_name: str = DEFAULT_MODEL, device_preference: str = "auto") -> None:
         self.model_name = model_name
+        # Optional names and terms that recognition should favour. Passed to
+        # the decoder as a hint; the transcript is never edited afterwards.
+        self.vocabulary = ""
         self.device_preference = device_preference
         self.device_info: DeviceInfo | None = None
         self.model_path: Path | None = None
@@ -198,7 +202,8 @@ class Transcriber:
             free = shutil.disk_usage(cache).free
         except OSError as exc:
             raise TranscriberError("model_cache_unwritable", str(exc)) from exc
-        if free < REQUIRED_FREE_BYTES:
+        required = MODELS.get(self.model_name, 2000) * 1_000_000 + FREE_SPACE_MARGIN_BYTES
+        if free < required:
             raise TranscriberError("no_disk_space", f"{free // 1_000_000} MB free in {cache}")
 
         log.info("Downloading model '%s' to %s", self.model_name, cache)
@@ -272,6 +277,7 @@ class Transcriber:
         with self._lock:
             self._model = None
             self.device_info = None
+            self.model_path = None
 
     # -- recognition -----------------------------------------------------
 
@@ -326,6 +332,7 @@ class Transcriber:
             no_speech_threshold=NO_SPEECH_PROBABILITY,
             log_prob_threshold=LOW_CONFIDENCE_LOGPROB,
             compression_ratio_threshold=MAX_COMPRESSION_RATIO,
+            hotwords=self.vocabulary.strip() or None,
         )
 
         result = UtteranceResult(decision)

@@ -2,16 +2,17 @@
 
 STRINGS = {
     "app.version": "Sürüm {version}",
+
     "unit.ms": "ms",
     "unit.s": "sn",
-    # Main window
+
     "main.settings": "Ayarlar",
     "main.settings.tip": "Ayarları aç ({shortcut})",
-    "main.start": "\u25cf  Kaydı Başlat",
+    "main.start": "Kaydı Başlat",
     "main.start.tip": "Yeni bir kayıt başlat ({shortcut})",
     "main.start.tip.model": "Konuşma modeli yüklenir yüklenmez kullanılabilir",
     "main.start.tip.busy": "Geçerli oturum bittiğinde kullanılabilir",
-    "main.stop": "\u25a0  Kaydı Durdur",
+    "main.stop": "Kaydı Durdur",
     "main.stop.tip": "Durdur, dökümü tamamla ve kaydet ({shortcut})",
     "main.microphone": "Mikrofon:",
     "main.microphone.default": "Sistem varsayılan mikrofonu",
@@ -22,17 +23,15 @@ STRINGS = {
     "main.elapsed": "Geçen kayıt süresi",
     "main.status": "Durum: {status}",
     "main.transcript": "Döküm",
-    "main.transcript.placeholder": (
-        "Konuştukça sözleriniz burada görünür. Başlamak için \u201cKaydı Başlat\u201d düğmesine basın."
-    ),
+    "main.transcript.placeholder": "Konuştukça sözleriniz burada görünür. Başlamak için “Kaydı Başlat” düğmesine basın.",
     "main.languages": "Diller: {languages}",
-    "main.languages.none": "henüz algılanmadı",
+    "main.languages.none": "Henüz dil algılanmadı",
     "main.copy": "Metni Kopyala",
     "main.copy.tip": "Döküm metnini panoya kopyala ({shortcut})",
     "main.copy.done": "Döküm panoya kopyalandı.",
     "main.output": "Çıktı",
     "main.folder": "Kayıt klasörü:",
-    "main.folder.change": "Değiştir\u2026",
+    "main.folder.change": "Değiştir…",
     "main.folder.change.tip": "Dökümlerin kaydedileceği yeri seç",
     "main.folder.dialog": "Dökümlerin kaydedileceği klasörü seçin",
     "main.folder.changed": "Kayıt klasörü değiştirildi.",
@@ -44,171 +43,101 @@ STRINGS = {
     "main.open_folder.tip": "Kaydedilen dosyayı klasöründe göster ({shortcut})",
     "main.save": "Kaydet",
     "main.save.tip": "Dökümü kayıt klasörüne kaydet",
-    "main.save_as": "Farklı Kaydet\u2026",
+    "main.save_as": "Farklı Kaydet…",
     "main.save_as.tip": "Dökümü başka bir yere veya biçimde kaydet ({shortcut})",
     "main.save_as.dialog": "Dökümü farklı kaydet",
     "main.dismiss": "Bu iletiyi kapat",
-    # States
+
     "state.ready": "Hazır",
     "state.recording": "Kaydediliyor",
-    "state.recording.speech": "Kaydediliyor \u00b7 konuşma algılandı",
+    "state.recording.speech": "Kaydediliyor · konuşma algılandı",
     "state.processing": "Konuşma işleniyor",
-    "state.processing.pending": "Konuşma işleniyor \u00b7 {seconds} sn kaldı",
+    "state.processing.pending": "Konuşma işleniyor · {seconds} sn kaldı",
     "state.saving": "Dosya kaydediliyor",
     "state.completed": "Tamamlandı",
     "state.error": "Hata",
-    # Results and notices
+
     "result.saved": "Kaydedildi: {path}",
-    "result.file_missing": (
-        "Kaydedilen dosya artık yerinde değil. Yeniden kaydetmek için "
-        "\u201cFarklı Kaydet\u2026\u201d seçeneğini kullanın."
-    ),
+    "result.file_missing": "Kaydedilen dosya artık yerinde değil. Yeniden kaydetmek için “Farklı Kaydet…” seçeneğini kullanın.",
     "result.open_failed": "{path} dosyasını açabilecek bir uygulama yok.",
+
     "notice.no_speech": "Konuşma algılanmadı, bu yüzden dosya oluşturulmadı.",
-    "notice.microphone_disconnected": (
-        "Mikrofon ses göndermeyi bıraktığı için kayıt durduruldu. "
-        "O ana kadar söylenen her şey korunuyor."
-    ),
-    "notice.backlog_limit": (
-        "Konuşma tanıma yetişemediği için kayıt durduruldu. "
-        "O ana kadar kaydedilen her şey yazıya dökülüyor."
-    ),
-    "notice.silent_input": (
-        "Mikrofondan yalnızca sessizlik geliyor. Mikrofonun kapalı olmadığını ve Windows'un "
-        "masaüstü uygulamalarına mikrofon izni verdiğini kontrol edin "
-        "(Ayarlar \u203a Gizlilik ve güvenlik \u203a Mikrofon)."
-    ),
+    "notice.microphone_disconnected": "Mikrofon ses göndermeyi bıraktığı için kayıt durduruldu. O ana kadar söylenen her şey korunuyor.",
+    "notice.backlog_limit": "Konuşma tanıma yetişemediği için kayıt durduruldu. O ana kadar kaydedilen her şey yazıya dökülüyor.",
+    "notice.silent_input": "Mikrofondan yalnızca sessizlik geliyor. Mikrofonun kapalı olmadığını ve Windows'un masaüstü uygulamalarına mikrofon izni verdiğini kontrol edin (Ayarlar › Gizlilik ve güvenlik › Mikrofon).",
     "notice.audio_dropped": "Bilgisayar çok meşguldü ve sesin kısa bir bölümü kayboldu.",
-    "notice.transcription_failed": (
-        "Kaydın bir bölümü yazıya dökülemedi ve atlandı. Ayrıntılar günlük dosyasında."
-    ),
-    "notice.gpu_fallback": (
-        "Ekran kartı artık kullanılamıyor. Tanıma işlemciyle devam ediyor ve daha yavaş olacak."
-    ),
+    "notice.transcription_failed": "Kaydın bir bölümü yazıya dökülemedi ve atlandı. Ayrıntılar günlük dosyasında.",
+    "notice.gpu_fallback": "Ekran kartı artık kullanılamıyor. Tanıma işlemciyle devam ediyor ve daha yavaş olacak.",
     "notice.session_recovered": "Kaydedilmemiş bir oturum kurtarıldı.",
-    # Errors
+
     "error.unknown": "Bir sorun oluştu. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
     "error.settings_save_failed": "Ayarlar kaydedilemedi: {detail}",
-    "error.no_microphone": (
-        "Mikrofon bulunamadı. Bir mikrofon bağlayın ve \u201cYenile\u201d düğmesine basın."
-    ),
-    "error.microphone_open_failed": (
-        "Mikrofon açılamadı. Başka bir programın mikrofonu tek başına kullanmadığından ve "
-        "Windows'un masaüstü uygulamalarına mikrofon izni verdiğinden emin olun "
-        "(Ayarlar \u203a Gizlilik ve güvenlik \u203a Mikrofon)."
-    ),
-    "error.audio_backend_unavailable": (
-        "Bu bilgisayarda ses kaydı kullanılamıyor. Ayrıntılar günlük dosyasına yazıldı:\n{log}"
-    ),
-    "error.engine_blocked_by_policy": (
-        "Windows konuşma tanıma motorunu engelledi (Akıllı Uygulama Denetimi veya başka bir "
-        "uygulama denetim ilkesi). Belgelerdeki \u201cTroubleshooting\u201d bölümüne bakın."
-    ),
-    "error.engine_import_failed": (
-        "Konuşma tanıma motoru başlatılamadı. Kurulum eksik olabilir. "
-        "Ayrıntılar günlük dosyasına yazıldı:\n{log}"
-    ),
+    "error.no_microphone": "Mikrofon bulunamadı. Bir mikrofon bağlayın ve “Yenile” düğmesine basın.",
+    "error.microphone_open_failed": "Mikrofon açılamadı. Başka bir programın mikrofonu tek başına kullanmadığından ve Windows'un masaüstü uygulamalarına mikrofon izni verdiğinden emin olun (Ayarlar › Gizlilik ve güvenlik › Mikrofon).",
+    "error.audio_backend_unavailable": "Bu bilgisayarda ses kaydı kullanılamıyor. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
+    "error.engine_blocked_by_policy": "Windows konuşma tanıma motorunu engelledi (Akıllı Uygulama Denetimi veya başka bir uygulama denetim ilkesi). Belgelerdeki “Troubleshooting” bölümüne bakın.",
+    "error.engine_import_failed": "Konuşma tanıma motoru başlatılamadı. Kurulum eksik olabilir. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
     "error.model_cache_unwritable": "Konuşma modelinin klasörüne yazılamıyor: {detail}",
-    "error.no_disk_space": (
-        "Konuşma modelini indirmek için yeterli boş disk alanı yok (yaklaşık 1 GB gerekir)."
-    ),
-    "error.model_download_failed": (
-        "Konuşma modeli indirilemedi. İnternet bağlantısı yalnızca ilk seferde gerekir. "
-        "Bağlantıyı kontrol edip yeniden deneyin."
-    ),
-    "error.model_load_failed": (
-        "Konuşma modeli yüklenemedi. Ayrıntılar günlük dosyasına yazıldı:\n{log}"
-    ),
+    "error.no_disk_space": "Konuşma modelini indirmek için yeterli boş disk alanı yok (modele göre yaklaşık 2 GB'a kadar gerekir).",
+    "error.model_download_failed": "Konuşma modeli indirilemedi. İnternet bağlantısı yalnızca ilk seferde gerekir. Bağlantıyı kontrol edip yeniden deneyin.",
+    "error.model_load_failed": "Konuşma modeli yüklenemedi. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
     "error.model_not_loaded": "Konuşma modeli henüz yüklenmedi.",
     "error.directory_missing": "Kayıt klasörü yok: {detail}",
     "error.directory_invalid": "Kayıt konumu bir klasör değil: {detail}",
-    "error.directory_not_writable": (
-        "Kayıt klasörüne yazılamıyor. Başka bir klasör seçin. "
-        "Dökümünüz hâlâ burada, kaybolmadı."
-    ),
-    "error.export_failed": (
-        "Dosya kaydedilemedi. Dökümünüz hâlâ burada: yeniden denemek için "
-        "\u201cKaydet\u201d, başka bir yer seçmek için \u201cFarklı Kaydet\u2026\u201d düğmesini kullanın."
-    ),
+    "error.directory_not_writable": "Kayıt klasörüne yazılamıyor. Başka bir klasör seçin. Dökümünüz hâlâ burada, kaybolmadı.",
+    "error.export_failed": "Dosya kaydedilemedi. Dökümünüz hâlâ burada: yeniden denemek için “Kaydet”, başka bir yer seçmek için “Farklı Kaydet…” düğmesini kullanın.",
     "error.unknown_format": "Seçilen dosya biçimi desteklenmiyor.",
-    "error.pdf_font_missing": (
-        "Tüm karakterleri destekleyen bir yazı tipi bulunamadığı için PDF oluşturulmadı. "
-        "Başka bir biçim seçin veya belgelerdeki \u201cTroubleshooting\u201d bölümüne bakın."
-    ),
-    # Model and device
+    "error.pdf_font_missing": "Tüm karakterleri destekleyen bir yazı tipi bulunamadığı için PDF oluşturulmadı. Başka bir biçim seçin veya belgelerdeki “Troubleshooting” bölümüne bakın.",
+
     "model.idle": "Konuşma modeli: yüklenmedi",
-    "model.checking": "Konuşma modeli kontrol ediliyor\u2026",
-    "model.downloading": "Konuşma modeli indiriliyor (yalnızca ilk çalıştırmada)\u2026",
-    "model.downloading.progress": "Konuşma modeli indiriliyor\u2026 {megabytes} MB",
-    "model.initializing": "Konuşma modeli yükleniyor\u2026",
-    "model.ready": "Model: {model} \u00b7 {device}",
+    "model.checking": "Konuşma modeli kontrol ediliyor…",
+    "model.downloading": "Konuşma modeli indiriliyor (yalnızca ilk çalıştırmada)…",
+    "model.downloading.progress": "Konuşma modeli indiriliyor… {megabytes} MB",
+    "model.initializing": "Konuşma modeli yükleniyor…",
+    "model.ready": "Model: {model} · {device}",
     "model.failed": "Konuşma modeli kullanılamıyor",
     "model.retry": "Yeniden Dene",
     "model.tip": "Konuşma bu bilgisayarda tanınır. Hiçbir ses dışarı gönderilmez.",
+
     "device.gpu": "GPU (NVIDIA CUDA, {compute_type})",
     "device.cpu": "İşlemci ({compute_type})",
     "device.reason.cpu_selected": "Ayarlar'da seçildiği için işlemci kullanılıyor.",
-    "device.reason.cuda_unavailable": (
-        "Uyumlu bir NVIDIA ekran kartı bulunamadığı için işlemci kullanılıyor."
-    ),
-    "device.reason.cuda_unsupported_compute_type": (
-        "Ekran kartı uygun bir sayı biçimini desteklemediği için işlemci kullanılıyor."
-    ),
-    "device.reason.cuda_init_failed": (
-        "Ekran kartı başlatılamadığı için işlemci kullanılıyor. "
-        "NVIDIA kitaplıkları (cuBLAS, cuDNN) eksik olabilir."
-    ),
-    "device.reason.cuda_out_of_memory": (
-        "Ekran kartının belleği yetmediği için işlemci kullanılıyor."
-    ),
-    "device.reason.cuda_runtime_error": (
-        "Ekran kartı hata bildirdiği için işlemci kullanılıyor."
-    ),
-    # Dialogs
+    "device.reason.cuda_unavailable": "Uyumlu bir NVIDIA ekran kartı bulunamadığı için işlemci kullanılıyor.",
+    "device.reason.cuda_unsupported_compute_type": "Ekran kartı uygun bir sayı biçimini desteklemediği için işlemci kullanılıyor.",
+    "device.reason.cuda_init_failed": "Ekran kartı başlatılamadığı için işlemci kullanılıyor. NVIDIA kitaplıkları (cuBLAS, cuDNN) eksik olabilir.",
+    "device.reason.cuda_out_of_memory": "Ekran kartının belleği yetmediği için işlemci kullanılıyor.",
+    "device.reason.cuda_runtime_error": "Ekran kartı hata bildirdiği için işlemci kullanılıyor.",
+
     "dialog.unsaved.title": "Kaydedilmemiş döküm",
-    "dialog.unsaved.text": (
-        "Geçerli döküm kaydedilmedi. Yeni bir kayıt başlatırsanız silinir."
-    ),
+    "dialog.unsaved.text": "Geçerli döküm kaydedilmedi. Yeni bir kayıt başlatırsanız silinir.",
     "dialog.recover.title": "Kaydedilmemiş oturumları kurtar",
-    "dialog.recover.text": (
-        "Uygulama son çalıştığında {count} oturum kaydedilmedi. "
-        "Şimdi kurtarıp kaydetmek ister misiniz?"
-    ),
+    "dialog.recover.text": "Uygulama son çalıştığında {count} oturum kaydedilmedi. Şimdi kurtarıp kaydetmek ister misiniz?",
     "dialog.recover.recover": "Kurtar ve Kaydet",
     "dialog.recover.discard": "Sil",
     "dialog.recover.later": "Sonra Karar Ver",
     "dialog.close.title": "Kayıt sürüyor",
-    "dialog.close.recording": (
-        "Bir kayıt sürüyor. Kapatmadan önce kayıt durdurulup döküm kaydedilsin mi?"
-    ),
+    "dialog.close.recording": "Bir kayıt sürüyor. Kapatmadan önce kayıt durdurulup döküm kaydedilsin mi?",
     "dialog.close.stop_save": "Durdur, Kaydet ve Kapat",
     "dialog.close.keep": "Kayda Devam Et",
-    "dialog.close.wait": "Döküm tamamlanıyor. Kaydedildiğinde pencere kapanacak\u2026",
-    "dialog.close.unsaved": (
-        "Döküm kaydedilmedi. Şimdi kapatırsanız, uygulama bir sonraki açılışta "
-        "onu kurtarmayı önerecek."
-    ),
-    # Settings
+    "dialog.close.wait": "Döküm tamamlanıyor. Kaydedildiğinde pencere kapanacak…",
+    "dialog.close.unsaved": "Döküm kaydedilmedi. Şimdi kapatırsanız, uygulama bir sonraki açılışta onu kurtarmayı önerecek.",
+
     "settings.title": "Ayarlar",
     "settings.tab.general": "Genel",
     "settings.tab.recording": "Kayıt",
-    "settings.tab.system": "Sistem",
     "settings.save": "Kaydet",
     "settings.cancel": "İptal",
     "settings.defaults": "Varsayılanlara Dön",
     "settings.defaults.tip": "Formu varsayılan değerlerle doldurur. Kaydedene kadar hiçbir şey değişmez.",
     "settings.saved": "Ayarlar kaydedildi.",
     "settings.ui_language": "Arayüz dili:",
-    "settings.ui_language.hint": (
-        "Yalnızca bu uygulamanın dilini değiştirir. Konuşma, hangi dilde konuşulursa "
-        "o dilde tanınır."
-    ),
+    "settings.ui_language.hint": "Yalnızca bu uygulamanın dilini değiştirir. Konuşma, hangi dilde konuşulursa o dilde tanınır.",
     "settings.folder": "Kayıt klasörü:",
     "settings.folder.hint": "Kayıt durduğunda dökümler otomatik olarak buraya kaydedilir.",
     "settings.folder.error.relative": "Tam yol girin, örneğin C:\\Users\\Ad\\Documents\\Dokumler.",
     "settings.folder.create.title": "Klasör oluştur",
     "settings.folder.create.text": "Bu klasör yok:\n{path}\n\nOluşturulsun mu?",
-    "settings.browse": "Gözat\u2026",
+    "settings.browse": "Gözat…",
     "settings.format": "Dosya biçimi:",
     "settings.template": "Dosya adı:",
     "settings.template.hint": "Kullanılabilir yer tutucular: {placeholders}",
@@ -219,53 +148,88 @@ STRINGS = {
     "settings.documents": "Belgeler:",
     "settings.timestamps": "Her döküm satırının başında zamanı göster",
     "settings.open_after_save": "Belge kaydedildikten sonra aç",
-    "settings.microphone": "Mikrofon:",
     "settings.silence": "Bölümü bitiren duraklama:",
-    "settings.silence.hint": (
-        "Bu uzunluktaki sessizlik geçerli bölümü bitirir. Daha kısa duraklamalar bölümün "
-        "içinde kalır. Cümleler çok sık bölünüyorsa artırın."
-    ),
+    "settings.silence.hint": "Bu uzunluktaki sessizlik geçerli bölümü bitirir. Daha kısa duraklamalar bölümün içinde kalır. Cümleler çok sık bölünüyorsa artırın.",
     "settings.threshold": "Konuşma duyarlılığı:",
-    "settings.threshold.hint": (
-        "Düşük değerler kısık sesli konuşmayı yakalar ama daha fazla arka plan gürültüsü de alır. "
-        "Yüksek değerler gürültüyü daha çok yok sayar."
-    ),
+    "settings.threshold.hint": "Düşük değerler kısık sesli konuşmayı yakalar ama daha fazla arka plan gürültüsü de alır. Yüksek değerler gürültüyü daha çok yok sayar.",
     "settings.min_speech": "En kısa konuşma:",
     "settings.min_speech.hint": "Tıklama gibi bundan kısa sesler yok sayılır.",
     "settings.max_segment": "En uzun bölüm:",
-    "settings.max_segment.hint": (
-        "Kesintisiz konuşma bu uzunluğa yaklaştığında bir sonraki kısa duraklamada bölünür."
-    ),
+    "settings.max_segment.hint": "Kesintisiz konuşma bu uzunluğa yaklaştığında bir sonraki kısa duraklamada bölünür.",
     "settings.pre_roll": "Ön pay:",
     "settings.pre_roll.hint": "İlk hecenin kesilmemesi için konuşma algılanmadan önce tutulan ses.",
     "settings.post_roll": "Son pay:",
     "settings.post_roll.hint": "Son hecenin kesilmemesi için konuşma bittikten sonra tutulan ses.",
     "settings.debugging": "Sorun giderme:",
     "settings.retain_audio": "Her oturumun ham sesini sakla",
-    "settings.retain_audio.hint": (
-        "Varsayılan olarak kapalıdır. Açıkken her oturumun mikrofon sesi, siz silene kadar "
-        "bu bilgisayarda WAV dosyası olarak saklanır."
-    ),
+    "settings.retain_audio.hint": "Varsayılan olarak kapalıdır. Açıkken her oturumun mikrofon sesi, siz silene kadar bu bilgisayarda WAV dosyası olarak saklanır.",
     "settings.open_audio_folder": "Ses Klasörünü Aç",
     "settings.device": "İşlem aygıtı:",
-    "settings.device.hint": (
-        "\u201cOtomatik\u201d, çalışan bir NVIDIA ekran kartı varsa onu, yoksa işlemciyi kullanır."
-    ),
+    "settings.device.hint": "“Otomatik”, çalışan bir NVIDIA ekran kartı varsa onu, yoksa işlemciyi kullanır.",
     "settings.device.auto": "Otomatik (önerilir)",
     "settings.device.cuda": "Ekran kartı (NVIDIA CUDA)",
     "settings.device.cpu": "İşlemci (CPU)",
-    "settings.device.in_use": "Şu an kullanılan:",
+    "settings.device.in_use": "Şu an kullanılan: {device}.",
     "settings.model": "Konuşma modeli:",
-    "settings.model.cached": "Whisper {model} \u00b7 bu bilgisayarda kayıtlı ({megabytes} MB)",
-    "settings.model.missing": "Whisper {model} \u00b7 henüz indirilmedi",
-    "settings.model.location": "Model konumu:",
     "settings.model.open": "Model Klasörünü Aç",
-    "settings.logs": "Günlük dosyaları:",
     "settings.logs.open": "Günlük Klasörünü Aç",
     "settings.logs.hint": "Günlükler yalnızca teknik ayrıntı içerir; ses veya döküm metni içermez.",
-    "settings.privacy": "Gizlilik:",
-    "settings.privacy.text": (
-        "Ses ve dökümler bu bilgisayarda kalır. İnternet yalnızca bir kez, "
-        "konuşma modelini indirmek için kullanılır."
-    ),
+
+    "main.help": "Yardım",
+    "main.help.tip": "VoxNote hakkında sorular, yanıtlar ve bilgiler ({shortcut})",
+    "main.languages.tip": "Bu oturumda algılanan diller",
+
+    "settings.tab.recognition": "Tanıma",
+    "settings.model.option.small": "Small · en hızlı, en az doğru (0,5 GB)",
+    "settings.model.option.medium": "Medium · daha doğru, daha yavaş (1,5 GB)",
+    "settings.model.option.large-v3-turbo": "Large v3 Turbo · en doğru, önerilen (1,6 GB)",
+    "settings.model.status.cached": "Bu bilgisayarda kayıtlı ({megabytes} MB).",
+    "settings.model.status.missing": "Henüz bu bilgisayarda yok. Kaydettikten sonra bir kez yaklaşık {megabytes} MB indirilir.",
+    "settings.model.hint": "Büyük modeller daha az hata yapar ama daha fazla bellek ister ve ekran kartı olmadan yavaş çalışır.",
+    "settings.spoken": "Konuşulan diller:",
+    "settings.spoken.all": "Tüm diller (otomatik algılanır)",
+    "settings.spoken.choose": "Seç…",
+    "settings.spoken.hint": "Tanımayı gerçekten konuştuğunuz dillerle sınırlayın. Böylece kısa ifadeler başka dillerle karıştırılmaz.",
+
+    "dialog.languages.title": "Konuşulan diller",
+    "dialog.languages.text": "Konuştuğunuz dilleri işaretleyin. Tüm dillere izin vermek için hiçbirini işaretlemeyin.",
+    "dialog.languages.filter": "Ara…",
+    "dialog.languages.clear": "Seçimi Temizle",
+    "dialog.ok": "Tamam",
+
+    "settings.vocabulary": "İsimler ve özel sözcükler:",
+    "settings.vocabulary.placeholder": "örneğin: Gesi, Kayseri, Erhan",
+    "settings.vocabulary.hint": "İsteğe bağlı, virgülle ayırın. Bu sözcükler daha güvenilir tanınır. Dökümün kendisi hiçbir zaman düzeltilmez.",
+    "settings.advanced": "Gelişmiş seçenekler",
+    "settings.folders": "Klasörler:",
+
+    "help.title": "Yardım",
+    "help.tab.faq": "Sorular ve Yanıtlar",
+    "help.tab.about": "Hakkında",
+    "help.close": "Kapat",
+
+    "about.description": "VoxNote, mikrofonunuzdan konuşmayı kaydeder, kendi bilgisayarınızda yazıya döker ve dökümü belge olarak kaydeder. Söyleneni, söylendiği dilde, düzeltmeden ve çevirmeden yazar.",
+    "about.privacy.title": "Gizlilik",
+    "about.privacy.text": "Ses ve dökümler bu bilgisayarda kalır. Hiçbir şey yüklenmez; hesap ya da kullanım takibi yoktur. İnternet yalnızca bir konuşma modeli ilk kez gerektiğinde onu indirmek için kullanılır.",
+    "about.credits.title": "Kullanılan bileşenler",
+    "about.credits.text": "Konuşma tanıma: faster-whisper ve CTranslate2 üzerinden OpenAI Whisper modelleri. Konuşma algılama: Silero VAD. Arayüz: Qt for Python (PySide6). Belgeler: python-docx ve ReportLab.",
+    "about.license": "VoxNote, MIT Lisansı ile yayımlanan özgür bir yazılımdır.",
+    "about.website": "Proje Sayfası",
+
+    "faq.1.q": "İnternet bağlantısı gerekiyor mu?",
+    "faq.1.a": "Yalnızca bir kez. Konuşma modeli ilk gerektiğinde indirilir. Sonrasında kayıt, tanıma ve kaydetme tamamen çevrimdışı çalışır.",
+    "faq.2.q": "Sesim bir yere gönderiliyor mu?",
+    "faq.2.a": "Hayır. Tanıma bu bilgisayarda yapılır. Ses yalnızca işlenirken bellekte tutulur ve saklanmaz; Ayarlar'da “Her oturumun ham sesini sakla” seçeneğini açmadığınız sürece.",
+    "faq.3.q": "Hangi dillerde konuşabilirim?",
+    "faq.3.a": "İngilizce, Türkçe, Almanca, Fransızca, İspanyolca, İtalyanca ve Rusça dahil yaklaşık yüz dilde. Dil her cümle için ayrı algılanır, yani kayıt sırasında dil değiştirebilirsiniz. Dil değiştirirken kısa bir ara verin.",
+    "faq.4.q": "Sözcükler ya da dil yanlış tanınıyor. Ne yapabilirim?",
+    "faq.4.a": "Ayarlar › Tanıma bölümünde gerçekten konuştuğunuz dilleri seçin, Large v3 Turbo modelini kullanın ve isimleri ya da özel terimleri “İsimler ve özel sözcükler” alanına ekleyin. Tam cümlelerle konuşun: tek başına söylenen bir sözcüğü tanımak zordur. Kulaklıklı mikrofon, dizüstü mikrofonundan çok daha iyi sonuç verir.",
+    "faq.5.q": "Metin neden ancak konuşmayı bıraktıktan sonra görünüyor?",
+    "faq.5.a": "Bir cümle bittiğinde, yani kısa bir duraklamadan sonra tanınır. Metnin daha erken gelmesini isterseniz Ayarlar › Kayıt bölümünde “Bölümü bitiren duraklama” değerini düşürün.",
+    "faq.6.q": "Dökümlerim nereye kaydediliyor?",
+    "faq.6.a": "Kaydı durdurduğunuzda otomatik olarak ana pencerede gösterilen kayıt klasörüne. “Farklı Kaydet…” ile aynı dökümü başka bir yere ya da biçimde yeniden kaydedebilirsiniz.",
+    "faq.7.q": "Ekran kartım neden kullanılmıyor?",
+    "faq.7.a": "Güncel sürücülü bir NVIDIA ekran kartı gerekir. Kullanılamıyorsa VoxNote işlemciyle devam eder; bu daha yavaştır. Ayarlar › Tanıma bölümü hangi aygıtın kullanıldığını ve nedenini gösterir.",
+    "faq.8.q": "Uygulama ya da bilgisayar çökerse ne olur?",
+    "faq.8.a": "Dökümde görünmüş olan her şey korunur. VoxNote bir sonraki açılışta oturumu kurtarıp kaydetmeyi önerir.",
 }

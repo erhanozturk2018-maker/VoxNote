@@ -106,6 +106,16 @@ QPushButton#primary:focus, QPushButton#record:focus, QPushButton#stop:focus {{
     border: 2px solid {text}; padding: 7px 17px; }}
 QPushButton#primary:disabled, QPushButton#record:disabled {{
     background: {disabled_bg}; color: {disabled_text}; border-color: {border}; }}
+QPushButton#flat {{ background: transparent; border: 1px solid transparent; padding: 5px 8px; }}
+QPushButton#flat:hover {{ background: {info_bg}; border-color: {border}; }}
+QPushButton#flat:focus {{ border: 2px solid {accent}; padding: 4px 7px; }}
+QPushButton#flat:disabled {{ background: transparent; border-color: transparent; }}
+
+QListWidget, QTextBrowser#help {{ background: {field}; border: 1px solid {border};
+    border-radius: 6px; padding: 6px; }}
+QTextBrowser#help {{ padding: 4px 14px 14px 14px; font-size: 10.5pt; }}
+QListWidget::item {{ padding: 4px 2px; }}
+QListWidget::item:selected {{ background: {info_bg}; color: {text}; }}
 
 QComboBox, QLineEdit {{ background: {field};
     border: 1px solid {border}; border-radius: 6px; padding: 5px 8px; min-height: 20px; }}

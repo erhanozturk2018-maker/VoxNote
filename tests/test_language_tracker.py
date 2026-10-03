@@ -101,3 +101,33 @@ def test_language_names():
     assert language_name("zz") == "zz"
     assert language_list(["en", "tr"]) == "English, Turkish"
     assert language_list([]) == ""
+
+
+def test_restriction_to_spoken_languages_removes_unrelated_ones():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"en", "tr"})
+    # Raw detection favours Arabic; only English and Turkish are allowed.
+    decision = tracker.decide([("ar", 0.50), ("tr", 0.30), ("en", 0.05), ("sv", 0.15)], 2.0)
+    assert decision.language == "tr"
+    assert decision.confident is True  # 0.30 / 0.35 after rescaling
+
+
+def test_restriction_keeps_ambiguous_choices_tentative():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"en", "tr"})
+    decision = tracker.decide([("en", 0.28), ("tr", 0.14), ("ru", 0.06)], 1.0)
+    assert decision.language == "en"
+    assert decision.confident is False
+
+
+def test_single_allowed_language_is_always_used():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"tr"})
+    decision = tracker.decide([("en", 0.9), ("tr", 0.01)], 0.5)
+    assert (decision.language, decision.confident) == ("tr", True)
+
+
+def test_restriction_with_unknown_codes_is_ignored():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"xx"})
+    assert tracker.decide([("en", 0.9)], 3.0).language == "en"
