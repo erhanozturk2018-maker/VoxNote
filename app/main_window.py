@@ -49,7 +49,14 @@ from app.logging_config import log_file
 from app.recording_controller import AppState, RecordingController
 from app.resources import assets_dir
 from app.settings_manager import Settings, SettingsManager
-from app.theme import THEME_MODES, apply_theme, refresh_style, set_mode, tokens
+from app.theme import (
+    THEME_MODES,
+    apply_theme,
+    polish_combos,
+    refresh_style,
+    set_mode,
+    tokens,
+)
 from app.transcript_models import format_clock
 
 log = logging.getLogger(__name__)
@@ -207,6 +214,7 @@ class MainWindow(QMainWindow):
         self._result_state: tuple | None = None
 
         self._build_ui()
+        polish_combos(self)
         self._connect()
         self._timer = QTimer(self)
         self._timer.setInterval(250)
@@ -477,7 +485,11 @@ class MainWindow(QMainWindow):
 
     def _apply_icons(self) -> None:
         colors = tokens()
-        special = {"record": colors["record_text"], "primary": colors["accent_text"]}
+        special = {
+            "record": colors["accent_text"],
+            "stop": colors["record_text"],
+            "primary": colors["accent_text"],
+        }
         self.theme_button.setProperty("iconName", f"theme-{self.settings.theme}")
         for button in self.findChildren(QPushButton):
             name = button.property("iconName")

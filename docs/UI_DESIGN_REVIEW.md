@@ -35,8 +35,8 @@ areas, icons were added, and a Help window was introduced.
   light and the dark variant. A colour always means the same thing: red is
   recording or an error, amber is work in progress or a warning, green is
   success, violet is the accent and "ready".
-- Four button styles only: the red record button, the violet primary button
-  (confirming actions: *Save*), neutral buttons, and borderless icon buttons
+- Four button styles only: the violet primary button (*Start Recording* and confirming actions such as
+  *Save*), the red *Stop Recording* button, neutral buttons, and borderless icon buttons
   for small secondary actions (refresh, open folder).
 - One icon set (`app/icons.py`) drawn in a single style and stroke width. The
   same icon always means the same thing: the folder icon opens a folder

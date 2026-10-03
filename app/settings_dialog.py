@@ -45,7 +45,7 @@ from app.icons import set_button_icon
 from app.language_names import LANGUAGE_NAMES, language_list
 from app.recording_controller import RecordingController
 from app.settings_manager import LIMITS, THEMES, Settings
-from app.theme import refresh_style
+from app.theme import polish_combos, refresh_style
 from app.workers import _directory_bytes
 
 # Shown first in the language chooser; the rest follows alphabetically.
@@ -190,6 +190,7 @@ class SettingsDialog(QDialog):
         self.defaults_button.clicked.connect(self._restore_defaults)
         layout.addWidget(self.buttons)
 
+        polish_combos(self)
         self._load(settings)
         self._ready = True
         self._validate()

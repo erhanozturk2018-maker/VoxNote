@@ -11,7 +11,7 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QGuiApplication, QPalette
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QComboBox, QListView
 
 from app.resources import assets_dir
 
@@ -98,13 +98,15 @@ QPushButton:disabled {{ background: {disabled_bg}; color: {disabled_text}; borde
 QPushButton#primary {{ background: {accent}; color: {accent_text}; border-color: {accent};
     font-weight: 600; padding: 8px 18px; }}
 QPushButton#primary:hover {{ background: {accent_hover}; }}
-QPushButton#record {{ background: {record}; color: {record_text}; border-color: {record};
+QPushButton#record {{ background: {accent}; color: {accent_text}; border-color: {accent};
     font-weight: 600; padding: 8px 18px; }}
-QPushButton#record:hover {{ background: {record_hover}; }}
-QPushButton#stop {{ font-weight: 600; padding: 8px 18px; }}
+QPushButton#record:hover {{ background: {accent_hover}; }}
+QPushButton#stop {{ background: {record}; color: {record_text}; border-color: {record};
+    font-weight: 600; padding: 8px 18px; }}
+QPushButton#stop:hover {{ background: {record_hover}; }}
 QPushButton#primary:focus, QPushButton#record:focus, QPushButton#stop:focus {{
     border: 2px solid {text}; padding: 7px 17px; }}
-QPushButton#primary:disabled, QPushButton#record:disabled {{
+QPushButton#primary:disabled, QPushButton#record:disabled, QPushButton#stop:disabled {{
     background: {disabled_bg}; color: {disabled_text}; border-color: {border}; }}
 QPushButton#flat {{ background: transparent; border: 1px solid transparent; padding: 5px 8px; }}
 QPushButton#flat:hover {{ background: {info_bg}; border-color: {border}; }}
@@ -124,8 +126,13 @@ QComboBox:disabled, QLineEdit:disabled {{ background: {disabled_bg}; color: {dis
 QComboBox::drop-down {{ border: none; width: 28px; }}
 QComboBox::down-arrow {{ image: url("{arrow}"); width: 12px; height: 12px; }}
 QSpinBox, QDoubleSpinBox {{ min-height: 26px; padding-left: 4px; }}
+QComboBox {{ combobox-popup: 0; }}
 QComboBox QAbstractItemView {{ background: {field}; border: 1px solid {border};
+    border-radius: 6px; padding: 4px; outline: none;
     selection-background-color: {accent}; selection-color: {accent_text}; }}
+QComboBox QAbstractItemView::item {{ min-height: 30px; padding: 2px 10px; border-radius: 4px; }}
+QComboBox QAbstractItemView::item:hover {{ background: {info_bg}; color: {text}; }}
+QComboBox QAbstractItemView::item:selected {{ background: {accent}; color: {accent_text}; }}
 QLineEdit[invalid="true"] {{ border: 2px solid {error}; padding: 4px 7px; }}
 
 QTextEdit#transcript {{ background: {field}; border: 1px solid {border}; border-radius: 6px;
@@ -199,6 +206,21 @@ def apply_theme(app: QApplication) -> None:
     app.setPalette(palette)
     arrow = assets_dir() / ("arrow-dark.png" if is_dark() else "arrow-light.png")
     app.setStyleSheet(_STYLE.format(arrow=arrow.as_posix(), **colors))
+
+
+def polish_combos(parent) -> None:
+    """Give every combo box below ``parent`` a roomy drop-down list.
+
+    By default the Fusion style opens the list on top of the box, as tall as
+    a couple of items and with scroll arrows. With a list view and the style
+    sheet above, the list opens below the box, shows up to twelve items at a
+    comfortable height and scrolls with a normal scroll bar beyond that.
+    """
+    for combo in parent.findChildren(QComboBox):
+        view = QListView(combo)
+        view.setTextElideMode(Qt.TextElideMode.ElideMiddle)
+        combo.setView(view)
+        combo.setMaxVisibleItems(12)
 
 
 def refresh_style(widget) -> None:

@@ -134,8 +134,11 @@ Kashimura, 1995; Tractinsky, Katz & Ikar, 2000).
 ## Decision 5: one accent colour, used sparingly
 
 **What.** Neutral greys for surfaces and text, and a single accent colour,
-violet, for the primary action in dialogs, focus rings, language headings and
-the logo. Three further colours are reserved for meaning and are never used
+violet, for the primary action (*Start Recording*, *Save*), focus rings,
+language headings and the logo. *Stop Recording* is red: it is only active
+while the red "Recording" status is shown, so the control that ends the
+recording carries the same colour as the state it ends, and the two buttons
+can be told apart at a glance. Three further colours are reserved for meaning and are never used
 decoratively: red for recording and errors, amber for work in progress and
 warnings, green for success.
 
