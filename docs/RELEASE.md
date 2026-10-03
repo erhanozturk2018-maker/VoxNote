@@ -4,15 +4,15 @@ This document describes how to turn VoxNote into a distributable Windows
 application, and what still has to be done before it should be offered to the
 public.
 
-> **Status.** VoxNote 0.1.0 runs from source. **No packaged build has been
-> produced or tested yet.** The PyInstaller workflow below is a documented
-> starting point, not a verified recipe. Expect to adjust it during the first
-> real build.
+> **Status.** For VoxNote 0.2.0 the executable and the installer were built
+> and tried on the development computer only (see [Status](#status)). They are
+> **not code-signed** and have not been tested on any other computer.
 
+- [Status](#status)
 - [Release readiness](#release-readiness)
 - [Versioning](#versioning)
 - [Release checklist](#release-checklist)
-- [Building with PyInstaller](#building-with-pyinstaller)
+- [Building the release](#building-the-release)
 - [GPU libraries in a packaged build](#gpu-libraries-in-a-packaged-build)
 - [Model distribution and cache strategy](#model-distribution-and-cache-strategy)
 - [Application icon](#application-icon)
@@ -21,6 +21,24 @@ public.
 - [Clean-machine testing](#clean-machine-testing)
 - [Licenses of bundled components](#licenses-of-bundled-components)
 
+## Status
+
+What was actually done for version 0.2.0, on one computer (Windows 11, NVIDIA
+RTX 3060 Laptop GPU, Smart App Control switched on):
+
+| Step | Result |
+| --- | --- |
+| `pyinstaller VoxNote.spec` | Built `dist\VoxNote` (about 2.4 GB including the NVIDIA libraries) |
+| Start `dist\VoxNote\VoxNote.exe` | Window opened, the model loaded on the GPU, the log was written, the Silero VAD model was found |
+| Compile `installer\VoxNote.iss` with Inno Setup 6.7 | Built `VoxNote-Setup-0.2.0.exe` (about 1.1 GB) in under two minutes |
+| Silent installation into a test folder | Succeeded; Start menu and desktop shortcuts were created |
+| Start the installed copy | Worked as above and closed with exit code 0 |
+| Run the uninstaller | **Blocked by Smart App Control**, because `unins000.exe` is unsigned. The test installation had to be removed by hand. |
+
+Not done: recording with the packaged build, a normal (interactive) run of
+the wizard, installation on a second computer, and any test on Windows 10 or
+without an NVIDIA card.
+
 ## Release readiness
 
 Running locally on the developer's computer does not make an application
@@ -28,15 +46,16 @@ ready for worldwide distribution. Open items:
 
 | Area | Remaining work | Priority |
 | --- | --- | --- |
-| Packaging | Produce and test a PyInstaller build | Required |
-| Code signing | Sign the executable; unsigned builds are blocked by Smart App Control and warned about by SmartScreen | Required |
+| Code signing | Sign the executable, the installer and the uninstaller. Without a signature, Smart App Control blocked the uninstaller on the development computer, and SmartScreen warns about the download | Required |
+| Packaged-build testing | Run the manual checklist with the installed application, not only from source | Required |
 | Clean-machine tests | Windows 10 and 11, with and without NVIDIA GPU, without Python installed | Required |
 | Hardware coverage | Other GPUs (older GTX, RTX 40/50 series), CPU-only machines, different microphones and audio drivers | Required |
 | Real-speech testing | Complete the manual checklist in [TESTING.md](TESTING.md) with several speakers and languages | Required |
 | License review | Confirm obligations of all bundled components, in particular PySide6 (LGPL) | Required |
 | Translations | Review of the Turkish, German, French, Italian and Russian texts by native speakers | Recommended |
 | Accessibility | Screen-reader and high-contrast testing | Recommended |
-| Installer | Start menu entry, uninstaller, upgrade behaviour | Recommended |
+| Installer | Test the interactive wizard, upgrading over an older version, and uninstalling | Required |
+| Installer size | Offer a CPU-only installer without the 1.5 GB of NVIDIA libraries | Recommended |
 | Continuous integration | Run the test suite automatically on every change | Recommended |
 | Update strategy | Decide how users learn about new versions (the application makes no network requests by design) | Recommended |
 | Long sessions | Verify memory use and stability over sessions of an hour or more | Recommended |
@@ -64,6 +83,9 @@ Independent version numbers:
   (see [EXPORT_FORMATS.md](EXPORT_FORMATS.md#versioning-policy)),
 - `SETTINGS_SCHEMA_VERSION` in `app/settings_manager.py`.
 
+The installer takes its version from `APP_VERSION` when it is built with
+`tools\build_release.ps1`.
+
 Tag releases in Git as `v0.1.0`, `v0.2.0`, and so on.
 
 ## Release checklist
@@ -81,82 +103,65 @@ Tag releases in Git as `v0.1.0`, `v0.2.0`, and so on.
 8. Build tested on clean machines.
 9. Git tag created and release notes published.
 
-## Building with PyInstaller
+## Building the release
+
+One script does everything:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install pyinstaller
+.\tools\build_release.ps1
+```
+
+It runs the tests, regenerates the icon and installer artwork, builds the
+application folder with PyInstaller and, if Inno Setup 6 is installed,
+compiles the installer. `-SkipTests` and `-SkipInstaller` leave out a step.
+
+| Output | Content |
+| --- | --- |
+| `dist\VoxNote\VoxNote.exe` | The application with its files in `dist\VoxNote\_internal`. The folder can be copied or zipped as a portable version. |
+| `dist\installer\VoxNote-Setup-<version>.exe` | The installer |
+
+Inno Setup can be installed with:
+
+```powershell
+winget install -e --id JRSoftware.InnoSetup
+```
+
+### The PyInstaller part
 
 [PyInstaller](https://pyinstaller.org/) bundles the Python interpreter, the
 packages and the application into a folder that runs without a Python
-installation.
-
-### Prepare a clean build environment
+installation. The build is described in `VoxNote.spec`:
 
 ```powershell
-py -3.11 -m venv .venv-build
-.\.venv-build\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-pip install pyinstaller
+pyinstaller --noconfirm --clean VoxNote.spec
 ```
 
-Build from a fresh environment so that the bundle contains only what the
-application needs.
+What the spec file takes care of:
 
-### Build
-
-Use the one-folder mode. A one-file build unpacks hundreds of megabytes to a
-temporary folder on every start, which is slow and more likely to trigger
-antivirus software.
-
-```powershell
-pyinstaller --noconfirm --clean --windowed `
-  --name VoxNote `
-  --icon assets\voxnote.ico `
-  --add-data "assets;assets" `
-  --collect-data faster_whisper `
-  --collect-all ctranslate2 `
-  --collect-all onnxruntime `
-  --collect-binaries sounddevice `
-  --collect-data _sounddevice_data `
-  --collect-data reportlab `
-  --collect-data docx `
-  main.py
-```
-
-The result is `dist\VoxNote\VoxNote.exe` with its supporting files in
-`dist\VoxNote\_internal`.
-
-What the options are for:
-
-| Option | Reason |
+| Item | Reason |
 | --- | --- |
-| `--windowed` | No console window. |
-| `--add-data "assets;assets"` | Icon and interface images, found through `app/resources.py` (`sys._MEIPASS`). |
-| `--collect-data faster_whisper` | The Silero VAD model file (`assets/silero_vad_*.onnx`), which `app/vad_processor.py` loads from the package folder. Without it the less accurate energy-based detector is used. |
-| `--collect-all ctranslate2` | The native inference library and its DLLs. |
-| `--collect-all onnxruntime` | Runtime for the VAD model. |
-| `--collect-binaries sounddevice`, `--collect-data _sounddevice_data` | The PortAudio DLL. |
-| `--collect-data reportlab`, `--collect-data docx` | Resource files and the default Word template. |
+| One-folder mode, no console window | A one-file build would unpack gigabytes to a temporary folder on every start. |
+| `assets` | Icon and interface images, found through `app/resources.py` (`sys._MEIPASS`). |
+| `collect_all("faster_whisper")` | Includes the Silero VAD model file that `app/vad_processor.py` loads from the package folder. Without it the less accurate energy-based detector is used and the log says so. |
+| `collect_all("ctranslate2")`, `collect_all("onnxruntime")` | Native inference libraries and their DLLs. |
+| `_sounddevice_data` | The PortAudio DLL. |
+| `reportlab`, `docx` data files | Resource files and the default Word template. |
+| `collect_submodules("app.i18n.locales")` | The interface translations are imported dynamically and would otherwise be missing. |
+| `nvidia/*/bin/*.dll` | The cuBLAS, cuDNN and NVRTC libraries, when `requirements-gpu.txt` is installed in the build environment. |
+| Excluded Qt modules | Unused parts of Qt (WebEngine, QML, 3D, …) are left out. |
 
-Things to verify in the first build (none of this has been checked yet):
-
-- The interface translations are imported dynamically
-  (`importlib.import_module` in `app/i18n/__init__.py`). If a language is
-  missing from the build, add
-  `--hidden-import app.i18n.locales.tr` (and likewise for `de`, `fr`, `it`,
-  `ru`, `en`), or `--collect-submodules app.i18n.locales`.
-- The log file reports
-  `Silero VAD unavailable, using the energy-based fallback` if the VAD model
-  was not bundled.
-- PDF, DOCX and every other export format work.
-- Start-up time and the size of `dist\VoxNote`.
-- Excluding unused Qt modules (`--exclude-module PySide6.QtWebEngineCore`,
-  `PySide6.QtQuick`, `PySide6.Qt3DCore`, …) reduces the size considerably.
-
-Once the options are settled, keep the generated `VoxNote.spec` in the
-repository and build with `pyinstaller VoxNote.spec`.
+For a release, build from a fresh virtual environment so the bundle contains
+only what the application needs, and pin the dependency versions that were
+tested.
 
 ## GPU libraries in a packaged build
 
 Decide between two variants:
+
+`VoxNote.spec` decides this automatically from what is installed in the
+build environment.
 
 **A. CPU-only bundle (small).** Build from an environment without
 `requirements-gpu.txt`. On a computer with an NVIDIA GPU, VoxNote uses the
@@ -164,15 +169,10 @@ GPU only if cuBLAS and cuDNN are available through a system-wide CUDA
 installation; otherwise it falls back to the CPU and says so.
 
 **B. GPU-enabled bundle (about 1.5 GB larger).** Install
-`requirements-gpu.txt` into the build environment and add the DLLs to the
-bundle so that they end up in `nvidia\<package>\bin`, which is where
-`register_nvidia_libraries` (`app/transcriber.py`) looks for them:
-
-```powershell
-  --add-binary ".venv-build\Lib\site-packages\nvidia\cublas\bin\*.dll;nvidia\cublas\bin" `
-  --add-binary ".venv-build\Lib\site-packages\nvidia\cudnn\bin\*.dll;nvidia\cudnn\bin" `
-  --add-binary ".venv-build\Lib\site-packages\nvidia\cuda_nvrtc\bin\*.dll;nvidia\cuda_nvrtc\bin" `
-```
+`requirements-gpu.txt` into the build environment. The spec file then copies
+the DLLs into `nvidia\<package>\bin` inside the bundle, which is where
+`register_nvidia_libraries` (`app/transcriber.py`) looks for them. This is
+the variant that was built and tried for 0.2.0.
 
 The same bundle still runs on computers without an NVIDIA GPU.
 
@@ -182,7 +182,8 @@ read them before publishing variant B.
 
 ## Model distribution and cache strategy
 
-The Whisper `small` model (about 0.5 GB) is not part of the repository.
+The speech models (0.5 to 1.6 GB each) are not part of the repository or of
+the installer.
 Options for a release:
 
 | Strategy | Download size | First start | Notes |
@@ -208,13 +209,14 @@ Whichever strategy is used:
 ## Application icon
 
 - Source: `tools/make_icon.py` draws the icon with Qt and writes
-  `assets/voxnote.png` and `assets/voxnote.ico` (256 × 256).
+  `assets/voxnote.png` (256 × 256) and `assets/voxnote.ico`.
 - At runtime, `main.py` sets it as the window icon via `app/resources.py`.
-- For the executable, PyInstaller embeds it with `--icon assets\voxnote.ico`.
-- Windows displays icons at several sizes (16, 24, 32, 48, 256 pixels). The
-  generated `.ico` currently contains only the 256-pixel image, which Windows
-  scales down. For a release, create a multi-size `.ico` with hand-tuned
-  small sizes.
+- For the executable, `VoxNote.spec` embeds it (`icon="assets/voxnote.ico"`);
+  the installer uses it as `SetupIconFile`.
+- Windows displays icons at several sizes. The `.ico` contains nine images
+  from 16 to 256 pixels, each rendered from the vector drawing rather than
+  scaled down, with thicker strokes in the small sizes.
+- The same script draws the two pictures of the setup wizard.
 - To replace the artwork, change `draw()` in `tools/make_icon.py` or put your
   own `voxnote.ico` and `voxnote.png` into `assets`.
 
@@ -223,7 +225,9 @@ Whichever strategy is used:
 Unsigned executables are a real obstacle on current Windows versions:
 
 - **Smart App Control** (Windows 11) blocks unsigned programs and libraries
-  without established reputation outright. During development this even
+  without established reputation. Its decisions are made per file: on the
+  development computer it allowed the unsigned installer and `VoxNote.exe`
+  but blocked the unsigned uninstaller. During development this even
   affected an unsigned library inside the Python environment
   (see [TROUBLESHOOTING.md](TROUBLESHOOTING.md#windows-blocked-the-speech-recognition-engine)).
 - **SmartScreen** shows a warning for downloads without reputation.
@@ -236,25 +240,54 @@ signing certificate, using `signtool` from the Windows SDK:
 signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /a dist\VoxNote\VoxNote.exe
 ```
 
+Inno Setup can sign the installer and the uninstaller itself during
+compilation (`SignTool=` and `SignedUninstaller=yes` in the `[Setup]`
+section), which is what fixes the blocked uninstaller.
+
 Third-party DLLs inside the bundle (CTranslate2, onnxruntime, PortAudio)
 keep their own signature status. Test the signed build on a computer with
 Smart App Control switched on.
 
 ## Installer
 
-A folder is not a convenient download. Wrap `dist\VoxNote` with an installer
-tool such as [Inno Setup](https://jrsoftware.org/isinfo.php) or
-[WiX](https://wixtoolset.org/), or publish it as a ZIP archive for a portable
-version (`VOXNOTE_HOME` keeps all data next to the application; see
-[INSTALLATION.md](INSTALLATION.md#where-voxnote-stores-its-data)).
+The installer is defined in `installer/VoxNote.iss` for
+[Inno Setup 6](https://jrsoftware.org/isinfo.php).
 
-The installer should:
+| Property | Value |
+| --- | --- |
+| Scope | Current user only (`PrivilegesRequired=lowest`); no administrator rights |
+| Default location | `%LOCALAPPDATA%\Programs\VoxNote` |
+| Shortcuts | Start menu entry; desktop shortcut (a ticked option in the wizard) |
+| Wizard languages | English, Turkish, German, French, Italian, Russian |
+| Artwork | `assets/installer-side.bmp`, `assets/installer-small.bmp` and `assets/voxnote.ico`, all generated by `tools/make_icon.py` |
+| License page | Shows `LICENSE` |
+| After installation | Offers to start VoxNote |
+| Uninstall | Removes the program files. Settings, transcripts, logs and downloaded models are kept. |
+| Updates | The fixed `AppId` makes a newer installer replace the existing installation. |
+| Compression | LZMA2; the speech model is not included and is downloaded on first start |
 
-- install per user without requiring administrator rights,
-- create a Start menu entry,
-- register an uninstaller,
-- leave the user's settings, transcripts and model cache untouched on
-  upgrade, and ask before removing them on uninstall.
+Compile it on its own with:
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" /DAppVersion=0.2.0 installer\VoxNote.iss
+```
+
+Useful command-line options of the finished installer:
+
+```powershell
+VoxNote-Setup-0.2.0.exe /SILENT
+VoxNote-Setup-0.2.0.exe /VERYSILENT /TASKS=""
+```
+
+The second form installs without any window and without the desktop
+shortcut. Note that `/NOICONS` only suppresses the Start menu folder question
+of the wizard; shortcuts are controlled through `/TASKS`.
+
+**Known problem on computers with Smart App Control:** the uninstaller that
+Inno Setup generates (`unins000.exe`) is unsigned and was blocked on the
+development computer. Until the build is signed, VoxNote has to be removed
+by hand there; see
+[TROUBLESHOOTING.md](TROUBLESHOOTING.md#the-uninstaller-is-blocked).
 
 ## Clean-machine testing
 
@@ -277,7 +310,7 @@ For each cell:
 1. Install or unpack the build and start it.
 2. First start: model download with progress; then retry with the network
    disconnected to see the error message and the **Try Again** button.
-3. Check the device shown in the status bar and in Settings › System.
+3. Check the device shown in the status bar and in Settings › Recognition.
 4. Run the recording checklist from [TESTING.md](TESTING.md).
 5. Export to all five formats and open each file.
 6. Disconnect the network and repeat a recording.

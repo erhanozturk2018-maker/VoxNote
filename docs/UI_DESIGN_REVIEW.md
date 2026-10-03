@@ -6,6 +6,11 @@ interface does, where that can be seen, and what is still weak. The review
 is a self-assessment by the developer based on the implemented windows; it
 is not the result of a usability study with real users.
 
+Version 0.2.0 addressed several weaknesses of the first version: disabled
+buttons that were permanently on screen were removed, the microphone setting
+was no longer duplicated, the settings dialog stopped showing large empty
+areas, icons were added, and a Help window was introduced.
+
 | # | Rule | Assessment |
 | --- | --- | --- |
 | 1 | Strive for consistency | Good |
@@ -27,11 +32,17 @@ is not the result of a usability study with real users.
   light and the dark variant. A colour always means the same thing: red is
   recording or an error, amber is work in progress or a warning, green is
   success, blue is the accent and "ready".
-- Three button styles only: the red record button, the blue primary button
-  (confirming actions: *Save*), and neutral buttons for everything else.
+- Four button styles only: the red record button, the blue primary button
+  (confirming actions: *Save*), neutral buttons, and borderless icon buttons
+  for small secondary actions (refresh, open folder).
+- One icon set (`app/icons.py`) drawn in a single style and stroke width. The
+  same icon always means the same thing: the folder icon opens a folder
+  everywhere, the download arrow saves.
 - The same word is used for the same thing everywhere: "Save folder", "File
-  name", "Format" and "Microphone" are identical in the main window, the
-  Settings dialog and the documentation.
+  name" and "Format" are identical in the main window, the Settings dialog
+  and the documentation.
+- Each setting has one home. The microphone is chosen in the main window only
+  and is not repeated in Settings.
 - Buttons that open another dialog end with an ellipsis (*Change…*, *Browse…*,
   *Save As…*); buttons that act immediately do not.
 - Layout follows one pattern: label on the left, control in the middle,
@@ -53,6 +64,8 @@ is not the result of a usability study with real users.
 
 **What the interface does**
 
+- **Help is one key away.** `F1` opens answers to common questions in the
+  interface language.
 - **Novices** can ignore everything except two large buttons. The empty
   transcript area says what to do ("Press 'Start Recording' to begin").
   Sensible defaults mean no configuration is required.
@@ -61,7 +74,8 @@ is not the result of a usability study with real users.
   shown in the tooltips so they can be discovered. Microphone, format and
   folder can be changed in the main window without opening Settings.
 - **Advanced users** find the speech-detection parameters in Settings, each
-  with a plain-language explanation.
+  with a plain-language explanation. The four rarely needed ones are folded
+  away under "Advanced options" so they do not burden everyone else.
 - **International users:** six interface languages, with the interface
   language independent of the spoken language. Decimal separators and number
   formatting follow the system locale. Dates in file names and exports use
@@ -107,8 +121,9 @@ is not the result of a usability study with real users.
   loading) next to an activity indicator.
 - **The transcript grows utterance by utterance**, with the language and the
   time of each line.
-- **Results are explicit:** after saving, a green message shows the complete
-  path. Quick actions (copy, folder changed, settings saved) are confirmed in
+- **Results are explicit:** after saving, a green message with a check mark
+  shows the complete path. Messages carry an icon for their kind (information,
+  success, warning, error) in addition to their colour. Quick actions (copy, folder changed, settings saved) are confirmed in
   the status bar.
 - **Problems are explained in plain language**, with the likely cause and
   the next step ("Check that it is not muted and that Windows allows desktop
@@ -134,9 +149,9 @@ is not the result of a usability study with real users.
 
 - A session has a clear beginning, middle and end:
   **Ready → Recording → Processing speech → Saving file → Completed.**
-  The final state is named "Completed", shown in green, with the saved file's
-  path and the buttons for the obvious next steps (*Open File*, *Open
-  Folder*).
+  The final state is named "Completed", shown in green, and the saved-file
+  message itself contains the buttons for the obvious next steps (*Open File*,
+  *Open Folder*).
 - A session without speech also ends clearly: "No speech was detected, so no
   file was created."
 - Settings end with *Save* or *Cancel*, followed by "Settings saved." in the
@@ -159,7 +174,7 @@ is not the result of a usability study with real users.
 - **Impossible actions are disabled, not punished.** *Start* is disabled
   while recording or processing; *Stop* is disabled when nothing is
   recording; Settings and the microphone list are locked during a session;
-  *Open File* is disabled until a file exists. A second recording cannot be
+  *Open File* is not offered until there is a file to open. A second recording cannot be
   started.
 - **Selection instead of typing** wherever possible: microphone, format,
   language and device are lists; the folder is chosen with the system folder
@@ -189,6 +204,9 @@ is not the result of a usability study with real users.
   deliberate privacy choice (the microphone is opened only between Start and
   Stop), and a silent microphone is reported after three seconds, but a
   dedicated "test microphone" action would prevent wasted recordings.
+- Recognition errors themselves cannot be prevented by the interface. The
+  language restriction and the vocabulary list reduce them, but the user has
+  to know they exist; the Help window points to them.
 - Advanced speech-detection values can be set to combinations that work
   poorly (for example a very high sensitivity threshold); only ranges are
   enforced.
@@ -231,7 +249,8 @@ is not the result of a usability study with real users.
 - **The user decides where files go**, what they are called and which format
   they have, and can change each of these at any time, including after the
   recording.
-- **The device can be chosen** (automatic, GPU, CPU) instead of being imposed.
+- **The device and the speech model can be chosen** instead of being imposed,
+  and so can the languages recognition may use.
 - **No modal interruptions for information.** Notices and errors appear
   inline and never block input. Modal questions are reserved for three
   decisions that must not be skipped.
@@ -255,7 +274,8 @@ is not the result of a usability study with real users.
 **What the interface does**
 
 - **Everything relevant to the next recording is visible at once:** which
-  microphone, which folder, which format, which file name, which device.
+  microphone, which folder, which format, which file name, which model and
+  device.
   Nothing has to be remembered from the Settings dialog.
 - **Recognition over recall:** options are chosen from lists; the file name
   placeholders are listed under the template field; the preview shows the
@@ -266,7 +286,8 @@ is not the result of a usability study with real users.
 - **Preferences persist** between sessions.
 - The main window has a small number of grouped areas (recorder, transcript,
   output) in the order of the workflow; Settings is split into three tabs of
-  at most eight items.
+  at most five visible items, and the window is only as tall as the selected
+  tab.
 - Shortcuts do not have to be memorised: they are shown in tooltips.
 
 **Weaknesses**

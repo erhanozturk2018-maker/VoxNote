@@ -72,7 +72,9 @@ developer who is new to the code base.
 | --- | --- | --- |
 | `main.py` | Start-up: logging, theme, settings, controller, window | yes |
 | `app/main_window.py` | Main window; shows state, never does blocking work | yes |
-| `app/settings_dialog.py` | Settings form with validation | yes |
+| `app/settings_dialog.py` | Settings form with validation; language chooser | yes |
+| `app/help_dialog.py` | Questions and answers, About page | yes |
+| `app/icons.py` | Vector icons rendered in the theme colours | yes |
 | `app/theme.py` | Colour tokens and style sheet (light and dark) | yes |
 | `app/recording_controller.py` | State machine; owns the model, the session and the workers | yes (signals) |
 | `app/workers.py` | Background threads | yes (signals) |
@@ -283,7 +285,13 @@ The resulting `DeviceInfo` (device, compute type, and the reason if the GPU
 is not used) is shown in the status bar and in Settings.
 
 The model is loaded once and reused for all sessions. It is reloaded only
-when the user changes the processing device.
+when the user changes the model or the processing device.
+
+**Models.** `app.MODELS` lists the selectable models (`small`, `medium`,
+`large-v3-turbo`) with their approximate download size, which is used for the
+disk-space check. `large-v3-turbo` is the default: in the developer's tests it
+recognised short Turkish and English utterances that `small` got wrong, at
+roughly twice the processing time on the GPU.
 
 **Recognising** (`Transcriber.transcribe`, on the `transcribe` thread), for
 each utterance:
@@ -301,9 +309,28 @@ Options and their reasons:
 | `condition_on_previous_text` | `False` | Each utterance stands alone. Feeding earlier text back causes repetition loops and pulls the next utterance towards the previous language. |
 | `vad_filter` | `False` | Segmentation was already done by the streaming VAD. |
 | `beam_size` | 5 | faster-whisper default. |
+| `temperature` | 0.0 | Deterministic beam search only; see below. |
+| `hotwords` | the user's vocabulary | Optional names and terms the decoder should favour. |
 | `no_speech_threshold` | 0.6 | Whisper default guard against silence. |
 | `log_prob_threshold` | −1.0 | Whisper default guard against low-confidence output. |
 | `compression_ratio_threshold` | 2.4 | Whisper default guard against repetitive output. |
+
+**No sampling fallback.** Whisper's default behaviour retries a poor result
+with random sampling at increasing temperatures. VoxNote decodes at
+temperature 0 only, for two reasons. First, sampling produces
+plausible-sounding text for unclear audio, which works against a faithful
+transcript. Second, with CTranslate2 4.7.1 on CUDA, a model that has run a
+sampling decode aborts the whole process when it is destroyed (observed on
+the development computer: exit code `0xC0000409` when the model was unloaded
+or the program ended). Since unloading happens whenever the user switches the
+model, this would have crashed the application. Without sampling the abort
+does not occur.
+
+**Vocabulary.** The names entered in Settings are passed as `hotwords`. They
+are formatted as a normally punctuated list (`Gesi, Erhan.`) because the
+decoder imitates the style of its prompt: a hint without punctuation made it
+drop the punctuation of the transcript in tests. The transcript is never
+edited after recognition.
 
 A recognised piece is dropped only if the model reports both a high
 no-speech probability and a low average log-probability, or if its
@@ -323,6 +350,11 @@ audio of that utterance.
 
 `LanguageTracker.decide(probabilities, duration)`:
 
+0. If the user ticked spoken languages (`LanguageTracker.allowed`), all other
+   languages are removed and the remaining probabilities are rescaled to sum
+   to one. Choosing between two or three languages is far more reliable than
+   choosing between a hundred. With one allowed language the decision is
+   fixed.
 1. If the top language is **confident** — probability at least 0.70, or at
    least 0.90 for utterances shorter than 1.5 seconds — use it.
 2. Otherwise, if the top language was not used in this session yet but an
@@ -411,8 +443,13 @@ each line. The cost is negligible at the rate of a few utterances per minute.
 - `theme.py` defines one set of colour tokens for light and one for dark and
   generates the style sheet from them; the variant follows the system colour
   scheme.
+- **Icons** (`icons.py`) are small SVG drawings stored as strings and rendered
+  with `QSvgRenderer` in the colour of the current theme, with a dimmed
+  variant for disabled controls. No image files or icon fonts are shipped.
+- The settings dialog sizes itself to the visible tab (`_fit_to_tab`), because
+  a `QTabWidget` is otherwise as tall as its tallest page.
 - Informational and error messages are shown inline (`Banner`), not in modal
-  dialogs. Modal dialogs are reserved for decisions that must not be skipped:
+  dialogs. A banner can carry actions, for example *Open File* after saving. Modal dialogs are reserved for decisions that must not be skipped:
   discarding an unsaved transcript, closing during a recording, and recovery.
 - **Strings.** `app/i18n/locales/<code>.py` each contain a dictionary.
   `tr(key, **values)` looks up the current language and falls back to
@@ -454,7 +491,7 @@ each line. The cost is negligible at the rate of a few utterances per minute.
 | Add an export format | See [EXPORT_FORMATS.md](EXPORT_FORMATS.md#adding-a-format) |
 | Add an interface language | Copy `app/i18n/locales/en.py`, translate, register in `app/i18n/__init__.py` and in `UI_LANGUAGES` (`settings_manager.py`) |
 | Add a setting | Field in `Settings`, range in `LIMITS` if numeric, control in `settings_dialog.py`, strings in every locale |
-| Support another Whisper model | `MODEL_NAME` in `app/__init__.py`; consider memory, download size and the disk-space check |
+| Offer another Whisper model | Add it to `MODELS` in `app/__init__.py` with its download size, and add a `settings.model.option.<name>` string to every locale |
 | Change segmentation | `VadProcessor` and its tests |
 
 ## Decisions and trade-offs

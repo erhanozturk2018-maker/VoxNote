@@ -26,18 +26,18 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_filename_template.py` | Template expansion, validation, sanitising of invalid characters, path traversal attempts, reserved Windows names, length limit, numeric suffixes for collisions |
 | `tests/test_settings.py` | Defaults, save and load round trip with non-ASCII text, atomic writing, corrupt and partial files, clamping of invalid values, data locations |
 | `tests/test_exporters.py` | Markdown, text, JSON (including schema validation and deliberately broken documents), DOCX and PDF read back from disk; Turkish characters in PDF; mixed scripts in one PDF; equivalent content across formats; empty transcripts; special characters; collisions; no overwriting; no leftover temporary files; failure handling |
-| `tests/test_language_tracker.py` | De-duplication and ordering of languages, confidence thresholds, avoiding unnecessary switches, never forcing an implausible language |
+| `tests/test_language_tracker.py` | De-duplication and ordering of languages, confidence thresholds, avoiding unnecessary switches, never forcing an implausible language, restriction to the user's spoken languages |
 | `tests/test_vad_processor.py` | Segmentation with a scripted detector: silence, pre-roll and post-roll, short and long pauses, minimum speech, hysteresis, flush on stop, maximum length, no overlapping or duplicated audio, independence from block size; resampler length and continuity |
 | `tests/test_session_journal.py` | Journal round trip, durability before close, truncated lines, deletion, unreadable files |
 | `tests/test_i18n.py` | Every language has exactly the keys and placeholders of the English table |
-| `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults |
+| `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`154 passed`.
+`163 passed`.
 
 ## Verification status
 
-Honest status of each area at version 0.1.0. "Verified" means it was actually
+Honest status of each area at version 0.2.0. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 
@@ -66,13 +66,40 @@ RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 | **Long sessions (30 minutes and more)** | **Not verified** | |
 | **Windows 10, other GPUs, CPU-only computers** | **Not verified** | |
 | **French, Italian and Russian interface texts** | **Not reviewed by native speakers** | Rendering was not checked on screen for these three |
-| **Packaged executable** | **Not built** | See [RELEASE.md](RELEASE.md) |
+| Packaged executable (`dist\VoxNote\VoxNote.exe`) | Verified on the development computer | Built with PyInstaller; started, loaded the model on the GPU and wrote its log |
+| Installer | See [RELEASE.md](RELEASE.md#status) | |
+| Large v3 Turbo model, language restriction, vocabulary | Verified with synthetic speech | See the comparison below |
+| **Medium model** | **Not verified** | Was not downloaded |
 | **Screen readers, high contrast** | **Not verified** | |
 
 Timing observed on the development computer with the synthetic test file
 (one run, not a benchmark): utterances of 1.8 to 4.1 seconds were recognised
 in about 0.2 seconds each on the GPU and about 3 seconds each on the CPU.
 Your numbers will differ; use the log file to measure them.
+
+### Model comparison
+
+One synthetic file (Windows text-to-speech, English and Turkish voices) was
+transcribed on the GPU with different settings. This is a single run on
+artificial speech, not a benchmark.
+
+| Spoken | Small | Large v3 Turbo | Turbo, languages `en,tr`, vocabulary `Gesi, Erhan` |
+| --- | --- | --- | --- |
+| I think I should speak more precisely, so you can understand me better. | correct | correct | correct |
+| Precisely. (single word) | wrong ("Regissade", Portuguese) | wrong ("Rediçade", Portuguese) | wrong ("Predissade", English) |
+| Accomplish. (single word) | wrong | wrong | wrong |
+| Gesi bağlarında dolanıyorum. | "Gizli bağlarında …" | "Gezi bağlarında …" | correct |
+| Evet. | wrong ("in it.", English) | correct | correct |
+| Kendimi iyi hissediyorum. | correct | correct | correct |
+| Okay, that's it. | correct | correct | correct |
+| Hayır. | wrong ("Olhe isso.", Portuguese) | correct | correct |
+| Languages reported | English, Turkish, Portuguese | English, Turkish, Portuguese | English, Turkish |
+| Time per utterance | about 0.2 s | about 0.5 s | about 0.5 s |
+
+What this shows: the larger model fixes short Turkish words, the language
+restriction removes the stray third language, the vocabulary fixes the place
+name, and isolated single English words from a synthetic voice stay wrong in
+every configuration.
 
 ## Pipeline test with an audio file
 
@@ -84,6 +111,7 @@ without speaking.
 ```powershell
 python tools/transcribe_file.py path\to\audio.wav
 python tools/transcribe_file.py path\to\audio.wav --device cpu
+python tools/transcribe_file.py path\to\audio.wav --model small --languages en,tr --vocabulary "Gesi, Erhan"
 ```
 
 Only 16-bit PCM WAV files are supported. To create a test file with the
@@ -131,7 +159,8 @@ observed.
 | A2 | Hover over **Start Recording** while the model loads | Tooltip explains that the model is loading |
 | A3 | Rename the model cache folder, disconnect the network, start VoxNote | A red message explains that the model could not be downloaded, with **Try Again**; the window stays usable |
 | A4 | Reconnect and press **Try Again** | Download progress in megabytes, then Ready |
-| A5 | Check **Settings › System** | Device, compute type and model location are correct |
+| A5 | Check **Settings › Recognition** | Model, device and compute type are correct; **Open Model Folder** opens the model |
+| A6 | Press **Help** (`F1`) | Questions and About are shown in the interface language |
 
 ### B. Recording workflow
 
@@ -181,6 +210,9 @@ observed.
 | D4 | **Permission.** Switch off microphone access for desktop apps in Windows, record | A message about the microphone or about silent input, mentioning the Windows setting |
 | D5 | No microphone connected at all | "No microphone was found" message; no crash |
 | D6 | Force **Processor (CPU)** in Settings | Status bar shows CPU; recording still works |
+| D8 | Switch the model in Settings after a recording, save | The model reloads (or downloads); no crash; the next recording works |
+| D9 | Tick only English and Turkish under Spoken languages, say short words in both | No other language appears in the transcript |
+| D10 | Add a name to "Names and special words" and say it in a sentence | The name is written as entered |
 | D7 | Fill the video memory with another program, then record | Falls back to CPU with a notice, or works; no crash |
 
 ### E. Application lifecycle

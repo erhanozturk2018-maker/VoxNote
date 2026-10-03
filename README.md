@@ -13,9 +13,10 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.1.0, pre-release.** The application runs from source and
-> its core workflow has been tested by the developer on one Windows 11 machine.
-> It has not been packaged, signed or tested on a range of computers yet. See
+> **Project status: 0.2.0, pre-release.** The application and its Windows
+> installer have been built and tested by the developer on one Windows 11
+> machine. The installer is not code-signed and has not been tested on a
+> range of computers yet. See
 > [Known limitations](#known-limitations) and [docs/RELEASE.md](docs/RELEASE.md).
 
 ## Contents
@@ -37,9 +38,15 @@ your choice.
 ## Features
 
 - **Local speech recognition** with [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
-  and the multilingual Whisper `small` model. No account, no subscription, no
-  cloud service.
-- **Works offline** after the model has been downloaded once (about 0.5 GB).
+  and multilingual Whisper models. No account, no subscription, no cloud
+  service.
+- **Three models to choose from:** Large v3 Turbo (default, most accurate),
+  Medium and Small.
+- **Works offline** after the chosen model has been downloaded once
+  (0.5 to 1.6 GB).
+- **Tools for better accuracy:** limit recognition to the languages you
+  actually speak, and list names or special terms that should be recognised
+  reliably.
 - **Voice activity detection** (Silero VAD): silence and background noise are
   not sent to the recogniser, so pauses do not produce invented text.
 - **Multilingual sessions.** The model transcribes 99 languages, among them
@@ -62,12 +69,14 @@ your choice.
 - **Interface in six languages:** English (default), Turkish, German, French,
   Italian and Russian. The interface language is independent of the language
   you speak.
-- **Keyboard shortcuts**, tooltips, light and dark appearance following the
-  system setting.
+- **Built-in help** with answers to common questions and an About page.
+- **Keyboard shortcuts**, tooltips, icons, light and dark appearance following
+  the system setting.
+- **Windows installer** with Start menu and desktop shortcuts.
 
 ## Spoken languages
 
-VoxNote is not limited to one or two languages. The Whisper `small` model is
+VoxNote is not limited to one or two languages. The Whisper models are
 multilingual, and VoxNote lets it decide the language separately for every
 utterance. You do not select a language anywhere: just speak.
 
@@ -84,7 +93,7 @@ and is exported like this (Markdown):
 - Languages: English, German, French, Turkish, Italian, Spanish, Russian
 - Duration: 00:00:36
 - Session ID: 3f9a1c2e
-- Model: Whisper small (faster-whisper)
+- Model: Whisper large-v3-turbo (faster-whisper)
 
 ## Transcript
 
@@ -147,6 +156,9 @@ What to expect:
   have not been tested individually with VoxNote yet. Reports are welcome.
 - **Switch languages between sentences, not inside them.** The language is
   chosen per utterance; make a short pause when you change language.
+- **Tell VoxNote which languages you speak.** In **Settings › Recognition ›
+  Spoken languages** you can tick, for example, English and Turkish. Short
+  phrases are then no longer mistaken for unrelated languages.
 - The interface language of the application (six languages) is a separate
   setting and has nothing to do with the languages you can speak.
 
@@ -160,13 +172,17 @@ in them is fixed sample text, not the result of a recognition run.
 | --- | --- |
 | ![Main window, ready to record](docs/images/main-ready.png) | ![Main window while recording](docs/images/main-recording.png) |
 
-| Completed | Settings |
+| Completed | Settings: General |
 | --- | --- |
 | ![Main window after saving](docs/images/main-completed.png) | ![Settings, General tab](docs/images/settings-general.png) |
 
-| Recording settings | System information |
+| Settings: Recognition | Settings: Recording |
 | --- | --- |
-| ![Settings, Recording tab](docs/images/settings-recording.png) | ![Settings, System tab](docs/images/settings-system.png) |
+| ![Settings, Recognition tab](docs/images/settings-recognition.png) | ![Settings, Recording tab](docs/images/settings-recording.png) |
+
+| Help: Questions and Answers | Help: About |
+| --- | --- |
+| ![Help window](docs/images/help-questions.png) | ![About page](docs/images/help-about.png) |
 
 | Turkish interface | German interface |
 | --- | --- |
@@ -191,7 +207,7 @@ in them is fixed sample text, not the result of a recognition run.
 | Processor | 64-bit, 4 cores | 6 or more cores |
 | Memory | 8 GB | 16 GB |
 | Graphics card | none (CPU mode) | NVIDIA GPU with CUDA 12 support and 4 GB or more VRAM |
-| Disk space | about 1.5 GB (application, dependencies and model) | add about 1.5 GB for the optional GPU libraries |
+| Disk space | about 3 GB (application, dependencies and the default model) | add about 1.5 GB for the optional GPU libraries |
 | Microphone | any input device Windows recognises | a headset or external microphone |
 
 The application was developed on a laptop with an NVIDIA RTX 3060 (6 GB
@@ -202,7 +218,13 @@ recognise, so you can measure it on your own machine (see
 
 ## Installation summary
 
-You need Python 3.11 (the tested version; 3.10 and 3.12 are expected to
+**With the installer:** run `VoxNote-Setup-<version>.exe`. It installs for the
+current user without administrator rights and creates Start menu and desktop
+shortcuts. The installer is built with `tools\build_release.ps1`
+(see [docs/RELEASE.md](docs/RELEASE.md)); it is not code-signed, so Windows
+may show a warning.
+
+**From source:** you need Python 3.11 (the tested version; 3.10 and 3.12 are expected to
 work). In PowerShell:
 
 ```powershell
@@ -230,14 +252,16 @@ Full instructions, including GPU requirements and first-run behaviour, are in
 python main.py
 ```
 
-1. On the first start the speech model is downloaded. This needs an internet
-   connection once; the status bar at the bottom shows the progress.
+1. On the first start the speech model is downloaded (about 1.6 GB for the
+   default model). This needs an internet connection once; the status bar at
+   the bottom shows the progress.
 2. When the status shows **Ready**, choose your microphone if needed.
 3. Press **Start Recording** (`Ctrl+R`) and speak.
 4. Press **Stop Recording** (`Ctrl+E`). Remaining speech is processed and
    the transcript is saved automatically.
 5. Use **Open File** or **Open Folder** to get to the document.
 
+Press **Help** (`F1`) inside the application for answers to common questions.
 The complete guide is in [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 
 ## Export formats
@@ -260,7 +284,7 @@ ID, model) and the same transcript. Example Markdown output:
 - Languages: English, Turkish
 - Duration: 00:05:24
 - Session ID: 3f9a1c2e
-- Model: Whisper small (faster-whisper)
+- Model: Whisper large-v3-turbo (faster-whisper)
 
 ## Transcript
 
@@ -294,9 +318,12 @@ every place where data is written to disk.
 
 ## Known limitations
 
-- **Only the Whisper `small` model is supported.** It is a compromise between
-  speed and accuracy; it makes mistakes, especially with names, accents,
-  noise and overlapping speakers.
+- **Recognition is not perfect.** Even the largest model makes mistakes,
+  especially with names, accents, noise and overlapping speakers. A single
+  word spoken on its own is recognised far less reliably than a sentence.
+- **VoxNote is not a pronunciation checker.** A mispronounced word is written
+  as the nearest word the model knows, or as nonsense. Larger models are more
+  likely to write the word that was meant.
 - **Language switching is detected per utterance, not per word.** A sentence
   that mixes two languages is written in one of them, and Whisper may then
   translate the foreign words instead of transcribing them.
@@ -309,8 +336,8 @@ every place where data is written to disk.
 - **PDF export** does not shape right-to-left or complex scripts (Arabic,
   Hebrew, Indic scripts) correctly. Use DOCX, Markdown, TXT or JSON for these.
 - **Punctuation and capitalisation come from the model** and can vary.
-- **Not yet packaged.** There is no installer or signed executable; the
-  application is started from source with Python.
+- **The installer is not code-signed.** Windows SmartScreen or Smart App
+  Control may warn about it or block it on other computers.
 - **Tested on a single computer.** See [docs/TESTING.md](docs/TESTING.md) for
   what was verified and what was not.
 
@@ -341,7 +368,8 @@ Useful scripts:
 | --- | --- |
 | `python tools/transcribe_file.py audio.wav` | Run a WAV file through the same VAD and recognition pipeline as the application |
 | `python tools/make_screenshots.py` | Re-render the screenshots in `docs/images` |
-| `python tools/make_icon.py` | Re-generate the application icon in `assets` |
+| `python tools/make_icon.py` | Re-generate the application icon and installer artwork in `assets` |
+| `.\tools\build_release.ps1` | Run the tests, build `VoxNote.exe` and the installer |
 
 Project layout:
 
@@ -365,14 +393,18 @@ VoxNote/
 │   ├── recording_controller.py State machine
 │   ├── workers.py              Background threads
 │   ├── main_window.py          Main window
-│   ├── settings_dialog.py      Settings dialog
+│   ├── settings_dialog.py      Settings dialog and language chooser
+│   ├── help_dialog.py          Questions and answers, About
+│   ├── icons.py                Vector icons
 │   ├── theme.py                Colours and style sheet
 │   ├── i18n/                   Interface translations
 │   ├── language_names.py       Names of spoken languages
 │   ├── logging_config.py       Log file setup
 │   ├── paths.py                User data locations
 │   └── resources.py            Bundled file locations
-├── assets/                     Icon and interface images
+├── assets/                     Icon, interface and installer images
+├── installer/                  Inno Setup script
+├── VoxNote.spec                PyInstaller build description
 ├── docs/                       Documentation and screenshots
 ├── tests/                      Automated tests
 └── tools/                      Developer scripts

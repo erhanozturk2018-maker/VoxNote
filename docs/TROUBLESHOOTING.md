@@ -7,6 +7,7 @@
 - [Recognition quality](#recognition-quality)
 - [File export problems](#file-export-problems)
 - [Installation and dependency problems](#installation-and-dependency-problems)
+- [Installer problems](#installer-problems)
 - [Application behaviour](#application-behaviour)
 - [Reporting a problem](#reporting-a-problem)
 
@@ -16,7 +17,8 @@ VoxNote writes technical details to a log file. Messages in the application
 are kept short on purpose; the log has the full error text.
 
 - Location: `%LOCALAPPDATA%\VoxNote\logs\voxnote.log`
-- Open the folder from **Settings › System › Open Log Folder**, or run:
+- Open the folder from **Settings › Recognition › Open Log Folder** or
+  **Help › About**, or run:
 
   ```powershell
   notepad "$env:LOCALAPPDATA\VoxNote\logs\voxnote.log"
@@ -40,11 +42,12 @@ numbers above only illustrate the format; they are not measurements.)
 
 ### "No microphone was found"
 
-- Connect a microphone and press **Refresh**.
+- Connect a microphone and press the refresh button (the circular arrow next
+  to the microphone list).
 - Check **Windows Settings › System › Sound › Input**: the device must be
   listed and enabled.
-- USB and Bluetooth devices can take a few seconds to appear; press
-  **Refresh** again.
+- USB and Bluetooth devices can take a few seconds to appear; press the
+  refresh button again.
 
 ### "The microphone could not be opened"
 
@@ -53,8 +56,8 @@ numbers above only illustrate the format; they are not measurements.)
   access your microphone*.
 - **Exclusive use.** Close other programs that may hold the microphone
   exclusively (conferencing or recording software).
-- **Device disappeared.** Press **Refresh** and select the device again, or
-  choose *System default microphone*.
+- **Device disappeared.** Press the refresh button and select the device
+  again, or choose *System default microphone*.
 
 ### The level meter does not move / "The microphone delivers only silence"
 
@@ -69,7 +72,7 @@ numbers above only illustrate the format; they are not measurements.)
 
 The device was unplugged, switched off or lost its Bluetooth connection.
 Everything spoken before that moment has been transcribed and saved.
-Reconnect the device, press **Refresh** and start a new recording.
+Reconnect the device, press the refresh button and start a new recording.
 
 ### Nothing is transcribed although the meter moves
 
@@ -102,14 +105,15 @@ starts.
 
 - If `huggingface.co` is blocked on your network, download the model on
   another computer by starting VoxNote there once, then copy the folder
-  `%USERPROFILE%\.cache\huggingface\hub\models--Systran--faster-whisper-small`
+  `%USERPROFILE%\.cache\huggingface\hub\models--mobiuslabsgmbh--faster-whisper-large-v3-turbo`
   to the same location on the target computer.
 - An interrupted download continues with the missing files on the next
   attempt.
 
 ### "There is not enough free disk space to download the speech model"
 
-VoxNote requires about 1 GB free on the drive that holds the Hugging Face
+VoxNote requires the size of the model plus 0.5 GB (about 2 GB for the
+default model) free on the drive that holds the Hugging Face
 cache (normally `C:`). Free some space, or move the cache to another drive
 by setting `HF_HOME` before starting:
 
@@ -127,7 +131,7 @@ Windows.
   Delete the model folder and start VoxNote again to download it afresh:
 
   ```powershell
-  Remove-Item -Recurse "$HOME\.cache\huggingface\hub\models--Systran--faster-whisper-small"
+  Remove-Item -Recurse "$HOME\.cache\huggingface\hub\models--mobiuslabsgmbh--faster-whisper-large-v3-turbo"
   ```
 
 - The computer may be out of memory. Close other programs.
@@ -147,7 +151,8 @@ ImportError: DLL load failed while importing _ext: An Application Control policy
 
 This is exactly what happened during development with CTranslate2 4.8.2;
 version 4.7.1 loaded normally on the same computer, which is why
-`requirements.txt` limits the version. What you can do:
+`requirements.txt` limits the version. The packaged application contains
+4.7.1. What you can do:
 
 1. Install the tested version:
 
@@ -174,8 +179,8 @@ If the log mentions `VCRUNTIME140.dll` or `MSVCP140.dll`, install the
 ## GPU and CUDA problems
 
 VoxNote never fails because of the graphics card: if the GPU cannot be used
-it continues on the CPU. **Settings › System › Currently used** shows the
-device and the reason.
+it continues on the CPU. **Settings › Recognition** shows the device in use
+and the reason below "Processing device".
 
 ### "…no compatible NVIDIA graphics card was found"
 
@@ -213,14 +218,18 @@ Another program is using the video memory (a game, a browser with hardware
 acceleration, another AI tool).
 
 - Close such programs and restart VoxNote, or
-- select **Processor (CPU)** in **Settings › System › Processing device**.
+- select **Processor (CPU)** in **Settings › Recognition › Processing
+  device**, or
+- choose a smaller model in **Settings › Recognition › Speech model**.
 
 If the memory runs out in the middle of a session, VoxNote reloads the model
 on the CPU, repeats the affected utterance and continues. You see the notice
 "The graphics card could not be used any more…".
 
-The `small` model needs well under 6 GB of video memory, but no exact figure
-is stated here because it has not been measured systematically.
+The Small and the Large v3 Turbo model ran on the 6 GB graphics card of the
+development computer; Medium was not tried.
+No exact memory figures are stated here because they have not been measured
+systematically.
 
 ### Checking what CTranslate2 sees
 
@@ -232,12 +241,27 @@ python -c "import ctranslate2; print(ctranslate2.__version__, ctranslate2.get_cu
 
 ### Words are wrong
 
-The `small` model is a compromise between speed and accuracy. Quality
-improves with a close microphone, a quiet room, clear articulation and
-complete sentences.
+In order of effect:
+
+1. **Use the Large v3 Turbo model** (**Settings › Recognition › Speech
+   model**). It is the default; Small and Medium are less accurate.
+2. **Speak in sentences.** A single word on its own gives the model no
+   context and is often written wrongly, whatever the model.
+3. **Add names and special terms** to **Settings › Recognition › Names and
+   special words**, separated by commas (for example `Gesi, Kayseri`). In the
+   developer's test, the place name "Gesi" was written "Gizli" by the Small
+   model and "Gezi" by the large one, and correctly by both once it was
+   listed there.
+4. **Use a headset** or a microphone close to your mouth, in a quiet room.
+
+VoxNote does not check pronunciation. A word that is pronounced unclearly is
+written as the nearest word the model knows.
 
 ### The wrong language is detected
 
+- **Tick the languages you speak** in **Settings › Recognition › Spoken
+  languages**. The model then only chooses between those, which removes
+  stray detections such as Arabic, Swedish or Portuguese for short phrases.
 - Very short utterances are the usual cause. Speak a full sentence.
 - Pause when switching languages so each language gets its own utterance.
 - A strong accent can make the model lean towards another language.
@@ -258,7 +282,9 @@ Increase **Pause that ends a segment** (for example to 1200 ms).
 
 ### The transcript appears late
 
-- In CPU mode recognition can take about as long as the speech itself.
+- In CPU mode recognition can take as long as the speech itself, or longer
+  with the large model. Choose the Small model on computers without a
+  supported graphics card.
 - An utterance is recognised only when it ends. Lowering **Pause that ends a
   segment** makes utterances end sooner, so text appears earlier.
 
@@ -350,6 +376,33 @@ The `sounddevice` package could not load its PortAudio library. Reinstall it:
 ```powershell
 pip install --force-reinstall sounddevice
 ```
+
+## Installer problems
+
+### Windows warns about the installer or refuses to run it
+
+`VoxNote-Setup-<version>.exe` is not code-signed. SmartScreen may show
+"Windows protected your PC"; Smart App Control may block it outright. Whether
+to run an unsigned program is your decision. Running VoxNote from source
+([INSTALLATION.md](INSTALLATION.md)) avoids the installer entirely.
+
+### The uninstaller is blocked
+
+On a computer with Smart App Control switched on, removing VoxNote through
+**Windows Settings › Apps** can fail with "An Application Control policy has
+blocked this file", because the uninstaller is unsigned. Remove VoxNote by
+hand instead:
+
+1. Close VoxNote.
+2. Delete the installation folder, by default
+   `%LOCALAPPDATA%\Programs\VoxNote`.
+3. Delete the desktop shortcut and the `VoxNote` folder in the Start menu
+   (`%APPDATA%\Microsoft\Windows\Start Menu\Programs\VoxNote`).
+4. The entry in the list of installed apps can be removed by deleting the
+   registry key
+   `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall\{6B0C2F4E-5C0A-4B55-9A77-3E1E1B0C7D21}_is1`.
+
+Your settings, transcripts and downloaded models are not affected.
 
 ## Application behaviour
 

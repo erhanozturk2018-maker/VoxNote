@@ -14,7 +14,7 @@ it uses the network for, so that the claim can be checked against the code.
 | Is an account or licence check required? | No. |
 | Does the application open a network port or run a server? | No. |
 | Does it use an online AI or transcription service? | No. Recognition runs locally. |
-| When is the network used? | To install the Python packages, and once to download the speech model. |
+| When is the network used? | To install the application, and once per speech model to download it. |
 | Is microphone audio stored on disk? | No, unless you enable the debugging option. |
 
 ## What stays on your computer
@@ -52,7 +52,9 @@ it uses the network for, so that the claim can be checked against the code.
 
 `%APPDATA%\VoxNote\settings.json` contains your preferences: interface
 language, save folder, file name template, export format, the name of the
-selected microphone and the recording options. It contains no transcript
+selected microphone, the recording options, the selected model, the spoken
+languages you ticked and the names you entered under "Names and special
+words". It contains no transcript
 text and no audio.
 
 ### Log files
@@ -81,9 +83,9 @@ deliberately left empty.
 
 ### 2. Downloading the speech model (first start only)
 
-When the model is not yet on the computer, VoxNote downloads it from the
-Hugging Face Hub (`huggingface.co`, repository
-`Systran/faster-whisper-small`).
+When the selected model is not yet on the computer, VoxNote downloads it from
+the Hugging Face Hub (`huggingface.co`). This happens on the first start and
+again only if you select a different model in Settings.
 
 - As with any download, the server sees your IP address and standard request
   headers. No audio, transcript or personal data from VoxNote is part of the
@@ -97,7 +99,9 @@ Hugging Face Hub (`huggingface.co`, repository
 ### Nothing else
 
 There is no update check, no error reporting, no advertising and no
-third-party service. You can verify offline operation by disconnecting the
+third-party service. The **Project Website** button on the About page opens
+the project page in your web browser; that is your browser's connection, made
+only when you press the button. You can verify offline operation by disconnecting the
 computer from the network after the first start: recording, recognition and
 export keep working.
 
@@ -135,7 +139,7 @@ networking features.
 | Retained audio | **Settings › Recording › Open Audio Folder**, then delete the files |
 | Logs | Delete `%LOCALAPPDATA%\VoxNote\logs` |
 | Settings | Delete `%APPDATA%\VoxNote` |
-| Speech model | Delete the folder shown in **Settings › System › Model location** |
+| Speech model | **Settings › Recognition › Open Model Folder**, then delete the model's folder |
 
 ## Verifying these statements
 

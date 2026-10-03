@@ -50,7 +50,7 @@ contain the same information.
 | Languages | `English, Turkish` | Distinct languages of the session, ordered by first confident detection; `None detected` for an empty session |
 | Duration | `00:05:24` | Length of the recording, including silence |
 | Session ID | `3f9a1c2e` | Random identifier of the session |
-| Model | `Whisper small (faster-whisper)` | Speech model that produced the transcript |
+| Model | `Whisper large-v3-turbo (faster-whisper)` | Speech model that produced the transcript |
 
 JSON additionally records the UTC offset of the start time, the language
 codes, and the device and number format the model ran on.
@@ -64,7 +64,7 @@ codes, and the device and number format the model ran on.
 - Languages: English, Turkish
 - Duration: 00:05:24
 - Session ID: 3f9a1c2e
-- Model: Whisper small (faster-whisper)
+- Model: Whisper large-v3-turbo (faster-whisper)
 
 ## Transcript
 
@@ -98,7 +98,7 @@ Date: 2026-10-03 14:30:00
 Languages: English, Turkish
 Duration: 00:05:24
 Session ID: 3f9a1c2e
-Model: Whisper small (faster-whisper)
+Model: Whisper large-v3-turbo (faster-whisper)
 
 Transcript
 ----------
@@ -121,7 +121,7 @@ Transcript
   "schema_version": 1,
   "application": {
     "name": "VoxNote",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "session": {
     "id": "3f9a1c2e",
@@ -129,7 +129,7 @@ Transcript
     "duration_seconds": 324.0,
     "languages": ["en", "tr"],
     "language_names": ["English", "Turkish"],
-    "model": "small",
+    "model": "large-v3-turbo",
     "device": "cuda",
     "compute_type": "float16"
   },
@@ -184,7 +184,7 @@ Top level:
 | `duration_seconds` | number | Length of the recording in seconds, including silence. Not negative. |
 | `languages` | array of strings | Distinct language codes as used by Whisper (for example `en`, `tr`), ordered by first confident detection. |
 | `language_names` | array of strings | English names for `languages`, in the same order. |
-| `model` | string | Name of the Whisper model. |
+| `model` | string | Name of the Whisper model: `small`, `medium` or `large-v3-turbo`. |
 | `device` | string | `cuda` or `cpu`. May be empty for a recovered session. |
 | `compute_type` | string | Number format used for inference, for example `float16` or `int8`. May be empty. |
 
