@@ -69,6 +69,8 @@ RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 | Packaged executable (`dist\VoxNote\VoxNote.exe`) | Verified on the development computer | Built with PyInstaller; started, loaded the model on the GPU and wrote its log |
 | Installer | See [RELEASE.md](RELEASE.md#status) | |
 | Large v3 Turbo model, language restriction, vocabulary | Verified with synthetic speech | See the comparison below |
+| Switching the model in the running application | Verified | Recorded, switched from Large v3 Turbo to Small through the settings path, recorded again, closed with exit code 0 |
+| Destroying a GPU model after decoding | Verified | With sampling fallback the process aborted (`0xC0000409`); with deterministic decoding it does not |
 | **Medium model** | **Not verified** | Was not downloaded |
 | **Screen readers, high contrast** | **Not verified** | |
 
