@@ -72,7 +72,7 @@ STRINGS = {
 
     "error.unknown": "Bir sorun oluştu. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
     "error.settings_save_failed": "Ayarlar kaydedilemedi: {detail}",
-    "error.no_microphone": "Mikrofon bulunamadı. Bir mikrofon bağlayın ve “Yenile” düğmesine basın.",
+    "error.no_microphone": "Mikrofon bulunamadı. Bir mikrofon bağlayın ve mikrofon listesinin yanındaki yenile düğmesine basın.",
     "error.microphone_open_failed": "Mikrofon açılamadı. Başka bir programın mikrofonu tek başına kullanmadığından ve Windows'un masaüstü uygulamalarına mikrofon izni verdiğinden emin olun (Ayarlar › Gizlilik ve güvenlik › Mikrofon).",
     "error.audio_backend_unavailable": "Bu bilgisayarda ses kaydı kullanılamıyor. Ayrıntılar günlük dosyasına yazıldı:\n{log}",
     "error.engine_blocked_by_policy": "Windows konuşma tanıma motorunu engelledi (Akıllı Uygulama Denetimi veya başka bir uygulama denetim ilkesi). Belgelerdeki “Troubleshooting” bölümüne bakın.",

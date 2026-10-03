@@ -36,6 +36,12 @@ FREE_SPACE_MARGIN_BYTES = 500_000_000
 NO_SPEECH_PROBABILITY = 0.6
 LOW_CONFIDENCE_LOGPROB = -1.0
 MAX_COMPRESSION_RATIO = 2.4
+# Decode deterministically (beam search only). Whisper's default retries
+# with random sampling at higher temperatures when the first result looks
+# poor. That is avoided for two reasons: sampling invents plausible-sounding
+# text for unclear audio, and with CTranslate2 on CUDA a model that has run a
+# sampling decode aborts the process when it is destroyed.
+DECODE_TEMPERATURE = 0.0
 
 
 class TranscriberError(Exception):
@@ -262,7 +268,9 @@ class Transcriber:
                 # the failure only shows on first use. Run one tiny inference
                 # so problems surface here, where falling back is possible.
                 silence = np.zeros(SAMPLE_RATE, dtype=np.float32)
-                segments, _ = model.transcribe(silence, language="en", beam_size=1)
+                segments, _ = model.transcribe(
+                    silence, language="en", beam_size=1, temperature=DECODE_TEMPERATURE
+                )
                 list(segments)
             except Exception as exc:
                 last_error = exc
@@ -310,6 +318,17 @@ class Transcriber:
             result.seconds = time.perf_counter() - started
             return result
 
+    def _hotwords(self) -> str | None:
+        """The vocabulary as a decoder hint.
+
+        Written as a normally punctuated list: the decoder imitates the style
+        of its prompt, and a hint without punctuation makes it drop the
+        punctuation of the transcript as well.
+        """
+        terms = [term.strip(" .") for term in self.vocabulary.split(",")]
+        terms = [term for term in terms if term]
+        return ", ".join(terms) + "." if terms else None
+
     def _recognize(self, audio: np.ndarray, tracker: LanguageTracker) -> UtteranceResult:
         model = self._model
         duration = len(audio) / SAMPLE_RATE
@@ -332,7 +351,8 @@ class Transcriber:
             no_speech_threshold=NO_SPEECH_PROBABILITY,
             log_prob_threshold=LOW_CONFIDENCE_LOGPROB,
             compression_ratio_threshold=MAX_COMPRESSION_RATIO,
-            hotwords=self.vocabulary.strip() or None,
+            hotwords=self._hotwords(),
+            temperature=DECODE_TEMPERATURE,
         )
 
         result = UtteranceResult(decision)

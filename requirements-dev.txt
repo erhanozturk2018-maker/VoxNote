@@ -5,3 +5,5 @@
 pytest>=8
 # Used by the tests to read generated PDF files back.
 pypdf>=4
+# Builds the Windows executable (see docs/RELEASE.md).
+pyinstaller>=6

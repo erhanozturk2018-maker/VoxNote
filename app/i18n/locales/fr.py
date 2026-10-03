@@ -72,7 +72,7 @@ STRINGS = {
 
     "error.unknown": "Un problème est survenu. Les détails ont été écrits dans le fichier journal :\n{log}",
     "error.settings_save_failed": "Les paramètres n'ont pas pu être enregistrés : {detail}",
-    "error.no_microphone": "Aucun microphone n'a été trouvé. Connectez un microphone et cliquez sur « Actualiser ».",
+    "error.no_microphone": "Aucun microphone n'a été trouvé. Connectez un microphone et cliquez sur le bouton d'actualisation à côté de la liste des microphones.",
     "error.microphone_open_failed": "Le microphone n'a pas pu être ouvert. Vérifiez qu'aucun autre programme ne l'utilise en mode exclusif et que Windows autorise les applications de bureau à utiliser le microphone (Paramètres › Confidentialité et sécurité › Microphone).",
     "error.audio_backend_unavailable": "L'enregistrement audio n'est pas disponible sur cet ordinateur. Les détails ont été écrits dans le fichier journal :\n{log}",
     "error.engine_blocked_by_policy": "Windows a bloqué le moteur de reconnaissance vocale (Smart App Control ou une autre stratégie de contrôle des applications). Consultez « Troubleshooting » dans la documentation.",

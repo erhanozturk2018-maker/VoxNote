@@ -72,7 +72,7 @@ STRINGS = {
 
     "error.unknown": "Etwas ist schiefgelaufen. Details wurden in die Protokolldatei geschrieben:\n{log}",
     "error.settings_save_failed": "Die Einstellungen konnten nicht gespeichert werden: {detail}",
-    "error.no_microphone": "Es wurde kein Mikrofon gefunden. Schließen Sie ein Mikrofon an und klicken Sie auf „Aktualisieren“.",
+    "error.no_microphone": "Es wurde kein Mikrofon gefunden. Schließen Sie ein Mikrofon an und klicken Sie auf die Aktualisieren-Schaltfläche neben der Mikrofonliste.",
     "error.microphone_open_failed": "Das Mikrofon konnte nicht geöffnet werden. Stellen Sie sicher, dass kein anderes Programm es exklusiv verwendet und dass Windows Desktop-Apps den Zugriff auf das Mikrofon erlaubt (Einstellungen › Datenschutz und Sicherheit › Mikrofon).",
     "error.audio_backend_unavailable": "Audioaufnahme ist auf diesem Computer nicht verfügbar. Details wurden in die Protokolldatei geschrieben:\n{log}",
     "error.engine_blocked_by_policy": "Windows hat die Spracherkennung blockiert (Smart App Control oder eine andere Richtlinie zur Anwendungssteuerung). Siehe „Troubleshooting“ in der Dokumentation.",

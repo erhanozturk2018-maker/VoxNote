@@ -72,7 +72,7 @@ STRINGS = {
 
     "error.unknown": "Something went wrong. Details were written to the log file:\n{log}",
     "error.settings_save_failed": "The settings could not be saved: {detail}",
-    "error.no_microphone": "No microphone was found. Connect a microphone and press “Refresh”.",
+    "error.no_microphone": "No microphone was found. Connect a microphone and press the refresh button next to the microphone list.",
     "error.microphone_open_failed": "The microphone could not be opened. Make sure no other program uses it exclusively and that Windows allows desktop apps to use the microphone (Settings › Privacy & security › Microphone).",
     "error.audio_backend_unavailable": "Audio recording is not available on this computer. Details were written to the log file:\n{log}",
     "error.engine_blocked_by_policy": "Windows blocked the speech recognition engine (Smart App Control or another application control policy). See “Troubleshooting” in the documentation.",

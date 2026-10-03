@@ -95,6 +95,9 @@ def main() -> int:
             f"audio={segment.duration_seconds:.1f}s took={result.seconds:.2f}s: {text}"
         )
     print(f"Languages: {language_list(tracker.languages) or '-'}")
+    # Release the model before the interpreter shuts down; destroying a GPU
+    # model during interpreter teardown can crash inside the CUDA libraries.
+    transcriber.unload()
     return 0
 
 
