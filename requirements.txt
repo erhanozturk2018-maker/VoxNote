@@ -1,0 +1,15 @@
+# Runtime dependencies. Install with:  pip install -r requirements.txt
+# These are sufficient for CPU transcription. For NVIDIA GPU acceleration
+# also install requirements-gpu.txt.
+
+PySide6>=6.6,<7
+faster-whisper>=1.1,<2
+# CTranslate2 is the inference engine behind faster-whisper. Versions 4.5+
+# need cuDNN 9 for GPU use. 4.7.1 is the version the application was tested
+# with; see docs/TROUBLESHOOTING.md ("Windows blocked the speech recognition
+# engine") before raising the upper bound.
+ctranslate2>=4.5,<=4.7.1
+sounddevice>=0.4.6
+numpy>=1.26
+python-docx>=1.1
+reportlab>=4.0

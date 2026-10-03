@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Packaging output
+build/
+dist/
+*.spec.bak
+
+# Editor / tooling (local only)
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Local runtime data: never commit recordings, transcripts, logs or models
+*.wav
+*.log
+*.part
+/sessions/
+/models/
+/exports/

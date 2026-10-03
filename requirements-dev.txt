@@ -1,0 +1,7 @@
+# Development and test dependencies. Install with:
+#   pip install -r requirements-dev.txt
+
+-r requirements.txt
+pytest>=8
+# Used by the tests to read generated PDF files back.
+pypdf>=4

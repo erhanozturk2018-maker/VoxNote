@@ -1,0 +1,10 @@
+# Optional: NVIDIA GPU acceleration (CUDA 12). Install with:
+#   pip install -r requirements-gpu.txt
+#
+# These wheels contain the cuBLAS and cuDNN runtime libraries that
+# CTranslate2 needs. Together with an up-to-date NVIDIA graphics driver they
+# replace a system-wide CUDA Toolkit / cuDNN installation.
+# Download size is roughly 1.2 GB.
+
+nvidia-cublas-cu12
+nvidia-cudnn-cu12>=9,<10
