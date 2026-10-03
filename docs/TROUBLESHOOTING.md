@@ -398,9 +398,12 @@ leaves you one. Alternatives:
 
 - Run VoxNote from source ([INSTALLATION.md](INSTALLATION.md)); no unsigned
   program of ours is involved.
-- If you built VoxNote yourself, install the built folder with
-  `tools\install_local.ps1`
+- If you have the project folder with its virtual environment, create
+  shortcuts that start VoxNote through Python:
+  `.\tools\install_local.ps1 -FromSource`
   (see [RELEASE.md](RELEASE.md#local-installation-without-the-installer)).
+  Copying the built `VoxNote.exe` to another folder is not reliable: Smart
+  App Control may block the copy even though the original runs.
 
 The permanent fix is a signed release; the options are listed in
 [RELEASE.md](RELEASE.md#distribution-without-security-warnings).

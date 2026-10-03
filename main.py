@@ -26,6 +26,16 @@ def main() -> int:
     from app.settings_manager import SettingsManager
     from app.theme import apply_theme, set_mode
 
+    if sys.platform == "win32":
+        # Gives the window its own taskbar entry and icon when the
+        # application is started through python.exe instead of VoxNote.exe.
+        try:
+            import ctypes
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("VoxNote.Desktop")
+        except Exception:
+            pass
+
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setApplicationDisplayName(APP_NAME)

@@ -384,7 +384,7 @@ Useful scripts:
 | `python tools/make_screenshots.py` | Re-render the screenshots in `docs/images` |
 | `python tools/make_icon.py` | Re-generate the application icon and installer artwork in `assets` |
 | `.\tools\build_release.ps1` | Run the tests, build `VoxNote.exe` and the installer |
-| `.\tools\install_local.ps1` | Install the built application for the current user without the setup program |
+| `.\tools\install_local.ps1 -FromSource` | Create desktop and Start menu shortcuts that start VoxNote from this folder |
 
 Project layout:
 

@@ -36,7 +36,8 @@ RTX 3060 Laptop GPU, Smart App Control switched on):
 | Start the installed copy | Worked as above and closed with exit code 0 |
 | Run the uninstaller | **Blocked by Smart App Control**, because `unins000.exe` is unsigned. The test installation had to be removed by hand. |
 | Start the installer from File Explorer | **Blocked by Smart App Control.** The silent installation above was started from a script and was allowed; the interactive start by the user was not. |
-| `tools\install_local.ps1` | Installed the built folder with shortcuts, without the setup program |
+| `tools\install_local.ps1` (copy of the build) | Worked for 0.2.1; the copied `VoxNote.exe` of 0.3.0 was **blocked by Smart App Control** while the same file in `dist\VoxNote` ran |
+| `tools\install_local.ps1 -FromSource` | Works: desktop and Start menu shortcuts start VoxNote through `pythonw.exe` |
 
 Not done: recording with the packaged build, a normal (interactive) run of
 the wizard, installation on a second computer, and any test on Windows 10 or
@@ -329,7 +330,22 @@ shortcuts.
 .\tools\install_local.ps1
 ```
 
-`.\tools\install_local.ps1 -Uninstall` removes it again. This is a
+Smart App Control judges a copied file separately from the original. On the
+development computer the copy of version 0.2.1 started, but the copy of
+version 0.3.0 was blocked although the identical file in `dist\VoxNote` was
+allowed. For that case the script has a second mode that copies nothing:
+
+```powershell
+.\tools\install_local.ps1 -FromSource
+```
+
+It creates the same shortcuts, but they start VoxNote from the project
+folder with the virtual environment's `pythonw.exe`, which is signed by the
+Python Software Foundation and therefore not blocked. The project folder has
+to stay where it is. This is how VoxNote is installed on the development
+computer at the moment.
+
+`.\tools\install_local.ps1 -Uninstall` removes either kind again. This is a
 convenience for the developer's own machine, not a distribution method:
 other computers will treat a copied unsigned build like any other unsigned
 download.
