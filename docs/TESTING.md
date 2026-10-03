@@ -30,14 +30,14 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_vad_processor.py` | Segmentation with a scripted detector: silence, pre-roll and post-roll, short and long pauses, minimum speech, hysteresis, flush on stop, maximum length, no overlapping or duplicated audio, independence from block size; resampler length and continuity |
 | `tests/test_session_journal.py` | Journal round trip, durability before close, truncated lines, deletion, unreadable files |
 | `tests/test_i18n.py` | Every language has exactly the keys and placeholders of the English table |
-| `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders |
+| `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders; introduction shown once; theme cycling and persistence |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`163 passed`.
+`167 passed`.
 
 ## Verification status
 
-Honest status of each area at version 0.2.1. "Verified" means it was actually
+Honest status of each area at version 0.3.0. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 
@@ -230,7 +230,9 @@ observed.
 | E7 | **Interface language.** Switch to Turkish, then German | All texts change immediately; recognition is unaffected |
 | E8 | **Offline.** Disconnect the network and record | Works as before |
 | E9 | **Responsiveness.** Move and resize the window during recording and processing | Always responsive |
-| E10 | **Dark mode.** Switch Windows to dark mode and restart VoxNote | Dark appearance, everything readable |
+| E10 | **Appearance.** Press `Ctrl+T` three times, also during a recording | Light, dark, system in turn; transcript stays; choice is kept after restart |
+| E11 | With "Same as system", switch Windows between light and dark while VoxNote runs | VoxNote follows |
+| E12 | Delete `settings.json` and start VoxNote | The introduction opens once; not on the next start |
 
 ### F. Privacy checks
 

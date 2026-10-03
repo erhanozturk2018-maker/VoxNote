@@ -24,6 +24,7 @@ Two things should be said first:
 - [Decision 5: one accent colour, used sparingly](#decision-5-one-accent-colour-used-sparingly)
 - [Decision 6: an icon that shows what the application does](#decision-6-an-icon-that-shows-what-the-application-does)
 - [Decision 7: few choices on the surface](#decision-7-few-choices-on-the-surface)
+- [Decision 8: appearance is the user's choice](#decision-8-appearance-is-the-users-choice)
 - [What was deliberately not done](#what-was-deliberately-not-done)
 - [References](#references)
 
@@ -204,6 +205,21 @@ step away ("progressive disclosure"), makes the common path fast without
 removing control from experienced users, which is also what Shneiderman's
 rules on universal usability and reducing memory load ask for.
 
+## Decision 8: appearance is the user's choice
+
+**What.** Three modes, same as system, light and dark, switchable with one
+key (`Ctrl+T`), one click or in Settings. The default follows the system.
+
+**Why.** Neither polarity is best for everyone. Experiments on display
+polarity found that dark text on a light background gives better legibility
+for most readers in normal lighting (Piepenbrock, Mayr, Mund & Buchner,
+2013), which is why light is what an unconfigured light-mode system gets.
+Many people nevertheless prefer a dark interface in dim surroundings or for
+comfort. Following the system by default respects a choice the user has
+already made once for the whole computer, and offering an override keeps the
+user in control (Shneiderman's seventh rule) without forcing a decision on
+anyone.
+
 ## What was deliberately not done
 
 - **No golden-ratio proportions.** There is no reliable evidence that
@@ -240,6 +256,9 @@ rules on universal usability and reducing memory load ask for.
 - Palmer, S. E., & Schloss, K. B. (2010). An ecological valence theory of
   human color preference. *Proceedings of the National Academy of Sciences,
   107*(19), 8877–8882.
+- Piepenbrock, C., Mayr, S., Mund, I., & Buchner, A. (2013). Positive display
+  polarity is advantageous for both younger and older adults. *Ergonomics,
+  56*(7), 1116–1124.
 - Reinecke, K., Yeh, T., Miratrix, L., Mardiko, R., Zhao, Y., Liu, J., &
   Gajos, K. Z. (2013). Predicting users' first impressions of website
   aesthetics with a quantification of perceived visual complexity and

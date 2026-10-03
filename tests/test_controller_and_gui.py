@@ -365,8 +365,8 @@ def test_help_dialog_shows_questions_and_about(qapp):
     try:
         text = dialog.faq_view.toPlainText()
         assert "Do I need an internet connection?" in text
-        assert dialog.tabs.count() == 2
-        about = dialog.tabs.widget(1)
+        assert dialog.tabs.count() == 3
+        about = dialog.tabs.widget(2)
         from PySide6.QtWidgets import QLabel
 
         labels = " ".join(label.text() for label in about.findChildren(QLabel))
@@ -386,3 +386,71 @@ def test_every_icon_renders(qapp):
             for x in range(0, image.width(), 3)
             for y in range(0, image.height(), 3)
         ), name
+
+def test_help_dialog_introduction_lists_steps_and_shortcuts(qapp):
+    from app.help_dialog import SHORTCUTS, HelpDialog, tutorial_steps
+
+    assert len(tutorial_steps()) == 5
+    dialog = HelpDialog(start_tab=0)
+    try:
+        assert dialog.tabs.currentIndex() == 0
+        text = dialog.tutorial_view.toPlainText()
+        assert "Start recording" in text
+        for keys, _ in SHORTCUTS:
+            assert keys in text
+        assert HelpDialog(start_tab=2).tabs.currentIndex() == 2
+    finally:
+        dialog.close()
+
+
+def test_introduction_is_shown_only_once(qapp, tmp_path, monkeypatch):
+    controller = make_controller(tmp_path)
+    window = make_window(controller, tmp_path)
+    opened = []
+    monkeypatch.setattr(window, "open_help", lambda tab=0: opened.append(tab))
+    try:
+        window.show_first_run_help()
+        window.show_first_run_help()
+        assert opened == [0]
+        assert SettingsManager(tmp_path / "settings.json").load().tutorial_seen is True
+    finally:
+        window.close()
+
+
+def test_theme_cycles_and_is_remembered(qapp, tmp_path, session):
+    from app import theme
+
+    controller = make_controller(tmp_path)
+    window = make_window(controller, tmp_path)
+    try:
+        controller._on_recognized(list(session.segments), ["en", "tr"])
+        before = window.transcript_view.toPlainText()
+        seen = []
+        for _ in range(3):
+            window.cycle_theme()
+            seen.append((controller.settings.theme, theme.is_dark()))
+            # The transcript is re-rendered with the new colours, not lost.
+            assert window.transcript_view.toPlainText() == before
+        assert [mode for mode, _ in seen] == ["light", "dark", "system"]
+        assert seen[0][1] is False and seen[1][1] is True
+        assert SettingsManager(tmp_path / "settings.json").load().theme == "system"
+        assert "Same as system" in window.theme_button.toolTip()
+    finally:
+        theme.set_mode("system")
+        theme.apply_theme(qapp)
+        controller.discard_session()
+        window.close()
+
+
+def test_theme_can_be_chosen_in_settings(qapp, tmp_path):
+    from app.settings_dialog import SettingsDialog
+
+    controller = make_controller(tmp_path)
+    (tmp_path / "out").mkdir()
+    dialog = SettingsDialog(controller.settings, controller)
+    try:
+        dialog.theme_combo.setCurrentIndex(dialog.theme_combo.findData("dark"))
+        dialog._accept()
+        assert dialog.result_settings().theme == "dark"
+    finally:
+        dialog.close()

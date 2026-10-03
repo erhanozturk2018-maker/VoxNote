@@ -44,7 +44,7 @@ from app.i18n import available_languages, has, tr
 from app.icons import set_button_icon
 from app.language_names import LANGUAGE_NAMES, language_list
 from app.recording_controller import RecordingController
-from app.settings_manager import LIMITS, Settings
+from app.settings_manager import LIMITS, THEMES, Settings
 from app.theme import refresh_style
 from app.workers import _directory_bytes
 
@@ -238,6 +238,11 @@ class SettingsDialog(QDialog):
             tr("settings.ui_language"),
             _column(self.language_combo, _hint(tr("settings.ui_language.hint"))),
         )
+
+        self.theme_combo = QComboBox()
+        for name in THEMES:
+            self.theme_combo.addItem(tr(f"theme.{name}"), name)
+        form.addRow(tr("settings.theme"), self.theme_combo)
 
         self.folder_edit = QLineEdit()
         self.folder_edit.setPlaceholderText(str(paths.default_save_dir()))
@@ -468,6 +473,7 @@ class SettingsDialog(QDialog):
             combo.setCurrentIndex(max(combo.findData(value), 0))
 
         select(self.language_combo, settings.ui_language)
+        select(self.theme_combo, settings.theme)
         self.folder_edit.setText(str(settings.resolved_save_directory()))
         select(self.format_combo, settings.export_format)
         self.template_edit.setText(settings.filename_template)
@@ -490,7 +496,13 @@ class SettingsDialog(QDialog):
     def _restore_defaults(self) -> None:
         # Fills the form only. The interface language is kept, because
         # switching it back would be surprising.
-        self._load(replace(Settings(), ui_language=self.language_combo.currentData()))
+        self._load(
+            replace(
+                Settings(),
+                ui_language=self.language_combo.currentData(),
+                tutorial_seen=self._original.tutorial_seen,
+            )
+        )
         self._validate()
         self._fit_to_tab()
 
@@ -574,6 +586,7 @@ class SettingsDialog(QDialog):
         return replace(
             self._original,
             ui_language=self.language_combo.currentData(),
+            theme=self.theme_combo.currentData(),
             # The default folder is stored as "" so it keeps following the
             # user's Documents folder if that is moved.
             save_directory="" if directory is None or directory == default else str(directory),

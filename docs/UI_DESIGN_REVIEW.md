@@ -67,6 +67,8 @@ areas, icons were added, and a Help window was introduced.
 
 **What the interface does**
 
+- **New users get a five-step introduction** on first start; it never
+  reappears unasked and stays available under Help.
 - **Help is one key away.** `F1` opens answers to common questions in the
   interface language.
 - **Novices** can ignore everything except two large buttons. The empty
@@ -85,7 +87,8 @@ areas, icons were added, and a Help window was introduced.
   the unambiguous ISO order (year-month-day).
 - **Keyboard operation:** every control is reachable with `Tab`, has a
   visible focus ring, and labels are linked to their fields.
-- **Visual:** light and dark variants follow the system setting. Text
+- **Visual:** light and dark variants; the user can follow the system or
+  choose either one (`Ctrl+T`). Text
   contrast was computed for the theme colours: body text is above 12:1,
   secondary text above 5.5:1, and coloured status text on its tinted
   background between 4.5:1 and 7.7:1 in both variants. State is never shown
@@ -253,6 +256,8 @@ areas, icons were added, and a Help window was introduced.
 - **The user decides where files go**, what they are called and which format
   they have, and can change each of these at any time, including after the
   recording.
+- **Appearance is the user's choice** (system, light or dark) and can be
+  changed at any moment, including during a recording.
 - **The device and the speech model can be chosen** instead of being imposed,
   and so can the languages recognition may use.
 - **No modal interruptions for information.** Notices and errors appear

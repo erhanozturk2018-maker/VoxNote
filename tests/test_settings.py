@@ -86,6 +86,7 @@ def test_invalid_values_are_normalised(tmp_path):
                 "retain_audio": "yes",
                 "microphone": 42,
                 "model": "gigantic",
+                "theme": "neon",
                 "spoken_languages": ["tr", "tr", "klingon", 7, "en"],
                 "vocabulary": 12,
             }
@@ -103,6 +104,7 @@ def test_invalid_values_are_normalised(tmp_path):
     assert settings.retain_audio is False
     assert settings.microphone == ""
     assert settings.model == Settings().model
+    assert settings.theme == "system"
     assert settings.spoken_languages == ["tr", "en"]
     assert settings.vocabulary == ""
 

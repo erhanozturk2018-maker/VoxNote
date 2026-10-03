@@ -18,6 +18,7 @@ SETTINGS_SCHEMA_VERSION = 1
 EXPORT_FORMATS = ("md", "txt", "json", "docx", "pdf")
 UI_LANGUAGES = ("en", "tr", "de", "ru", "it", "fr")
 DEVICE_PREFERENCES = ("auto", "cuda", "cpu")
+THEMES = ("system", "light", "dark")
 
 # (minimum, maximum) for every numeric option; values outside are clamped.
 LIMITS: dict[str, tuple[float, float]] = {
@@ -35,6 +36,10 @@ class Settings:
     schema_version: int = SETTINGS_SCHEMA_VERSION
     # Interface language. Independent of the spoken language.
     ui_language: str = "en"
+    # Appearance: follow the operating system, or force light or dark.
+    theme: str = "system"
+    # Whether the short introduction was shown on first start.
+    tutorial_seen: bool = False
     # Empty means "use the default folder inside Documents".
     save_directory: str = ""
     export_format: str = "md"
@@ -105,6 +110,8 @@ class Settings:
             data["ui_language"] = defaults["ui_language"]
         if data["export_format"] not in EXPORT_FORMATS:
             data["export_format"] = defaults["export_format"]
+        if data["theme"] not in THEMES:
+            data["theme"] = defaults["theme"]
         if data["model"] not in MODELS:
             data["model"] = defaults["model"]
         data["spoken_languages"] = [c for c in data["spoken_languages"] if c in LANGUAGE_NAMES]

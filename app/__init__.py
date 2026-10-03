@@ -1,7 +1,7 @@
 """VoxNote - local speech recorder and transcription desktop application."""
 
 APP_NAME = "VoxNote"
-APP_VERSION = "0.2.1"
+APP_VERSION = "0.3.0"
 
 # Whisper models the user can choose from, with their approximate download
 # size in megabytes. Names are faster-whisper model identifiers.

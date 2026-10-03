@@ -21,6 +21,7 @@ from PySide6.QtGui import (
     QTextBlockFormat,
 )
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QFileDialog,
     QFrame,
@@ -42,13 +43,13 @@ from app.export_manager import ExportError, check_directory
 from app.exporters import EXPORTERS
 from app.filename_template import render_filename
 from app.i18n import has, set_language, tr
-from app.icons import icon, icon_size, pixmap, set_button_icon
+from app.icons import clear_cache, icon, icon_size, pixmap, set_button_icon
 from app.language_names import language_list, language_name
 from app.logging_config import log_file
 from app.recording_controller import AppState, RecordingController
 from app.resources import assets_dir
 from app.settings_manager import Settings, SettingsManager
-from app.theme import refresh_style, tokens
+from app.theme import THEME_MODES, apply_theme, refresh_style, set_mode, tokens
 from app.transcript_models import format_clock
 
 log = logging.getLogger(__name__)
@@ -273,12 +274,15 @@ class MainWindow(QMainWindow):
         self.title_label.setObjectName("title")
         self.version_label = QLabel()
         self.version_label.setObjectName("version")
+        self.theme_button = self._icon_button("theme-system", "flat")
+        self.theme_button.setFixedSize(36, 36)
         self.help_button = self._icon_button("help")
         self.settings_button = self._icon_button("settings")
         header.addWidget(self.logo_label)
         header.addWidget(self.title_label)
         header.addWidget(self.version_label, 0, Qt.AlignmentFlag.AlignBottom)
         header.addStretch(1)
+        header.addWidget(self.theme_button)
         header.addWidget(self.help_button)
         header.addWidget(self.settings_button)
         root.addLayout(header)
@@ -441,6 +445,12 @@ class MainWindow(QMainWindow):
         self.stop_button.clicked.connect(self.stop_recording)
         self.settings_button.clicked.connect(self.open_settings)
         self.help_button.clicked.connect(self.open_help)
+        self.theme_button.clicked.connect(self.cycle_theme)
+        # In "system" mode, follow the operating system while running.
+        try:
+            QGuiApplication.styleHints().colorSchemeChanged.connect(self._on_system_scheme_changed)
+        except AttributeError:
+            pass  # older Qt versions have no such signal
         self.mic_refresh.clicked.connect(lambda: self.refresh_devices(rescan=True))
         self.mic_combo.activated.connect(self._on_mic_selected)
         self.format_combo.activated.connect(self._on_format_selected)
@@ -456,6 +466,7 @@ class MainWindow(QMainWindow):
             ("Ctrl+E", self.stop_recording),
             ("Ctrl+,", self.open_settings),
             ("F1", self.open_help),
+            ("Ctrl+T", self.cycle_theme),
             ("Ctrl+Shift+S", self.save_as),
             ("Ctrl+Shift+C", self.copy_transcript),
             ("Ctrl+O", self.open_folder),
@@ -467,6 +478,7 @@ class MainWindow(QMainWindow):
     def _apply_icons(self) -> None:
         colors = tokens()
         special = {"record": colors["record_text"], "primary": colors["accent_text"]}
+        self.theme_button.setProperty("iconName", f"theme-{self.settings.theme}")
         for button in self.findChildren(QPushButton):
             name = button.property("iconName")
             if name:
@@ -481,6 +493,9 @@ class MainWindow(QMainWindow):
         self.settings_button.setToolTip(tr("main.settings.tip", shortcut="Ctrl+,"))
         self.help_button.setText(tr("main.help"))
         self.help_button.setToolTip(tr("main.help.tip", shortcut="F1"))
+        theme_name = tr(f"theme.{self.settings.theme}")
+        self.theme_button.setToolTip(tr("main.theme.tip", mode=theme_name, shortcut="Ctrl+T"))
+        self.theme_button.setAccessibleName(tr("main.theme.tip", mode=theme_name, shortcut="Ctrl+T"))
         self.start_button.setText(tr("main.start"))
         self.stop_button.setText(tr("main.stop"))
         self.stop_button.setToolTip(tr("main.stop.tip", shortcut="Ctrl+E"))
@@ -730,6 +745,32 @@ class MainWindow(QMainWindow):
         if self.controller.state is AppState.PROCESSING:
             self._update_controls()
 
+    # -- appearance ------------------------------------------------------
+
+    def apply_appearance(self) -> None:
+        """Re-style everything for the current theme mode."""
+        set_mode(self.settings.theme)
+        apply_theme(QApplication.instance())
+        clear_cache()
+        self.retranslate()
+        # The transcript carries its colours inline, so it is rendered again.
+        self.transcript_view.clear()
+        self._last_language = None
+        if self.controller.session.segments:
+            self._on_segments_added(list(self.controller.session.segments))
+
+    def cycle_theme(self) -> None:
+        """Switch between system, light and dark appearance."""
+        current = THEME_MODES.index(self.settings.theme) if self.settings.theme in THEME_MODES else 0
+        self.settings.theme = THEME_MODES[(current + 1) % len(THEME_MODES)]
+        self._persist()
+        self.apply_appearance()
+        self._flash(tr("main.theme.changed", mode=tr(f"theme.{self.settings.theme}")))
+
+    def _on_system_scheme_changed(self, *_args) -> None:
+        if self.settings.theme == "system":
+            self.apply_appearance()
+
     # -- transcript ------------------------------------------------------
 
     def _on_session_reset(self) -> None:
@@ -942,17 +983,29 @@ class MainWindow(QMainWindow):
             return
         new_settings = dialog.result_settings()
         language_changed = new_settings.ui_language != self.settings.ui_language
+        theme_changed = new_settings.theme != self.settings.theme
         self.controller.apply_settings(new_settings)
         self._persist()
         if language_changed:
             set_language(new_settings.ui_language)
-        self.retranslate()
+        if theme_changed:
+            self.apply_appearance()
+        else:
+            self.retranslate()
         self._flash(tr("settings.saved"), 4000)
 
-    def open_help(self) -> None:
+    def open_help(self, tab: int = 0) -> None:
         from app.help_dialog import HelpDialog
 
-        HelpDialog(self).exec()
+        HelpDialog(self, start_tab=tab if isinstance(tab, int) else 0).exec()
+
+    def show_first_run_help(self) -> None:
+        """Show the short introduction once, on the first start."""
+        if self.settings.tutorial_seen:
+            return
+        self.settings.tutorial_seen = True
+        self._persist()
+        self.open_help(0)
 
     def check_recovery(self) -> None:
         """Offer to restore transcripts that were never saved (after a crash)."""

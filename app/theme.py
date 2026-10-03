@@ -144,15 +144,32 @@ QCheckBox {{ spacing: 8px; }}
 """
 
 
+THEME_MODES = ("system", "light", "dark")
+_mode = "system"
+
+
+def set_mode(mode: str) -> None:
+    """Choose the appearance: ``system``, ``light`` or ``dark``."""
+    global _mode
+    _mode = mode if mode in THEME_MODES else "system"
+
+
+def mode() -> str:
+    return _mode
+
+
 def is_dark() -> bool:
     """Whether the dark variant applies.
 
-    Follows the operating system. The ``VOXNOTE_THEME`` environment variable
-    (``light`` or ``dark``) overrides it.
+    The mode chosen by the user decides; ``system`` follows the operating
+    system. The ``VOXNOTE_THEME`` environment variable (``light`` or
+    ``dark``) overrides both and is meant for testing.
     """
     forced = os.environ.get("VOXNOTE_THEME", "").lower()
     if forced in ("light", "dark"):
         return forced == "dark"
+    if _mode in ("light", "dark"):
+        return _mode == "dark"
     try:
         return QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark
     except Exception:

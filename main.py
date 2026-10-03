@@ -24,7 +24,7 @@ def main() -> int:
     from app.recording_controller import RecordingController
     from app.resources import icon_path
     from app.settings_manager import SettingsManager
-    from app.theme import apply_theme
+    from app.theme import apply_theme, set_mode
 
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
@@ -33,11 +33,11 @@ def main() -> int:
     icon = icon_path()
     if icon is not None:
         app.setWindowIcon(QIcon(str(icon)))
-    apply_theme(app)
-
     settings_manager = SettingsManager()
     settings = settings_manager.load()
     set_language(settings.ui_language)
+    set_mode(settings.theme)
+    apply_theme(app)
 
     controller = RecordingController(settings)
     window = MainWindow(controller, settings_manager)
@@ -46,6 +46,7 @@ def main() -> int:
     # Start slow work only after the window is visible.
     QTimer.singleShot(0, controller.load_model)
     QTimer.singleShot(200, window.check_recovery)
+    QTimer.singleShot(400, window.show_first_run_help)
     return app.exec()
 
 

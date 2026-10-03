@@ -4,7 +4,7 @@ This document describes how to turn VoxNote into a distributable Windows
 application, and what still has to be done before it should be offered to the
 public.
 
-> **Status.** For VoxNote 0.2.1 the executable and the installer were built
+> **Status.** For VoxNote 0.3.0 the executable and the installer were built
 > and tried on the development computer only (see [Status](#status)). They are
 > **not code-signed** and have not been tested on any other computer.
 
@@ -24,7 +24,7 @@ public.
 
 ## Status
 
-What was actually done for versions 0.2.0 and 0.2.1, on one computer (Windows 11, NVIDIA
+What was actually done for versions 0.2.0 to 0.3.0, on one computer (Windows 11, NVIDIA
 RTX 3060 Laptop GPU, Smart App Control switched on):
 
 | Step | Result |

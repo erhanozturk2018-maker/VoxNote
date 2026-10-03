@@ -28,6 +28,30 @@ from app.theme import tokens
 PROJECT_URL = "https://github.com/erhanozturk2018-maker/VoxNote"
 
 
+# (key sequence, translation key) of every keyboard shortcut, in the order
+# they are listed in the introduction.
+SHORTCUTS = (
+    ("Ctrl+R", "shortcut.start"),
+    ("Ctrl+E", "shortcut.stop"),
+    ("Ctrl+Shift+C", "shortcut.copy"),
+    ("Ctrl+Shift+S", "shortcut.save_as"),
+    ("Ctrl+O", "shortcut.open_folder"),
+    ("Ctrl+T", "shortcut.theme"),
+    ("Ctrl+,", "shortcut.settings"),
+    ("F1", "shortcut.help"),
+)
+
+
+def tutorial_steps() -> list[tuple[str, str]]:
+    """Title and text of each step of the introduction."""
+    steps = []
+    number = 1
+    while has(f"tutorial.{number}.title"):
+        steps.append((tr(f"tutorial.{number}.title"), tr(f"tutorial.{number}.text")))
+        number += 1
+    return steps
+
+
 def faq_entries() -> list[tuple[str, str]]:
     """Question and answer pairs in the current language."""
     entries = []
@@ -39,7 +63,7 @@ def faq_entries() -> list[tuple[str, str]]:
 
 
 class HelpDialog(QDialog):
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, start_tab: int = 0) -> None:
         super().__init__(parent)
         self.setWindowTitle(tr("help.title"))
         self.setModal(True)
@@ -49,8 +73,10 @@ class HelpDialog(QDialog):
         layout.setContentsMargins(16, 16, 16, 12)
         layout.setSpacing(12)
         self.tabs = QTabWidget()
+        self.tabs.addTab(self._build_tutorial(), tr("help.tab.start"))
         self.tabs.addTab(self._build_faq(), tr("help.tab.faq"))
         self.tabs.addTab(self._build_about(), tr("help.tab.about"))
+        self.tabs.setCurrentIndex(max(0, min(start_tab, self.tabs.count() - 1)))
         layout.addWidget(self.tabs)
 
         buttons = QDialogButtonBox()
@@ -58,6 +84,41 @@ class HelpDialog(QDialog):
         close.setDefault(True)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
+
+    def _build_tutorial(self) -> QWidget:
+        colors = tokens()
+        parts = [
+            f'<p style="margin:12px 0 6px 0; color:{colors["muted"]};">'
+            f'{html.escape(tr("tutorial.intro"))}</p>'
+        ]
+        for number, (title, text) in enumerate(tutorial_steps(), start=1):
+            parts.append(
+                '<table cellspacing="0" cellpadding="0" style="margin-top:12px;"><tr>'
+                f'<td width="34" valign="top" style="font-size:15pt; font-weight:600; '
+                f'color:{colors["accent"]};">{number}</td>'
+                f'<td><span style="font-weight:600; color:{colors["text"]};">'
+                f"{html.escape(title)}</span><br>"
+                f'<span style="color:{colors["muted"]};">{html.escape(text)}</span></td>'
+                "</tr></table>"
+            )
+        parts.append(
+            f'<p style="margin:20px 0 6px 0; font-weight:600; color:{colors["text"]};">'
+            f'{html.escape(tr("tutorial.shortcuts"))}</p>'
+            '<table cellspacing="0" cellpadding="3">'
+        )
+        for keys, key in SHORTCUTS:
+            parts.append(
+                f'<tr><td width="130" style="font-family:Consolas, monospace; '
+                f'color:{colors["accent"]};">{html.escape(keys)}</td>'
+                f'<td style="color:{colors["muted"]};">{html.escape(tr(key))}</td></tr>'
+            )
+        parts.append("</table>")
+        self.tutorial_view = QTextBrowser()
+        self.tutorial_view.setObjectName("help")
+        self.tutorial_view.setOpenLinks(False)
+        self.tutorial_view.setHtml("".join(parts))
+        self.tutorial_view.setAccessibleName(tr("help.tab.start"))
+        return self.tutorial_view
 
     def _build_faq(self) -> QWidget:
         colors = tokens()

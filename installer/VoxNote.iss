@@ -3,13 +3,13 @@
 ; Build the application first (pyinstaller VoxNote.spec), then compile this
 ; script with Inno Setup 6:
 ;
-;     ISCC.exe /DAppVersion=0.2.0 installer\VoxNote.iss
+;     ISCC.exe /DAppVersion=0.3.0 installer\VoxNote.iss
 ;
 ; or run tools\build_release.ps1, which does both. The installer is written
 ; to dist\installer. See docs\RELEASE.md.
 
 #ifndef AppVersion
-  #define AppVersion "0.2.1"
+  #define AppVersion "0.3.0"
 #endif
 #define AppName "VoxNote"
 #define AppExe "VoxNote.exe"

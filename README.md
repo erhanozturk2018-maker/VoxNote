@@ -13,7 +13,7 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.2.1, pre-release.** The application and its Windows
+> **Project status: 0.3.0, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
 > machine. The installer is **not code-signed**, so Windows blocks or warns
 > about it on other computers; see
@@ -70,9 +70,10 @@ your choice.
 - **Interface in six languages:** English (default), Turkish, German, French,
   Italian and Russian. The interface language is independent of the language
   you speak.
-- **Built-in help** with answers to common questions and an About page.
-- **Keyboard shortcuts**, tooltips, icons, light and dark appearance following
-  the system setting.
+- **Built-in help** with a five-step introduction (shown once on first
+  start), answers to common questions and an About page.
+- **Light, dark or system appearance**, switchable with one click or `Ctrl+T`.
+- **Keyboard shortcuts** for every main action, tooltips and icons.
 - **Windows installer** with Start menu and desktop shortcuts.
 
 ## Spoken languages
@@ -181,9 +182,9 @@ in them is fixed sample text, not the result of a recognition run.
 | --- | --- |
 | ![Settings, Recognition tab](docs/images/settings-recognition.png) | ![Settings, Recording tab](docs/images/settings-recording.png) |
 
-| Help: Questions and Answers | Help: About |
+| Help: Getting Started | Help: Questions and Answers |
 | --- | --- |
-| ![Help window](docs/images/help-questions.png) | ![About page](docs/images/help-about.png) |
+| ![Introduction](docs/images/help-start.png) | ![Help window](docs/images/help-questions.png) |
 
 | Turkish interface | German interface |
 | --- | --- |
@@ -267,7 +268,9 @@ python main.py
    the transcript is saved automatically.
 5. Use **Open File** or **Open Folder** to get to the document.
 
-Press **Help** (`F1`) inside the application for answers to common questions.
+Press **Help** (`F1`) inside the application for a short introduction and
+answers to common questions. `Ctrl+T` switches between light, dark and system
+appearance.
 The complete guide is in [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 
 ## Export formats

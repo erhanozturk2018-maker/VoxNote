@@ -14,6 +14,7 @@
 - [If saving fails](#if-saving-fails)
 - [Recovering a session after a crash](#recovering-a-session-after-a-crash)
 - [Settings reference](#settings-reference)
+- [Appearance: light, dark or system](#appearance-light-dark-or-system)
 - [Help inside the application](#help-inside-the-application)
 - [Keyboard shortcuts](#keyboard-shortcuts)
 - [Working offline](#working-offline)
@@ -25,8 +26,8 @@
 
 From top to bottom:
 
-1. **Header** – application name, version, and the **Help** and **Settings**
-   buttons.
+1. **Header** – application name, version, the appearance button, and the
+   **Help** and **Settings** buttons.
 2. **Recorder** – the **Start Recording** and **Stop Recording** buttons, the
    current status, the elapsed time, the microphone selection with its
    refresh button, and the input level meter.
@@ -305,6 +306,7 @@ as tall as the selected tab needs.
 | Setting | Description | Default |
 | --- | --- | --- |
 | Interface language | Language of menus and messages | English |
+| Appearance | Same as system, Light or Dark | Same as system |
 | Save folder | Where transcripts are saved automatically | `Documents\VoxNote` |
 | File format | Format used for automatic saving | Markdown |
 | File name | File name template | `{date}_{time}_{languages}` |
@@ -348,9 +350,34 @@ first.
 | Lead-in | Audio kept before detected speech | 300 ms | 0–1000 ms |
 | Lead-out | Audio kept after speech ends | 300 ms | 0–1000 ms |
 
+## Appearance: light, dark or system
+
+VoxNote has three appearance modes:
+
+| Mode | Behaviour |
+| --- | --- |
+| Same as system | Follows the Windows setting (*Settings › Personalisation › Colours*), also while VoxNote is running |
+| Light | Always light |
+| Dark | Always dark |
+
+Switch in any of these ways:
+
+- press `Ctrl+T`,
+- click the appearance button in the header (a monitor, a sun or a moon,
+  depending on the current mode),
+- choose it under **Settings › General › Appearance**.
+
+Each press moves to the next mode: system, light, dark, and back to system.
+The choice is remembered, takes effect immediately and works during a
+recording. The current mode is shown in the button's tooltip.
+
 ## Help inside the application
 
-The **Help** button (`F1`) opens a window with two tabs:
+The **Help** button (`F1`) opens a window with three tabs:
+
+- **Getting Started** – five steps from choosing the microphone to improving
+  accuracy, followed by the list of keyboard shortcuts. This tab is shown
+  automatically the first time VoxNote starts, and never again unasked.
 
 - **Questions and Answers** – short answers to the most common questions:
   internet use, privacy, languages, accuracy, delays, file locations, the
@@ -372,6 +399,7 @@ The **Help** button (`F1`) opens a window with two tabs:
 | `Ctrl+O` | Open the folder of the saved file |
 | `Ctrl+,` | Open Settings |
 | `F1` | Open Help |
+| `Ctrl+T` | Switch appearance: system, light, dark |
 | `Tab` / `Shift+Tab` | Move between controls |
 | `Space` / `Enter` | Activate the focused button |
 
