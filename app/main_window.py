@@ -53,6 +53,11 @@ from app.transcript_models import format_clock
 
 log = logging.getLogger(__name__)
 
+# The content never grows wider than this, however large the window is. On a
+# maximised window the controls would otherwise drift far apart and lines of
+# text would become too long to read comfortably. See docs/DESIGN_RATIONALE.md.
+MAX_CONTENT_WIDTH = 960
+
 # Icon and text colour token for each kind of inline message.
 _BANNER_ICONS = {
     "info": ("info", "accent"),
@@ -114,6 +119,22 @@ class ElidedLabel(QLabel):
         self.setText(
             metrics.elidedText(self._full, Qt.TextElideMode.ElideMiddle, max(self.width() - 4, 40))
         )
+
+
+class TranscriptView(QTextEdit):
+    """Read-only transcript whose lines never become longer than a
+    comfortable reading measure, however wide the window is."""
+
+    MAX_LINE_CHARACTERS = 80
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        limit = self.fontMetrics().averageCharWidth() * self.MAX_LINE_CHARACTERS
+        if self.viewport().width() > limit:
+            self.setLineWrapMode(QTextEdit.LineWrapMode.FixedPixelWidth)
+            self.setLineWrapColumnOrWidth(limit)
+        else:
+            self.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
 
 
 class Banner(QFrame):
@@ -193,8 +214,8 @@ class MainWindow(QMainWindow):
         self.retranslate()
         self.refresh_devices()
         self._update_controls()
-        self.resize(880, 720)
-        self.setMinimumSize(700, 560)
+        self.resize(920, 740)
+        self.setMinimumSize(720, 580)
 
     @property
     def settings(self) -> Settings:
@@ -220,8 +241,15 @@ class MainWindow(QMainWindow):
 
     def _build_ui(self) -> None:
         central = QWidget()
-        root = QVBoxLayout(central)
-        root.setContentsMargins(20, 16, 20, 6)
+        outer = QHBoxLayout(central)
+        outer.setContentsMargins(20, 16, 20, 10)
+        column = QWidget()
+        column.setMaximumWidth(MAX_CONTENT_WIDTH)
+        outer.addStretch(1)
+        outer.addWidget(column, 100)
+        outer.addStretch(1)
+        root = QVBoxLayout(column)
+        root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(12)
         self.setCentralWidget(central)
 
@@ -313,6 +341,8 @@ class MainWindow(QMainWindow):
         self.languages_label = QLabel()
         self.languages_label.setObjectName("muted")
         self.languages_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.restriction_label = QLabel()
+        self.restriction_label.setObjectName("hint")
         self.copy_button = self._icon_button("copy")
         self.save_button = self._icon_button("save", "primary")
         self.save_as_button = self._icon_button("save")
@@ -320,12 +350,13 @@ class MainWindow(QMainWindow):
         row.addSpacing(10)
         row.addWidget(self.languages_icon)
         row.addWidget(self.languages_label)
+        row.addWidget(self.restriction_label)
         row.addStretch(1)
         row.addWidget(self.copy_button)
         row.addWidget(self.save_as_button)
         row.addWidget(self.save_button)
         layout.addLayout(row)
-        self.transcript_view = QTextEdit()
+        self.transcript_view = TranscriptView()
         self.transcript_view.setObjectName("transcript")
         self.transcript_view.setReadOnly(True)
         self.transcript_view.setMinimumHeight(150)
@@ -361,19 +392,30 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_banner)
         root.addWidget(card)
 
-        # Status bar
+        # Footer: short confirmations on the left, the speech model on the
+        # right. It is part of the centred column so that it stays close to
+        # the content instead of sitting in the far corner of a large window.
+        footer = QHBoxLayout()
+        footer.setContentsMargins(2, 0, 2, 0)
+        footer.setSpacing(8)
+        self.status_message = QLabel()
+        self.status_message.setObjectName("hint")
+        self._message_timer = QTimer(self)
+        self._message_timer.setSingleShot(True)
+        self._message_timer.timeout.connect(self.status_message.clear)
         self.model_progress = QProgressBar()
         self.model_progress.setRange(0, 0)
         self.model_progress.setFixedWidth(110)
         self.model_progress.setTextVisible(False)
         self.model_icon = QLabel()
         self.model_icon.setFixedSize(16, 16)
-        self.model_icon.setStyleSheet("padding: 0;")
         self.model_label = QLabel()
-        self.statusBar().addPermanentWidget(self.model_progress)
-        self.statusBar().addPermanentWidget(self.model_icon)
-        self.statusBar().addPermanentWidget(self.model_label)
-        self.statusBar().setSizeGripEnabled(False)
+        self.model_label.setObjectName("hint")
+        footer.addWidget(self.status_message, 1)
+        footer.addWidget(self.model_progress)
+        footer.addWidget(self.model_icon)
+        footer.addWidget(self.model_label)
+        root.addLayout(footer)
 
         self.setTabOrder(self.start_button, self.stop_button)
         self.setTabOrder(self.stop_button, self.mic_combo)
@@ -477,6 +519,13 @@ class MainWindow(QMainWindow):
         if self._result_state:
             self._show_result(*self._result_state)
 
+    def _flash(self, text: str, milliseconds: int = 4000) -> None:
+        """Show a short confirmation in the footer."""
+        self.status_message.setText(text)
+        self._message_timer.stop()
+        if milliseconds:
+            self._message_timer.start(milliseconds)
+
     def _render(self, key: str, values: dict) -> str:
         if key in ("@error", "@model"):
             return error_text(values["code"], values.get("detail", ""))
@@ -529,7 +578,7 @@ class MainWindow(QMainWindow):
         elif devices and self._banner_state and self._banner_state[2].get("code") == "no_microphone":
             self._clear_banner()
         if rescan and devices:
-            self.statusBar().showMessage(tr("main.refresh.done", count=len(devices)), 4000)
+            self._flash(tr("main.refresh.done", count=len(devices)), 4000)
 
     def _update_output_fields(self) -> None:
         self.folder_value.set_full_text(str(self.settings.resolved_save_directory()))
@@ -575,7 +624,7 @@ class MainWindow(QMainWindow):
         self.settings.save_directory = chosen
         self._persist()
         self._update_output_fields()
-        self.statusBar().showMessage(tr("main.folder.changed"), 4000)
+        self._flash(tr("main.folder.changed"), 4000)
 
     # -- recording -------------------------------------------------------
 
@@ -745,13 +794,19 @@ class MainWindow(QMainWindow):
         self.languages_label.setAccessibleName(
             tr("main.languages", languages=names or tr("main.languages.none"))
         )
+        # Remind the user when recognition is limited to certain languages;
+        # anything else they say is written in one of those.
+        allowed = language_list(self.settings.spoken_languages)
+        self.restriction_label.setVisible(bool(allowed))
+        self.restriction_label.setText(tr("main.languages.limited", languages=allowed))
+        self.restriction_label.setToolTip(tr("main.languages.limited.tip"))
 
     def copy_transcript(self) -> None:
         if not self.controller.has_transcript:
             return
         text = "\n".join(s.text for s in self.controller.session.segments if s.text.strip())
         QGuiApplication.clipboard().setText(text)
-        self.statusBar().showMessage(tr("main.copy.done"), 4000)
+        self._flash(tr("main.copy.done"), 4000)
 
     # -- saving ----------------------------------------------------------
 
@@ -780,7 +835,7 @@ class MainWindow(QMainWindow):
         if code == "no_speech":
             self._show_result("info", "notice.no_speech", {})
         elif code == "session_recovered":
-            self.statusBar().showMessage(tr("notice.session_recovered"), 6000)
+            self._flash(tr("notice.session_recovered"), 6000)
         else:
             self._show_banner("warning", f"notice.{code}", {})
 
@@ -892,7 +947,7 @@ class MainWindow(QMainWindow):
         if language_changed:
             set_language(new_settings.ui_language)
         self.retranslate()
-        self.statusBar().showMessage(tr("settings.saved"), 4000)
+        self._flash(tr("settings.saved"), 4000)
 
     def open_help(self) -> None:
         from app.help_dialog import HelpDialog
@@ -937,7 +992,7 @@ class MainWindow(QMainWindow):
         if c.is_busy:
             # Speech is still being recognised or the file is being written.
             self._close_when_idle = True
-            self.statusBar().showMessage(tr("dialog.close.wait"))
+            self._flash(tr("dialog.close.wait"), 0)
             event.ignore()
             return
         if c.has_unsaved_transcript:

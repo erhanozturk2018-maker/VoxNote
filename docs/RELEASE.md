@@ -4,7 +4,7 @@ This document describes how to turn VoxNote into a distributable Windows
 application, and what still has to be done before it should be offered to the
 public.
 
-> **Status.** For VoxNote 0.2.0 the executable and the installer were built
+> **Status.** For VoxNote 0.2.1 the executable and the installer were built
 > and tried on the development computer only (see [Status](#status)). They are
 > **not code-signed** and have not been tested on any other computer.
 
@@ -16,6 +16,7 @@ public.
 - [GPU libraries in a packaged build](#gpu-libraries-in-a-packaged-build)
 - [Model distribution and cache strategy](#model-distribution-and-cache-strategy)
 - [Application icon](#application-icon)
+- [Distribution without security warnings](#distribution-without-security-warnings)
 - [Code signing](#code-signing)
 - [Installer](#installer)
 - [Clean-machine testing](#clean-machine-testing)
@@ -23,7 +24,7 @@ public.
 
 ## Status
 
-What was actually done for version 0.2.0, on one computer (Windows 11, NVIDIA
+What was actually done for versions 0.2.0 and 0.2.1, on one computer (Windows 11, NVIDIA
 RTX 3060 Laptop GPU, Smart App Control switched on):
 
 | Step | Result |
@@ -34,6 +35,8 @@ RTX 3060 Laptop GPU, Smart App Control switched on):
 | Silent installation into a test folder | Succeeded; Start menu and desktop shortcuts were created |
 | Start the installed copy | Worked as above and closed with exit code 0 |
 | Run the uninstaller | **Blocked by Smart App Control**, because `unins000.exe` is unsigned. The test installation had to be removed by hand. |
+| Start the installer from File Explorer | **Blocked by Smart App Control.** The silent installation above was started from a script and was allowed; the interactive start by the user was not. |
+| `tools\install_local.ps1` | Installed the built folder with shortcuts, without the setup program |
 
 Not done: recording with the packaged build, a normal (interactive) run of
 the wizard, installation on a second computer, and any test on Windows 10 or
@@ -220,6 +223,35 @@ Whichever strategy is used:
 - To replace the artwork, change `draw()` in `tools/make_icon.py` or put your
   own `voxnote.ico` and `voxnote.png` into `assets`.
 
+## Distribution without security warnings
+
+An unsigned installer is not a workable way to reach other people:
+
+- **Smart App Control** (switched on by default on new Windows 11
+  installations) blocks unsigned downloads that have no reputation, with no
+  "run anyway" option. On the development computer it blocked
+  `VoxNote-Setup-0.2.0.exe` when it was started from File Explorer.
+- **SmartScreen** shows "Windows protected your PC" for unsigned downloads on
+  other computers.
+
+The realistic options, as researched in October 2026 (check the current terms
+before relying on them):
+
+| Option | Cost | What it involves | Notes |
+| --- | --- | --- | --- |
+| **SignPath Foundation** | Free for open-source projects | Apply with the public repository; releases are built by a CI pipeline (for example GitHub Actions) and signed by SignPath | Fits VoxNote, which is MIT-licensed and public. The project must meet their conditions (open-source licence, no proprietary parts in the signed files, a build that runs in CI). |
+| **Microsoft Store (MSIX)** | Free; individual developer registration has been free since September 2025 | Package the application as MSIX and submit it; Microsoft re-signs the package after certification | Store-signed packages are trusted by Smart App Control and SmartScreen. EXE/MSI submissions are *not* re-signed, so the MSIX route is the one that helps. The 2.4 GB size and the model download on first start need to be checked against Store policies. |
+| **Azure Artifact Signing** (formerly Trusted Signing) | About US$10 per month | Sign in the build pipeline with a Microsoft-managed certificate | For individuals currently limited to the United States and Canada; organisations in more regions. |
+| **Certificate from a commercial CA** | A few hundred euros per year, plus a hardware token or cloud HSM | Classic OV or EV code-signing certificate | Works everywhere, most expensive. |
+| **Run from source** | Free | Users install Python and follow [INSTALLATION.md](INSTALLATION.md) | No executable of ours is involved, so nothing is blocked, but it is only suitable for technical users. |
+
+Recommended order for this project: apply to SignPath Foundation first (it
+matches an open-source project and keeps the existing installer), and
+consider the Microsoft Store as the channel for non-technical users.
+
+Until one of these is in place, the build can still be used on the computer
+where it was made: see [Local installation without the installer](#local-installation-without-the-installer).
+
 ## Code signing
 
 Unsigned executables are a real obstacle on current Windows versions:
@@ -282,6 +314,25 @@ VoxNote-Setup-0.2.0.exe /VERYSILENT /TASKS=""
 The second form installs without any window and without the desktop
 shortcut. Note that `/NOICONS` only suppresses the Start menu folder question
 of the wizard; shortcuts are controlled through `/TASKS`.
+
+### Local installation without the installer
+
+On the build computer itself, Smart App Control allowed `VoxNote.exe` from
+the build folder but blocked the installer and the uninstaller. For that
+case `tools\install_local.ps1` installs the already built application
+without running any setup program: it copies `dist\VoxNote` to
+`%LOCALAPPDATA%\Programs\VoxNote` and creates the desktop and Start menu
+shortcuts.
+
+```powershell
+.\tools\build_release.ps1 -SkipInstaller
+.\tools\install_local.ps1
+```
+
+`.\tools\install_local.ps1 -Uninstall` removes it again. This is a
+convenience for the developer's own machine, not a distribution method:
+other computers will treat a copied unsigned build like any other unsigned
+download.
 
 **Known problem on computers with Smart App Control:** the uninstaller that
 Inno Setup generates (`unins000.exe`) is unsigned and was blocked on the

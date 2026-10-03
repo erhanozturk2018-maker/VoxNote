@@ -6,6 +6,9 @@ interface does, where that can be seen, and what is still weak. The review
 is a self-assessment by the developer based on the implemented windows; it
 is not the result of a usability study with real users.
 
+The reasoning behind the layout, colours and icon, with references to the
+literature, is in [DESIGN_RATIONALE.md](DESIGN_RATIONALE.md).
+
 Version 0.2.0 addressed several weaknesses of the first version: disabled
 buttons that were permanently on screen were removed, the microphone setting
 was no longer duplicated, the settings dialog stopped showing large empty
@@ -31,8 +34,8 @@ areas, icons were added, and a Help window was introduced.
 - One set of colour tokens (`app/theme.py`) drives every window in both the
   light and the dark variant. A colour always means the same thing: red is
   recording or an error, amber is work in progress or a warning, green is
-  success, blue is the accent and "ready".
-- Four button styles only: the red record button, the blue primary button
+  success, violet is the accent and "ready".
+- Four button styles only: the red record button, the violet primary button
   (confirming actions: *Save*), neutral buttons, and borderless icon buttons
   for small secondary actions (refresh, open folder).
 - One icon set (`app/icons.py`) drawn in a single style and stroke width. The
@@ -90,7 +93,8 @@ areas, icons were added, and a Help window was introduced.
 - **Assistive technology:** icon-like and non-text elements (status pill,
   timer, level meter, message close button) have accessible names.
 - The window can be resized; long paths are shortened in the middle and
-  shown in full as a tooltip.
+  shown in full as a tooltip. On large screens the content keeps a maximum
+  width and the transcript a maximum line length, instead of stretching.
 
 **Weaknesses**
 
@@ -273,6 +277,8 @@ areas, icons were added, and a Help window was introduced.
 
 **What the interface does**
 
+- **An active language restriction is shown** next to the detected languages,
+  so the user does not have to remember a setting made earlier.
 - **Everything relevant to the next recording is visible at once:** which
   microphone, which folder, which format, which file name, which model and
   device.

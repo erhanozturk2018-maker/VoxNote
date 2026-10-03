@@ -178,6 +178,8 @@ STRINGS = {
     "main.help": "Yardım",
     "main.help.tip": "VoxNote hakkında sorular, yanıtlar ve bilgiler ({shortcut})",
     "main.languages.tip": "Bu oturumda algılanan diller",
+    "main.languages.limited": "· {languages} ile sınırlı",
+    "main.languages.limited.tip": "Tanıma bu dillerle sınırlı (Ayarlar › Tanıma › Konuşulan diller). Başka bir dilde söylenenler bu dillerden biriyle yazılır.",
 
     "settings.tab.recognition": "Tanıma",
     "settings.model.option.small": "Small · en hızlı, en az doğru (0,5 GB)",

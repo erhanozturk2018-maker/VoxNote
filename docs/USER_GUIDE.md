@@ -37,8 +37,12 @@ From top to bottom:
    it, the file format, the file name that will be used, and the result of
    the last save. After a successful save, **Open File** and **Open Folder**
    appear right inside that message.
-5. **Status bar** – short confirmations on the left; on the right, the speech
+5. **Footer** – short confirmations on the left; on the right, the speech
    model and the device it runs on.
+
+The content never becomes wider than about 960 pixels. In a maximised window
+it stays in the middle with empty margins left and right; the reasons are
+explained in [DESIGN_RATIONALE.md](DESIGN_RATIONALE.md).
 
 Messages that need your attention appear as a coloured bar below the header
 (problems with the microphone or the model) or in the Output section (results
@@ -151,7 +155,10 @@ Three settings in **Settings › Recognition** have the largest effect.
 speak, for example English and Turkish. Without a selection the model picks
 from about a hundred languages for every utterance, and a short phrase can
 land in an unrelated one (Arabic, Swedish, Portuguese …). With a selection it
-only decides between the ticked languages. Leave everything unticked if you
+only decides between the ticked languages, and the main window shows
+"· limited to …" next to the detected languages as a reminder. **Anything
+you say in a language that is not ticked is written in one of the ticked
+languages**, so add every language you use. Leave everything unticked if you
 want every language to be possible. With a single language ticked, everything
 is transcribed in that language.
 

@@ -178,6 +178,8 @@ STRINGS = {
     "main.help": "Справка",
     "main.help.tip": "Вопросы, ответы и сведения о VoxNote ({shortcut})",
     "main.languages.tip": "Языки, определённые в этом сеансе",
+    "main.languages.limited": "· только: {languages}",
+    "main.languages.limited.tip": "Распознавание ограничено этими языками (Настройки › Распознавание › Языки речи). Сказанное на другом языке записывается на одном из них.",
 
     "settings.tab.recognition": "Распознавание",
     "settings.model.option.small": "Small · самая быстрая, наименее точная (0,5 ГБ)",

@@ -257,6 +257,15 @@ In order of effect:
 VoxNote does not check pronunciation. A word that is pronounced unclearly is
 written as the nearest word the model knows.
 
+### Something I said in another language was written in English or Turkish
+
+Recognition is limited to the languages ticked in **Settings › Recognition ›
+Spoken languages**. The main window shows this next to the detected
+languages ("· limited to English, Turkish"). Anything said in a language
+that is not ticked is forced into one of the ticked ones, which produces
+wrong or translated text. Tick the additional language, or untick everything
+to allow all languages.
+
 ### The wrong language is detected
 
 - **Tick the languages you speak** in **Settings › Recognition › Spoken
@@ -382,9 +391,19 @@ pip install --force-reinstall sounddevice
 ### Windows warns about the installer or refuses to run it
 
 `VoxNote-Setup-<version>.exe` is not code-signed. SmartScreen may show
-"Windows protected your PC"; Smart App Control may block it outright. Whether
-to run an unsigned program is your decision. Running VoxNote from source
-([INSTALLATION.md](INSTALLATION.md)) avoids the installer entirely.
+"Windows protected your PC"; Smart App Control blocks it outright ("An
+Application Control policy has blocked this file") and offers no way to run
+it anyway. Whether to run an unsigned program is your decision where Windows
+leaves you one. Alternatives:
+
+- Run VoxNote from source ([INSTALLATION.md](INSTALLATION.md)); no unsigned
+  program of ours is involved.
+- If you built VoxNote yourself, install the built folder with
+  `tools\install_local.ps1`
+  (see [RELEASE.md](RELEASE.md#local-installation-without-the-installer)).
+
+The permanent fix is a signed release; the options are listed in
+[RELEASE.md](RELEASE.md#distribution-without-security-warnings).
 
 ### The uninstaller is blocked
 

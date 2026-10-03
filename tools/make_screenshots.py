@@ -89,7 +89,7 @@ def main() -> int:
         controller.model_ready = True
         controller.model_state = "ready"
         window = MainWindow(controller, SettingsManager())
-        window.resize(880, 720)
+        window.resize(920, 740)
         window.show()
         window._update_model_label()
         suffix = "-dark" if dark else "" if language == "en" else f"-{language}"
@@ -142,6 +142,7 @@ def main() -> int:
         window.close()
 
     render_multilingual(app, documents)
+    render_maximised(app, documents)
     return 0
 
 
@@ -156,6 +157,33 @@ MULTILINGUAL_SAMPLE = [
 ]
 
 
+def render_maximised(app, documents: Path) -> None:
+    """The window at full-HD size, to show that the content stays compact."""
+    set_language("en")
+    controller = RecordingController(Settings(save_directory=str(documents)))
+    controller.transcriber.device_info = DeviceInfo("cuda", "float16")
+    controller.model_ready = True
+    controller.model_state = "ready"
+    window = MainWindow(controller, SettingsManager())
+    window.resize(1920, 1000)
+    window.show()
+    window._update_model_label()
+    controller.session = sample_session()
+    controller.state = AppState.RECORDING
+    controller.session_reset.emit()
+    segments = [TranscriptSegment(a, b, code, text, 0.98) for a, b, code, text in SAMPLE]
+    controller._on_recognized(segments, ["en", "tr"])
+    controller.state = AppState.COMPLETED
+    controller._unsaved = False
+    controller.saved_path = documents / "2026-10-03_14-30-00_en-tr.md"
+    window._on_state_changed(AppState.COMPLETED)
+    window._on_saved(str(controller.saved_path))
+    grab(window, "main-maximised.png")
+    controller.discard_session()
+    controller.state = AppState.READY
+    window.close()
+
+
 def render_multilingual(app, documents: Path) -> None:
     """A session with many languages, to show how language blocks look."""
     os.environ["VOXNOTE_THEME"] = "light"
@@ -166,7 +194,7 @@ def render_multilingual(app, documents: Path) -> None:
     controller.model_ready = True
     controller.model_state = "ready"
     window = MainWindow(controller, SettingsManager())
-    window.resize(880, 1000)
+    window.resize(920, 1000)
     window.show()
     window._update_model_label()
 

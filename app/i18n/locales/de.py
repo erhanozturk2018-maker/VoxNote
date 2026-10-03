@@ -178,6 +178,8 @@ STRINGS = {
     "main.help": "Hilfe",
     "main.help.tip": "Fragen, Antworten und Informationen zu VoxNote ({shortcut})",
     "main.languages.tip": "In dieser Sitzung erkannte Sprachen",
+    "main.languages.limited": "· beschränkt auf {languages}",
+    "main.languages.limited.tip": "Die Erkennung ist auf diese Sprachen beschränkt (Einstellungen › Erkennung › Gesprochene Sprachen). Äußerungen in anderen Sprachen werden in einer dieser Sprachen geschrieben.",
 
     "settings.tab.recognition": "Erkennung",
     "settings.model.option.small": "Small · am schnellsten, am ungenauesten (0,5 GB)",

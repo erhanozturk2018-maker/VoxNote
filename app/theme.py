@@ -21,8 +21,8 @@ LIGHT = {
     "border": "#d9dce1",
     "text": "#1c1f24",
     "muted": "#5b6470",
-    "accent": "#2563eb",
-    "accent_hover": "#1d4fd8",
+    "accent": "#6d3fd0",
+    "accent_hover": "#5a31b3",
     "accent_text": "#ffffff",
     "record": "#c62828",
     "record_hover": "#a81f1f",
@@ -33,7 +33,7 @@ LIGHT = {
     "warning_bg": "#fff4d6",
     "error": "#b3261e",
     "error_bg": "#fdecea",
-    "info_bg": "#eef3fe",
+    "info_bg": "#f2edfc",
     "field": "#ffffff",
     "disabled_bg": "#e6e8ec",
     "disabled_text": "#8b929c",
@@ -45,9 +45,9 @@ DARK = {
     "border": "#3a3f47",
     "text": "#e8eaed",
     "muted": "#a2a9b3",
-    "accent": "#5b8def",
-    "accent_hover": "#77a1f3",
-    "accent_text": "#0d1117",
+    "accent": "#a98bf5",
+    "accent_hover": "#bda6f8",
+    "accent_text": "#17121f",
     "record": "#ef5350",
     "record_hover": "#f27573",
     "record_text": "#1b1d21",
@@ -57,7 +57,7 @@ DARK = {
     "warning_bg": "#3a3018",
     "error": "#f28b82",
     "error_bg": "#301c1a",
-    "info_bg": "#1c2536",
+    "info_bg": "#262036",
     "field": "#1f2226",
     "disabled_bg": "#2c3036",
     "disabled_text": "#6f7782",
@@ -139,8 +139,6 @@ QTabBar::tab {{ padding: 7px 16px; border: 1px solid transparent; border-bottom:
     border-top-left-radius: 6px; border-top-right-radius: 6px; color: {muted}; }}
 QTabBar::tab:selected {{ background: {card}; border-color: {border}; color: {text}; font-weight: 600; }}
 QTabBar::tab:focus {{ color: {accent}; }}
-QStatusBar {{ background: {window}; color: {muted}; }}
-QStatusBar QLabel {{ color: {muted}; padding: 0 6px; }}
 QToolTip {{ background: {card}; color: {text}; border: 1px solid {border}; padding: 4px; }}
 QCheckBox {{ spacing: 8px; }}
 """

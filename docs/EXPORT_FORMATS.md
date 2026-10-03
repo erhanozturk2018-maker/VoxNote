@@ -121,7 +121,7 @@ Transcript
   "schema_version": 1,
   "application": {
     "name": "VoxNote",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
   "session": {
     "id": "3f9a1c2e",

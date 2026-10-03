@@ -13,10 +13,11 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.2.0, pre-release.** The application and its Windows
+> **Project status: 0.2.1, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
-> machine. The installer is not code-signed and has not been tested on a
-> range of computers yet. See
+> machine. The installer is **not code-signed**, so Windows blocks or warns
+> about it on other computers; see
+> [docs/RELEASE.md](docs/RELEASE.md#distribution-without-security-warnings). See
 > [Known limitations](#known-limitations) and [docs/RELEASE.md](docs/RELEASE.md).
 
 ## Contents
@@ -188,6 +189,10 @@ in them is fixed sample text, not the result of a recognition run.
 | --- | --- |
 | ![Main window in Turkish](docs/images/main-completed-tr.png) | ![Main window in German](docs/images/main-completed-de.png) |
 
+| Maximised window | |
+| --- | --- |
+| ![Maximised window with centred content](docs/images/main-maximised.png) | The content keeps a maximum width on large screens. |
+
 | Dark appearance | Many languages in one session |
 | --- | --- |
 | ![Main window, dark](docs/images/main-completed-dark.png) | ![Multilingual session](docs/images/main-multilingual.png) |
@@ -221,8 +226,9 @@ recognise, so you can measure it on your own machine (see
 **With the installer:** run `VoxNote-Setup-<version>.exe`. It installs for the
 current user without administrator rights and creates Start menu and desktop
 shortcuts. The installer is built with `tools\build_release.ps1`
-(see [docs/RELEASE.md](docs/RELEASE.md)); it is not code-signed, so Windows
-may show a warning.
+(see [docs/RELEASE.md](docs/RELEASE.md)). **It is not code-signed:** Windows
+SmartScreen warns about it, and Smart App Control blocks it. Until a signed
+release exists, installing from source is the reliable way.
 
 **From source:** you need Python 3.11 (the tested version; 3.10 and 3.12 are expected to
 work). In PowerShell:
@@ -336,8 +342,12 @@ every place where data is written to disk.
 - **PDF export** does not shape right-to-left or complex scripts (Arabic,
   Hebrew, Indic scripts) correctly. Use DOCX, Markdown, TXT or JSON for these.
 - **Punctuation and capitalisation come from the model** and can vary.
-- **The installer is not code-signed.** Windows SmartScreen or Smart App
-  Control may warn about it or block it on other computers.
+- **The installer is not code-signed.** Windows SmartScreen warns about it and
+  Smart App Control blocks it. The ways to fix this are described in
+  [docs/RELEASE.md](docs/RELEASE.md#distribution-without-security-warnings).
+- **A language restriction applies to everything.** If you tick spoken
+  languages in Settings, speech in any other language is written in one of
+  the ticked ones.
 - **Tested on a single computer.** See [docs/TESTING.md](docs/TESTING.md) for
   what was verified and what was not.
 
@@ -351,6 +361,7 @@ every place where data is written to disk.
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solutions for microphone, model, GPU and export problems |
 | [docs/PRIVACY.md](docs/PRIVACY.md) | What stays on the computer and what the network is used for |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, threading, buffering and design decisions |
+| [docs/DESIGN_RATIONALE.md](docs/DESIGN_RATIONALE.md) | Why the interface, colours and icon look the way they do, with references |
 | [docs/UI_DESIGN_REVIEW.md](docs/UI_DESIGN_REVIEW.md) | Review of the interface against Shneiderman's Eight Golden Rules |
 | [docs/TESTING.md](docs/TESTING.md) | Automated tests, manual test checklist, verification status |
 | [docs/RELEASE.md](docs/RELEASE.md) | Building a Windows executable and release readiness |
@@ -370,6 +381,7 @@ Useful scripts:
 | `python tools/make_screenshots.py` | Re-render the screenshots in `docs/images` |
 | `python tools/make_icon.py` | Re-generate the application icon and installer artwork in `assets` |
 | `.\tools\build_release.ps1` | Run the tests, build `VoxNote.exe` and the installer |
+| `.\tools\install_local.ps1` | Install the built application for the current user without the setup program |
 
 Project layout:
 

@@ -37,7 +37,7 @@ folder, so your settings and transcripts are not touched.
 
 ## Verification status
 
-Honest status of each area at version 0.2.0. "Verified" means it was actually
+Honest status of each area at version 0.2.1. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 

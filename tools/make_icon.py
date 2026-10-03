@@ -33,12 +33,21 @@ from PySide6.QtGui import (  # noqa: E402
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 ICON_SIZES = (16, 20, 24, 32, 40, 48, 64, 128, 256)
-BLUE = "#2563eb"
-BLUE_DARK = "#1b3fa8"
+VIOLET = "#7b4fe0"
+VIOLET_DARK = "#4f2aa6"
+
+# The logo shows what the application does: sound (a waveform, left) becomes
+# writing (lines of text, right). Each tuple is (x, height) of a waveform bar
+# or (y, length) of a text line on a 256 unit grid.
+WAVE_BARS = ((48, 44), (74, 104), (100, 68), (126, 128))
+TEXT_LINES = ((92, 58), (128, 58), (164, 36))
+# Simplified drawing for very small icon sizes.
+WAVE_BARS_SMALL = ((46, 64), (82, 124), (118, 84))
+TEXT_LINES_SMALL = ((104, 62), (152, 40))
 
 
 def paint_logo(painter: QPainter, size: float, tile: bool = True) -> None:
-    """Draw the microphone logo into a ``size`` x ``size`` square.
+    """Draw the logo into a ``size`` x ``size`` square.
 
     The drawing is defined on a 256 unit grid and scaled, so every icon
     size is rendered from the vector description instead of being resized.
@@ -46,24 +55,28 @@ def paint_logo(painter: QPainter, size: float, tile: bool = True) -> None:
     painter.save()
     painter.scale(size / 256, size / 256)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    if tile:
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(QColor(BLUE))
-        painter.drawRoundedRect(QRectF(8, 8, 240, 240), 52, 52)
-
-    white = QColor("#ffffff")
     painter.setPen(Qt.PenStyle.NoPen)
-    painter.setBrush(white)
-    painter.drawRoundedRect(QRectF(100, 48, 56, 100), 28, 28)  # capsule
+    if tile:
+        gradient = QLinearGradient(0, 8, 0, 248)
+        gradient.setColorAt(0.0, QColor(VIOLET))
+        gradient.setColorAt(1.0, QColor(VIOLET_DARK))
+        painter.setBrush(gradient)
+        painter.drawRoundedRect(QRectF(8, 8, 240, 240), 54, 54)
 
-    # Thin strokes disappear in very small icons, so they are thickened.
-    pen = QPen(white, 12 if size >= 48 else 18)
-    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
-    painter.setPen(pen)
-    painter.setBrush(Qt.BrushStyle.NoBrush)
-    painter.drawArc(QRectF(76, 72, 104, 104), 180 * 16, 180 * 16)  # cradle
-    painter.drawLine(QPointF(128, 176), QPointF(128, 204))  # stand
-    painter.drawLine(QPointF(98, 208), QPointF(158, 208))
+    painter.setBrush(QColor("#ffffff"))
+    small = size < 40
+    bars, lines = (WAVE_BARS_SMALL, TEXT_LINES_SMALL) if small else (WAVE_BARS, TEXT_LINES)
+    bar_width, line_height, text_x = (24, 26, 150) if small else (16, 18, 154)
+    for x, height in bars:
+        painter.drawRoundedRect(
+            QRectF(x, 128 - height / 2, bar_width, height), bar_width / 2, bar_width / 2
+        )
+    for y, length in lines:
+        painter.drawRoundedRect(
+            QRectF(text_x, y - line_height / 2, length, line_height),
+            line_height / 2,
+            line_height / 2,
+        )
     painter.restore()
 
 
@@ -118,8 +131,8 @@ def installer_side(width: int = 328, height: int = 628) -> QImage:
     image = QImage(width, height, QImage.Format.Format_RGB32)
     painter = QPainter(image)
     gradient = QLinearGradient(0, 0, 0, height)
-    gradient.setColorAt(0.0, QColor(BLUE))
-    gradient.setColorAt(1.0, QColor(BLUE_DARK))
+    gradient.setColorAt(0.0, QColor(VIOLET))
+    gradient.setColorAt(1.0, QColor(VIOLET_DARK))
     painter.fillRect(0, 0, width, height, gradient)
 
     logo_size = 150
@@ -134,7 +147,7 @@ def installer_side(width: int = 328, height: int = 628) -> QImage:
     painter.setFont(title)
     painter.drawText(QRectF(0, 330, width, 70), Qt.AlignmentFlag.AlignHCenter, "VoxNote")
     painter.setFont(QFont("Segoe UI", 12))
-    painter.setPen(QColor("#dbe6ff"))
+    painter.setPen(QColor("#e6dcff"))
     painter.drawText(
         QRectF(20, 400, width - 40, 80),
         Qt.AlignmentFlag.AlignHCenter | Qt.TextFlag.TextWordWrap,
