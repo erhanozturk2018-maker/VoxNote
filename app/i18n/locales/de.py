@@ -289,4 +289,9 @@ STRINGS = {
     "settings.hotkey": "Aufnahme mit {shortcut} aus jeder Anwendung starten und stoppen",
     "shortcut.global": "Aufnahme aus jeder Anwendung starten oder stoppen",
     "notice.hotkey_unavailable": "Das Tastenkürzel {shortcut} wird von einem anderen Programm verwendet und ist nicht verfügbar.",
+
+    "settings.model.option.large-v3": "Large v3 · am besten für andere Sprachen als Englisch, langsamer (3,1 GB)",
+    "settings.completeness": "Vollständigkeit:",
+    "settings.keep_uncertain": "Auch undeutliche Sprache aufschreiben",
+    "settings.keep_uncertain.hint": "Ein: Alles Gehörte wird geschrieben, auch wenn die Erkennung unsicher ist, sodass kein Satzteil verloren geht. Aus: Unsichere Teile werden weggelassen.",
 }

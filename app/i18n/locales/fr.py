@@ -289,4 +289,9 @@ STRINGS = {
     "settings.hotkey": "Démarrer et arrêter l'enregistrement avec {shortcut} depuis n'importe quelle application",
     "shortcut.global": "Démarrer ou arrêter l'enregistrement depuis n'importe quelle application",
     "notice.hotkey_unavailable": "Le raccourci {shortcut} est utilisé par un autre programme et n'est pas disponible.",
+
+    "settings.model.option.large-v3": "Large v3 · le meilleur pour les langues autres que l'anglais, plus lent (3,1 Go)",
+    "settings.completeness": "Exhaustivité :",
+    "settings.keep_uncertain": "Écrire aussi la parole peu claire",
+    "settings.keep_uncertain.hint": "Activé : tout ce qui a été entendu est écrit, même si la reconnaissance hésite, afin qu'aucune partie de phrase ne manque. Désactivé : les parties incertaines sont omises.",
 }

@@ -289,4 +289,9 @@ STRINGS = {
     "settings.hotkey": "Herhangi bir uygulamadayken {shortcut} ile kaydı başlat ve durdur",
     "shortcut.global": "Herhangi bir uygulamadayken kaydı başlat veya durdur",
     "notice.hotkey_unavailable": "{shortcut} kısayolu başka bir program tarafından kullanılıyor ve kullanılamıyor.",
+
+    "settings.model.option.large-v3": "Large v3 · İngilizce dışındaki dillerde en iyisi, daha yavaş (3,1 GB)",
+    "settings.completeness": "Eksiksizlik:",
+    "settings.keep_uncertain": "Anlaşılmayan konuşmayı da yaz",
+    "settings.keep_uncertain.hint": "Açık: tanıyıcı emin olmasa bile duyulan her şey yazılır, cümlenin hiçbir kısmı kaybolmaz. Kapalı: emin olunmayan kısımlar atlanır.",
 }

@@ -346,12 +346,14 @@ class TranscribeWorker(Worker):
         work_total = 0.0
         count = 0
         reported_problem = False
+        # Language and text of the previous utterance, passed on as context.
+        context = ("", "")
         while True:
             segment = self._segments.get()
             if segment is None:
                 break
             try:
-                result = self._transcriber.transcribe(segment.audio, self._tracker)
+                result = self._transcriber.transcribe(segment.audio, self._tracker, context)
             except Exception as exc:
                 # One bad utterance must not end the session.
                 log.exception("Transcription of one segment failed")
@@ -377,6 +379,7 @@ class TranscribeWorker(Worker):
                 continue
 
             self._tracker.record(result.decision)
+            context = (result.decision.language, " ".join(p.text for p in result.pieces))
             offset = segment.start_seconds
             new_segments = [
                 TranscriptSegment(

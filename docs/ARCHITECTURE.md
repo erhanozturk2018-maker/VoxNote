@@ -210,7 +210,7 @@ drives the model itself and passes `vad_filter=False` to the recogniser.
 | `threshold` | 0.5 | A frame at or above this probability is speech. |
 | release threshold | threshold − 0.15 | A frame below this is silence. Frames in between extend whatever is happening (hysteresis). |
 | `pre_roll_ms` | 300 | Audio before the first speech frame that is prepended to the segment. |
-| `silence_ms` | 800 | Continuous silence that ends the segment. |
+| `silence_ms` | 1200 | Continuous silence that ends the segment. Shorter values split long sentences at breathing pauses. |
 | `post_roll_ms` | 300 | Trailing silence kept at the end of the segment. |
 | `min_speech_ms` | 250 | Segments with fewer speech frames are discarded. |
 | `max_segment_s` | 28 | Upper limit of a segment. |
@@ -310,7 +310,9 @@ Options and their reasons:
 | --- | --- | --- |
 | `task` | `transcribe` | Never translate. |
 | `language` | decided per utterance | Allows language switches inside a session. |
-| `condition_on_previous_text` | `False` | Each utterance stands alone. Feeding earlier text back causes repetition loops and pulls the next utterance towards the previous language. |
+| `condition_on_previous_text` | `False` | Whisper's own carry-over inside one call causes repetition loops. Context is passed explicitly instead, see below. |
+| `initial_prompt` | end of the previous utterance | Lets the model continue a sentence that a pause split in two. Only used when the previous utterance was in the same language. |
+| `no_speech_threshold` | off (`None`) | The streaming VAD already decided that somebody spoke; the recogniser must not skip the audio as "no speech". |
 | `vad_filter` | `False` | Segmentation was already done by the streaming VAD. |
 | `beam_size` | 5 | faster-whisper default. |
 | `temperature` | 0.0 | Deterministic beam search only; see below. |
@@ -336,10 +338,15 @@ decoder imitates the style of its prompt: a hint without punctuation made it
 drop the punctuation of the transcript in tests. The transcript is never
 edited after recognition.
 
-A recognised piece is dropped only if the model reports both a high
-no-speech probability and a low average log-probability, or if its
-compression ratio indicates a degenerate repetition. Nothing else filters,
-corrects or rewrites the text.
+**Completeness over tidiness.** By default (`keep_uncertain`) every piece of
+text the recogniser returns for a detected utterance is kept, including text
+it is unsure about. Earlier versions dropped pieces with a high no-speech
+probability or a high compression ratio; in practice that removed parts of
+real sentences, which is worse for a transcript than an occasional wrong
+word. The option can be switched off in Settings. If a result looks like a
+repetition loop while context was supplied, the utterance is decoded once
+more without context instead of being dropped. Nothing corrects or rewrites
+the text.
 
 **GPU failure during a session.** A `RuntimeError` from the GPU (typically
 out of memory because another program took the VRAM) makes `Transcriber`

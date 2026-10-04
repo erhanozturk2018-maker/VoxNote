@@ -8,10 +8,14 @@ running one to come to the front and exits.
 from __future__ import annotations
 
 import getpass
+import hashlib
 import logging
+import os
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
+
+from app.paths import ENV_HOME
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +25,13 @@ def _server_name() -> str:
         user = getpass.getuser()
     except Exception:
         user = "user"
-    return f"VoxNote-single-instance-{user}"
+    name = f"VoxNote-single-instance-{user}"
+    # A separate data folder (portable installation, automated tests) is a
+    # separate application as far as this guard is concerned.
+    home = os.environ.get(ENV_HOME)
+    if home:
+        name += "-" + hashlib.sha1(home.encode("utf-8")).hexdigest()[:10]
+    return name
 
 
 def notify_running_instance(timeout_ms: int = 400) -> bool:

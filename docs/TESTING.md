@@ -30,15 +30,16 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_vad_processor.py` | Segmentation with a scripted detector: silence, pre-roll and post-roll, short and long pauses, minimum speech, hysteresis, flush on stop, maximum length, no overlapping or duplicated audio, independence from block size; resampler length and continuity |
 | `tests/test_session_journal.py` | Journal round trip, durability before close, truncated lines, deletion, unreadable files |
 | `tests/test_i18n.py` | Every language has exactly the keys and placeholders of the English table |
+| `tests/test_transcriber_options.py` | Uncertain text kept or dropped, context passing, retry without context, vocabulary hint, with a stand-in model |
 | `tests/test_document_content.py` | Paragraph layout and content options in every document format; settings for them; the content panel; edge bar positions and requests; start/stop toggle; single-instance activation |
 | `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders; introduction shown once; theme cycling and persistence |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`194 passed`.
+`202 passed`.
 
 ## Verification status
 
-Honest status of each area at version 0.4.0. "Verified" means it was actually
+Honest status of each area at version 0.5.0. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 
@@ -75,6 +76,7 @@ RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 | Global hotkey | Partly verified | `RegisterHotKey` succeeded and a posted `WM_HOTKEY` message reached the application; the keys were not physically pressed in the test |
 | Edge bar | Partly verified | Shown on the real desktop; sliding in and out was triggered from code and the positions checked; hovering with a real pointer was not tested |
 | Start key of the shortcut (`Ctrl+Alt+V`) | **Not verified** | The property is written into the shortcut; pressing it was not tested |
+| Longer pause, context and keeping uncertain text | Verified with synthetic speech | Two long sentences with one-second pauses were split into six segments before and two after; the words were identical in both runs, so this test shows the changed segmentation but not a gain in accuracy |
 | **Medium model** | **Not verified** | Was not downloaded |
 | **Screen readers, high contrast** | **Not verified** | |
 

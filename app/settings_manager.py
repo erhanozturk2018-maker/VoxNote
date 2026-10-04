@@ -14,7 +14,9 @@ from app.filename_template import DEFAULT_TEMPLATE, template_errors
 
 log = logging.getLogger(__name__)
 
-SETTINGS_SCHEMA_VERSION = 1
+SETTINGS_SCHEMA_VERSION = 2
+# Default of ``silence_ms`` in schema version 1.
+_OLD_DEFAULT_SILENCE_MS = 800
 EXPORT_FORMATS = ("md", "txt", "json", "docx", "pdf")
 UI_LANGUAGES = ("en", "tr", "de", "ru", "it", "fr")
 DEVICE_PREFERENCES = ("auto", "cuda", "cpu")
@@ -68,7 +70,7 @@ class Settings:
     # Segments containing less speech than this are discarded.
     min_speech_ms: int = 250
     # Silence that ends a segment. Shorter pauses stay inside the utterance.
-    silence_ms: int = 800
+    silence_ms: int = 1200
     # A segment is cut when it reaches this length (Whisper window is 30 s).
     max_segment_s: int = 28
     # Audio kept before detected speech so the first syllable is not lost.
@@ -81,6 +83,8 @@ class Settings:
     spoken_languages: list[str] = field(default_factory=list)
     # Comma separated names and terms recognition should favour.
     vocabulary: str = ""
+    # Keep text the recogniser is unsure about instead of dropping it.
+    keep_uncertain: bool = True
     # "auto" uses the GPU when it works and falls back to the CPU.
     device_preference: str = "auto"
     # Debug option: keep the raw microphone audio of each session.
@@ -173,6 +177,12 @@ class SettingsManager:
             log.warning("Settings file is corrupt, using defaults: %s", exc)
             self._preserve_corrupt_file()
             return Settings()
+
+        # Version 1 ended a segment after 0.8 s of silence, which split long
+        # sentences at every breath. Files that still carry that old default
+        # get the new one; a value the user chose is left alone.
+        if data.get("schema_version", 1) < 2 and data.get("silence_ms") == _OLD_DEFAULT_SILENCE_MS:
+            data["silence_ms"] = Settings().silence_ms
 
         known = {item.name for item in fields(Settings)}
         return Settings(**{k: v for k, v in data.items() if k in known}).normalized()

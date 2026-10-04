@@ -207,6 +207,7 @@ class RecordingController(QObject):
         self._tracker.reset()
         self._tracker.allowed = frozenset(self.settings.spoken_languages)
         self.transcriber.vocabulary = self.settings.vocabulary
+        self.transcriber.keep_uncertain = self.settings.keep_uncertain
         self.session_reset.emit()
 
         blocks: queue.Queue = queue.Queue(maxsize=CAPTURE_QUEUE_BLOCKS)

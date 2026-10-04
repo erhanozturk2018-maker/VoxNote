@@ -44,7 +44,7 @@ SOFT_LIMIT_SILENCE_MS = 200
 class VadConfig:
     threshold: float = 0.5
     min_speech_ms: int = 250
-    silence_ms: int = 800
+    silence_ms: int = 1200
     max_segment_s: float = 28.0
     pre_roll_ms: int = 300
     post_roll_ms: int = 300

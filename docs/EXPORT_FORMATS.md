@@ -143,7 +143,7 @@ Transcript
   "schema_version": 1,
   "application": {
     "name": "VoxNote",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "session": {
     "id": "3f9a1c2e",
@@ -206,7 +206,7 @@ Top level:
 | `duration_seconds` | number | Length of the recording in seconds, including silence. Not negative. |
 | `languages` | array of strings | Distinct language codes as used by Whisper (for example `en`, `tr`), ordered by first confident detection. |
 | `language_names` | array of strings | English names for `languages`, in the same order. |
-| `model` | string | Name of the Whisper model: `small`, `medium` or `large-v3-turbo`. |
+| `model` | string | Name of the Whisper model: `small`, `medium`, `large-v3-turbo` or `large-v3`. |
 | `device` | string | `cuda` or `cpu`. May be empty for a recovered session. |
 | `compute_type` | string | Number format used for inference, for example `float16` or `int8`. May be empty. |
 

@@ -55,6 +55,9 @@ def main() -> int:
     )
     parser.add_argument("--vocabulary", default="", help="names and terms to favour")
     parser.add_argument("--silence-ms", type=int, default=VadConfig.silence_ms)
+    parser.add_argument(
+        "--strict", action="store_true", help="drop uncertain pieces and use no context"
+    )
     args = parser.parse_args()
 
     audio, rate = read_wav(args.wav)
@@ -62,6 +65,7 @@ def main() -> int:
 
     transcriber = Transcriber(args.model, args.device)
     transcriber.vocabulary = args.vocabulary
+    transcriber.keep_uncertain = not args.strict
     started = time.perf_counter()
     info = transcriber.load(lambda code: print(f"Model: {code}"))
     print(
@@ -80,13 +84,15 @@ def main() -> int:
     segments.extend(vad.flush())
     print(f"VAD found {len(segments)} speech segment(s)")
 
+    context = ("", "")
     for segment in segments:
-        result = transcriber.transcribe(segment.audio, tracker)
+        result = transcriber.transcribe(segment.audio, tracker, ("", "") if args.strict else context)
         if result.decision is None or not result.pieces:
             print(f"[{format_clock(segment.start_seconds)}] (no text, {result.seconds:.2f} s)")
             continue
         tracker.record(result.decision)
         text = " ".join(piece.text for piece in result.pieces)
+        context = (result.decision.language, text)
         print(
             f"[{format_clock(segment.start_seconds)}] "
             f"{language_name(result.decision.language)} "

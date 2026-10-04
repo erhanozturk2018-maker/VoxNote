@@ -42,6 +42,8 @@ MAX_COMPRESSION_RATIO = 2.4
 # text for unclear audio, and with CTranslate2 on CUDA a model that has run a
 # sampling decode aborts the process when it is destroyed.
 DECODE_TEMPERATURE = 0.0
+# How much of the previous utterance is given to the decoder as context.
+CONTEXT_CHARACTERS = 200
 
 
 class TranscriberError(Exception):
@@ -139,6 +141,10 @@ class Transcriber:
         # Optional names and terms that recognition should favour. Passed to
         # the decoder as a hint; the transcript is never edited afterwards.
         self.vocabulary = ""
+        # Write down everything the recogniser produced for detected speech,
+        # including text it is unsure about. When off, uncertain and
+        # repetitive pieces are dropped, which can remove real speech.
+        self.keep_uncertain = True
         self.device_preference = device_preference
         self.device_info: DeviceInfo | None = None
         self.model_path: Path | None = None
@@ -289,18 +295,24 @@ class Transcriber:
 
     # -- recognition -----------------------------------------------------
 
-    def transcribe(self, audio: np.ndarray, tracker: LanguageTracker) -> UtteranceResult:
+    def transcribe(
+        self,
+        audio: np.ndarray,
+        tracker: LanguageTracker,
+        context: tuple[str, str] = ("", ""),
+    ) -> UtteranceResult:
         """Recognise one utterance of 16 kHz mono float32 audio.
 
         The tracker decides the language but is not updated here; the caller
         records the decision once it knows the utterance produced text.
+        ``context`` is ``(language, text)`` of the previous utterance.
         """
         with self._lock:
             if self._model is None:
                 raise TranscriberError("model_not_loaded")
             started = time.perf_counter()
             try:
-                result = self._recognize(audio, tracker)
+                result = self._recognize(audio, tracker, context)
             except RuntimeError as exc:
                 if self.device_info is None or self.device_info.device != "cuda":
                     raise
@@ -314,7 +326,7 @@ class Transcriber:
                 self.device_info = DeviceInfo(info.device, info.compute_type, reason)
                 if self.on_device_changed:
                     self.on_device_changed(self.device_info)
-                result = self._recognize(audio, tracker)
+                result = self._recognize(audio, tracker, context)
             result.seconds = time.perf_counter() - started
             return result
 
@@ -329,7 +341,33 @@ class Transcriber:
         terms = [term for term in terms if term]
         return ", ".join(terms) + "." if terms else None
 
-    def _recognize(self, audio: np.ndarray, tracker: LanguageTracker) -> UtteranceResult:
+    def _decode(self, audio: np.ndarray, language: str, context: str) -> list:
+        """Run the recogniser once and return its segments."""
+        segments, _info = self._model.transcribe(
+            audio,
+            language=language,
+            task="transcribe",
+            beam_size=5,
+            # Context is passed explicitly through ``initial_prompt`` (see
+            # ``_recognize``); Whisper's own carry-over inside one call stays
+            # off because it is what produces repetition loops.
+            condition_on_previous_text=False,
+            initial_prompt=context or None,
+            # Speech was already isolated by the streaming VAD.
+            vad_filter=False,
+            # With ``keep_uncertain`` nothing is skipped as "probably no
+            # speech": the VAD decided that somebody spoke.
+            no_speech_threshold=None if self.keep_uncertain else NO_SPEECH_PROBABILITY,
+            log_prob_threshold=LOW_CONFIDENCE_LOGPROB,
+            compression_ratio_threshold=MAX_COMPRESSION_RATIO,
+            hotwords=self._hotwords(),
+            temperature=DECODE_TEMPERATURE,
+        )
+        return list(segments)
+
+    def _recognize(
+        self, audio: np.ndarray, tracker: LanguageTracker, context: tuple[str, str]
+    ) -> UtteranceResult:
         model = self._model
         duration = len(audio) / SAMPLE_RATE
         _, _, probabilities = model.detect_language(audio)
@@ -337,36 +375,30 @@ class Transcriber:
         if decision is None:
             return UtteranceResult(None)
 
-        segments, _info = model.transcribe(
-            audio,
-            language=decision.language,
-            task="transcribe",
-            beam_size=5,
-            # Each utterance is decoded on its own. Feeding earlier text back
-            # in is what makes Whisper repeat itself and drift between
-            # languages, and it would bias the next utterance's language.
-            condition_on_previous_text=False,
-            # Speech was already isolated by the streaming VAD.
-            vad_filter=False,
-            no_speech_threshold=NO_SPEECH_PROBABILITY,
-            log_prob_threshold=LOW_CONFIDENCE_LOGPROB,
-            compression_ratio_threshold=MAX_COMPRESSION_RATIO,
-            hotwords=self._hotwords(),
-            temperature=DECODE_TEMPERATURE,
-        )
+        # The end of the previous utterance helps the model continue a
+        # sentence that a pause split in two. It is only used when the
+        # language is the same, so it cannot pull speech into another language.
+        previous_language, previous_text = context
+        prompt = previous_text[-CONTEXT_CHARACTERS:] if previous_language == decision.language else ""
+        segments = self._decode(audio, decision.language, prompt)
+        if prompt and any(s.compression_ratio > MAX_COMPRESSION_RATIO for s in segments):
+            # A prompt can push the decoder into repeating itself. Decode
+            # again without it rather than keep or drop a looping result.
+            segments = self._decode(audio, decision.language, "")
 
         result = UtteranceResult(decision)
         for segment in segments:
             text = segment.text.strip()
             if not text:
                 continue
-            if (
-                segment.no_speech_prob > NO_SPEECH_PROBABILITY
-                and segment.avg_logprob < LOW_CONFIDENCE_LOGPROB
-            ):
-                continue
-            if segment.compression_ratio > MAX_COMPRESSION_RATIO:
-                continue
+            if not self.keep_uncertain:
+                if (
+                    segment.no_speech_prob > NO_SPEECH_PROBABILITY
+                    and segment.avg_logprob < LOW_CONFIDENCE_LOGPROB
+                ):
+                    continue
+                if segment.compression_ratio > MAX_COMPRESSION_RATIO:
+                    continue
             start = min(max(float(segment.start), 0.0), duration)
             end = min(max(float(segment.end), start), duration)
             result.pieces.append(RecognizedPiece(start, end, text))

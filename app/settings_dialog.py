@@ -333,6 +333,12 @@ class SettingsDialog(QDialog):
             _column(self.vocabulary_edit, _hint(tr("settings.vocabulary.hint"))),
         )
 
+        self.uncertain_check = QCheckBox(tr("settings.keep_uncertain"))
+        form.addRow(
+            tr("settings.completeness"),
+            _column(self.uncertain_check, _hint(tr("settings.keep_uncertain.hint"))),
+        )
+
         self.device_combo = QComboBox()
         for code in ("auto", "cuda", "cpu"):
             self.device_combo.addItem(tr(f"settings.device.{code}"), code)
@@ -494,6 +500,7 @@ class SettingsDialog(QDialog):
         self._spoken = list(settings.spoken_languages)
         self._update_spoken_label()
         self.vocabulary_edit.setText(settings.vocabulary)
+        self.uncertain_check.setChecked(settings.keep_uncertain)
         select(self.device_combo, settings.device_preference)
         self.silence_spin.setValue(settings.silence_ms)
         self.threshold_spin.setValue(settings.vad_threshold)
@@ -615,6 +622,7 @@ class SettingsDialog(QDialog):
             model=self.model_combo.currentData(),
             spoken_languages=list(self._spoken),
             vocabulary=self.vocabulary_edit.text(),
+            keep_uncertain=self.uncertain_check.isChecked(),
             device_preference=self.device_combo.currentData(),
             silence_ms=self.silence_spin.value(),
             vad_threshold=round(self.threshold_spin.value(), 2),

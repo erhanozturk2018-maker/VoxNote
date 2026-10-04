@@ -123,3 +123,13 @@ def test_application_data_respects_override(isolated_home):
     assert paths.settings_file() == isolated_home / "config" / "settings.json"
     assert paths.log_dir() == isolated_home / "data" / "logs"
     assert paths.journal_dir() == isolated_home / "data" / "sessions"
+
+
+def test_old_default_pause_is_upgraded_but_a_chosen_value_is_kept(tmp_path):
+    path = tmp_path / "settings.json"
+    path.write_text(json.dumps({"schema_version": 1, "silence_ms": 800}), encoding="utf-8")
+    assert SettingsManager(path).load().silence_ms == Settings().silence_ms == 1200
+    path.write_text(json.dumps({"schema_version": 1, "silence_ms": 650}), encoding="utf-8")
+    assert SettingsManager(path).load().silence_ms == 650
+    path.write_text(json.dumps({"schema_version": 2, "silence_ms": 800}), encoding="utf-8")
+    assert SettingsManager(path).load().silence_ms == 800

@@ -266,6 +266,32 @@ that is not ticked is forced into one of the ticked ones, which produces
 wrong or translated text. Tick the additional language, or untick everything
 to allow all languages.
 
+### Parts of a sentence are missing
+
+VoxNote writes down everything the recogniser returns for detected speech.
+If words still go missing:
+
+- Keep **Settings › Recognition › Write down unclear speech as well** switched
+  on. When it is off, text the recogniser is unsure about is dropped.
+- Increase **Settings › Recording › Pause that ends a segment** (default
+  1200 ms). A sentence that is cut at a breath is recognised as two unrelated
+  halves. Settings saved by versions before 0.5.0 with the old default of
+  800 ms are raised automatically.
+- Quiet word endings may fall below the speech detector. Lower **Speech
+  sensitivity** (for example to 0.4) and raise **Lead-out** under *Advanced
+  options*.
+- Use a headset. With a laptop microphone in a noisy room, speech and noise
+  overlap and no setting fully separates them.
+- Try the **Large v3** model.
+
+A local model will not reach the accuracy of the large cloud services; see
+the README.
+
+### A dialect or accent is taken for another language
+
+Tick only the language you are speaking in **Settings › Recognition › Spoken
+languages**. With a single language ticked, the language is never guessed.
+
 ### The wrong language is detected
 
 - **Tick the languages you speak** in **Settings › Recognition › Spoken

@@ -13,7 +13,7 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.4.0, pre-release.** The application and its Windows
+> **Project status: 0.5.0, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
 > machine. The installer is **not code-signed**, so Windows blocks or warns
 > about it on other computers; see
@@ -41,8 +41,8 @@ your choice.
 - **Local speech recognition** with [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
   and multilingual Whisper models. No account, no subscription, no cloud
   service.
-- **Three models to choose from:** Large v3 Turbo (default, most accurate),
-  Medium and Small.
+- **Four models to choose from:** Large v3 Turbo (default), Large v3, Medium
+  and Small.
 - **Works offline** after the chosen model has been downloaded once
   (0.5 to 1.6 GB).
 - **Tools for better accuracy:** limit recognition to the languages you
@@ -343,6 +343,10 @@ every place where data is written to disk.
 
 ## Known limitations
 
+- **A local model does not match the large cloud services.** Online
+  transcription services run far larger models on servers and are noticeably
+  more accurate, especially with noise, dialects and unusual words. VoxNote
+  trades some accuracy for keeping the audio on your computer.
 - **Recognition is not perfect.** Even the largest model makes mistakes,
   especially with names, accents, noise and overlapping speakers. A single
   word spoken on its own is recognised far less reliably than a sentence.

@@ -289,4 +289,9 @@ STRINGS = {
     "settings.hotkey": "Start and stop recording with {shortcut} from any application",
     "shortcut.global": "Start or stop recording from any application",
     "notice.hotkey_unavailable": "The shortcut {shortcut} is used by another program and is not available.",
+
+    "settings.model.option.large-v3": "Large v3 · best for languages other than English, slower (3.1 GB)",
+    "settings.completeness": "Completeness:",
+    "settings.keep_uncertain": "Write down unclear speech as well",
+    "settings.keep_uncertain.hint": "On: everything that was heard is written, even when the recogniser is unsure, so no part of a sentence goes missing. Off: uncertain parts are left out.",
 }

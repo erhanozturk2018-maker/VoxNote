@@ -115,7 +115,8 @@ VoxNote listens for speech and ignores silence.
 
 - An utterance **starts** when speech is detected. A short stretch of audio
   from just before that moment is included, so the first syllable is complete.
-- **Short pauses** (by default up to 0.8 seconds) stay inside the utterance.
+- **Short pauses** (by default up to 1.2 seconds) stay inside the utterance,
+  so a breath in the middle of a long sentence does not split it.
 - The utterance **ends** after a longer pause. It is then recognised and
   appears in the transcript, with the time at which it started.
 - Sounds shorter than a quarter of a second, such as a click, are ignored.
@@ -166,9 +167,11 @@ languages**, so add every language you use. Leave everything unticked if you
 want every language to be possible. With a single language ticked, everything
 is transcribed in that language.
 
-**Speech model.** Large v3 Turbo is the default and the most accurate.
-Medium and Small are faster on computers without a graphics card but make
-more mistakes. A model is downloaded once when it is first selected.
+**Speech model.** Large v3 Turbo is the default: fast and accurate. Large v3
+is the full-size model; published comparisons report it as more accurate for
+languages other than English, such as Turkish, at two to three times the
+processing time and twice the download. Medium and Small are faster on
+computers without a graphics card but make more mistakes. A model is downloaded once when it is first selected.
 
 **Names and special words.** Enter names, places or technical terms,
 separated by commas, for example `Gesi, Kayseri, Erhan`. The recogniser is
@@ -177,6 +180,11 @@ The transcript is not searched and replaced afterwards; the words only
 influence recognition. Keep the list short and limited to words you really
 use, because listed words can occasionally appear where something similar
 was said.
+
+**Speaking one language only.** If a whole session is in one language, tick
+only that language. Recognition then never has to guess the language, which
+removes the most common error with dialects and accents: a sentence being
+mistaken for another language.
 
 Beyond the settings:
 
@@ -398,9 +406,10 @@ as tall as the selected tab needs.
 
 | Setting | Description | Default |
 | --- | --- | --- |
-| Speech model | Large v3 Turbo, Medium or Small. The line below shows whether the model is already on this computer. | Large v3 Turbo |
+| Speech model | Large v3 Turbo, Large v3, Medium or Small. The line below shows whether the model is already on this computer. | Large v3 Turbo |
 | Spoken languages | Languages recognition is limited to; **Choose…** opens a searchable list | All languages |
 | Names and special words | Comma-separated words that should be recognised reliably | empty |
+| Write down unclear speech as well | On: everything that was heard is written, even text the recogniser is unsure about. Off: uncertain and repetitive parts are left out, which can remove real speech. | On |
 | Processing device | Automatic (GPU if it works, otherwise CPU), graphics card, or processor. The line below shows what is in use and why. | Automatic |
 | Folders | **Open Model Folder** and **Open Log Folder** | |
 
@@ -414,7 +423,7 @@ first.
 
 | Setting | Description | Default | Range |
 | --- | --- | --- | --- |
-| Pause that ends a segment | Silence needed to finish an utterance | 800 ms | 200–5000 ms |
+| Pause that ends a segment | Silence needed to finish an utterance | 1200 ms | 200–5000 ms |
 | Speech sensitivity | Probability above which sound counts as speech. Lower = more sensitive. | 0.50 | 0.10–0.95 |
 | Keep the raw audio of each session | Stores a WAV file per session for troubleshooting | Off | |
 

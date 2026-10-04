@@ -289,4 +289,9 @@ STRINGS = {
     "settings.hotkey": "Avvia e ferma la registrazione con {shortcut} da qualsiasi applicazione",
     "shortcut.global": "Avvia o ferma la registrazione da qualsiasi applicazione",
     "notice.hotkey_unavailable": "La scorciatoia {shortcut} è usata da un altro programma e non è disponibile.",
+
+    "settings.model.option.large-v3": "Large v3 · il migliore per le lingue diverse dall'inglese, più lento (3,1 GB)",
+    "settings.completeness": "Completezza:",
+    "settings.keep_uncertain": "Scrivi anche il parlato poco chiaro",
+    "settings.keep_uncertain.hint": "Attivo: tutto ciò che è stato sentito viene scritto, anche se il riconoscimento è incerto, così nessuna parte della frase va persa. Disattivo: le parti incerte vengono omesse.",
 }
