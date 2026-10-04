@@ -294,4 +294,10 @@ STRINGS = {
     "settings.completeness": "Completeness:",
     "settings.keep_uncertain": "Write down unclear speech as well",
     "settings.keep_uncertain.hint": "On: everything that was heard is written, even when the recogniser is unsure, so no part of a sentence goes missing. Off: uncertain parts are left out.",
+
+    "main.autosave": "Save automatically",
+    "main.autosave.tip": "On: the transcript is saved as soon as a recording ends. Off: you are asked whether to save it.",
+    "notice.save_prompt": "The recording has finished. Do you want to save the transcript?",
+    "main.discard": "Don't Save",
+    "notice.discarded": "The transcript was discarded.",
 }

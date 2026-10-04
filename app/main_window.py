@@ -22,6 +22,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QComboBox,
     QFileDialog,
     QFrame,
@@ -406,7 +407,10 @@ class MainWindow(QMainWindow):
         self.filename_hint = QLabel()
         self.filename_hint.setObjectName("hint")
         self.content_button = self._icon_button("document")
+        self.autosave_check = QCheckBox()
         row.addWidget(self.filename_hint, 1)
+        row.addWidget(self.autosave_check)
+        row.addSpacing(6)
         row.addWidget(self.content_button)
         layout.addLayout(row)
         self.content_panel: ContentPanel | None = None
@@ -478,6 +482,7 @@ class MainWindow(QMainWindow):
         self.save_button.clicked.connect(self.save_now)
         self.save_as_button.clicked.connect(self.save_as)
         self.content_button.clicked.connect(self.show_content_panel)
+        self.autosave_check.toggled.connect(self._on_autosave_toggled)
 
         # Shortcuts for frequent users; each one is also shown in a tooltip.
         for sequence, slot in (
@@ -542,6 +547,11 @@ class MainWindow(QMainWindow):
         self.save_button.setToolTip(tr("main.save.tip"))
         self.save_as_button.setText(tr("main.save_as"))
         self.save_as_button.setToolTip(tr("main.save_as.tip", shortcut="Ctrl+Shift+S"))
+        self.autosave_check.setText(tr("main.autosave"))
+        self.autosave_check.setToolTip(tr("main.autosave.tip"))
+        self.autosave_check.blockSignals(True)
+        self.autosave_check.setChecked(self.settings.auto_save)
+        self.autosave_check.blockSignals(False)
         self.content_button.setText(tr("main.content"))
         self.content_button.setToolTip(tr("main.content.tip"))
         self.content_panel = None  # rebuilt in the current language when opened
@@ -975,10 +985,36 @@ class MainWindow(QMainWindow):
     def _on_notice(self, code: str) -> None:
         if code == "no_speech":
             self._show_result("info", "notice.no_speech", {})
+        elif code == "save_prompt":
+            self._ask_to_save()
         elif code == "session_recovered":
             self._flash(tr("notice.session_recovered"), 6000)
         else:
             self._show_banner("warning", f"notice.{code}", {})
+
+    def _on_autosave_toggled(self, enabled: bool) -> None:
+        self.settings.auto_save = enabled
+        self._persist()
+
+    def _ask_to_save(self) -> None:
+        """Automatic saving is off: let the user decide what happens."""
+        self._show_result(
+            "info",
+            "notice.save_prompt",
+            {},
+            (
+                ("main.save", "save", self.save_now),
+                ("main.save_as", "save", self.save_as),
+                ("main.discard", "close", self.discard_transcript),
+            ),
+        )
+        self._update_controls()
+
+    def discard_transcript(self) -> None:
+        if self.controller.discard_transcript():
+            self._clear_result()
+            self._flash(tr("notice.discarded"))
+            self._update_controls()
 
     def save_now(self) -> None:
         self._clear_result()

@@ -294,4 +294,10 @@ STRINGS = {
     "settings.completeness": "Vollständigkeit:",
     "settings.keep_uncertain": "Auch undeutliche Sprache aufschreiben",
     "settings.keep_uncertain.hint": "Ein: Alles Gehörte wird geschrieben, auch wenn die Erkennung unsicher ist, sodass kein Satzteil verloren geht. Aus: Unsichere Teile werden weggelassen.",
+
+    "main.autosave": "Automatisch speichern",
+    "main.autosave.tip": "Ein: Das Transkript wird gespeichert, sobald eine Aufnahme endet. Aus: Sie werden gefragt, ob es gespeichert werden soll.",
+    "notice.save_prompt": "Die Aufnahme ist beendet. Möchten Sie das Transkript speichern?",
+    "main.discard": "Nicht speichern",
+    "notice.discarded": "Das Transkript wurde verworfen.",
 }

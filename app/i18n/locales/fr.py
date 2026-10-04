@@ -294,4 +294,10 @@ STRINGS = {
     "settings.completeness": "Exhaustivité :",
     "settings.keep_uncertain": "Écrire aussi la parole peu claire",
     "settings.keep_uncertain.hint": "Activé : tout ce qui a été entendu est écrit, même si la reconnaissance hésite, afin qu'aucune partie de phrase ne manque. Désactivé : les parties incertaines sont omises.",
+
+    "main.autosave": "Enregistrer automatiquement",
+    "main.autosave.tip": "Activé : la transcription est enregistrée dès la fin d'un enregistrement. Désactivé : il vous est demandé s'il faut l'enregistrer.",
+    "notice.save_prompt": "L'enregistrement est terminé. Voulez-vous enregistrer la transcription ?",
+    "main.discard": "Ne pas enregistrer",
+    "notice.discarded": "La transcription a été supprimée.",
 }

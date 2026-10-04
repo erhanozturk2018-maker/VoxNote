@@ -294,4 +294,10 @@ STRINGS = {
     "settings.completeness": "Eksiksizlik:",
     "settings.keep_uncertain": "Anlaşılmayan konuşmayı da yaz",
     "settings.keep_uncertain.hint": "Açık: tanıyıcı emin olmasa bile duyulan her şey yazılır, cümlenin hiçbir kısmı kaybolmaz. Kapalı: emin olunmayan kısımlar atlanır.",
+
+    "main.autosave": "Otomatik kaydet",
+    "main.autosave.tip": "Açık: kayıt biter bitmez döküm kaydedilir. Kapalı: kaydedilsin mi diye sorulur.",
+    "notice.save_prompt": "Kayıt bitti. Döküm kaydedilsin mi?",
+    "main.discard": "Kaydetme",
+    "notice.discarded": "Döküm silindi.",
 }

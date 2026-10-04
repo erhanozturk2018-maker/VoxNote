@@ -454,3 +454,52 @@ def test_theme_can_be_chosen_in_settings(qapp, tmp_path):
         assert dialog.result_settings().theme == "dark"
     finally:
         dialog.close()
+
+
+def test_without_automatic_saving_the_user_is_asked(qapp, tmp_path, session):
+    controller = make_controller(tmp_path, auto_save=False)
+    window = make_window(controller, tmp_path)
+    try:
+        begin_fake_session(controller, session)
+        controller._on_transcription_finished()
+        assert controller.state is AppState.COMPLETED
+        assert not (tmp_path / "out").exists()  # nothing was written
+        assert controller.has_unsaved_transcript
+        assert len(find_journals(paths.journal_dir())) == 1  # still recoverable
+        labels = [button.text().strip() for button in window.result_banner.buttons]
+        assert labels == ["Save", "Save As…", "Don't Save"]
+
+        window.save_now()
+        assert wait_until(lambda: controller.saved_path is not None)
+        assert controller.saved_path.exists() and not controller.has_unsaved_transcript
+    finally:
+        controller.discard_session()
+        window.close()
+
+
+def test_declining_to_save_discards_the_transcript(qapp, tmp_path, session):
+    controller = make_controller(tmp_path, auto_save=False)
+    window = make_window(controller, tmp_path)
+    try:
+        begin_fake_session(controller, session)
+        controller._on_transcription_finished()
+        window.discard_transcript()
+        assert controller.state is AppState.READY
+        assert not controller.has_transcript
+        assert window.transcript_view.toPlainText() == ""
+        assert find_journals(paths.journal_dir()) == []
+        assert not (tmp_path / "out").exists()
+    finally:
+        window.close()
+
+
+def test_automatic_saving_can_be_switched_in_the_main_window(qapp, tmp_path):
+    controller = make_controller(tmp_path)
+    window = make_window(controller, tmp_path)
+    try:
+        assert window.autosave_check.isChecked()
+        window.autosave_check.setChecked(False)
+        assert controller.settings.auto_save is False
+        assert SettingsManager(tmp_path / "settings.json").load().auto_save is False
+    finally:
+        window.close()

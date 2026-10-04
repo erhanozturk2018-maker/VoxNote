@@ -63,6 +63,9 @@ class Settings:
     # Ctrl+Alt+R starts and stops recording from any application.
     global_hotkeys: bool = True
     open_after_save: bool = False
+    # Save the transcript as soon as a recording has been processed. When
+    # off, the user is asked what to do with it.
+    auto_save: bool = True
     # Empty means "system default input device".
     microphone: str = ""
     # Speech probability above which a frame counts as speech.

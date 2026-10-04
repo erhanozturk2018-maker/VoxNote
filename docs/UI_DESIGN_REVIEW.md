@@ -260,6 +260,8 @@ areas, icons were added, and a Help window was introduced.
 - **The user decides where files go**, what they are called and which format
   they have, and can change each of these at any time, including after the
   recording.
+- **Saving is the user's choice:** automatic by default, or on request with
+  the option to discard.
 - **Appearance is the user's choice** (system, light or dark) and can be
   changed at any moment, including during a recording.
 - **The device and the speech model can be chosen** instead of being imposed,
@@ -275,8 +277,6 @@ areas, icons were added, and a Help window was introduced.
 
 **Weaknesses**
 
-- **Automatic saving cannot be switched off.** Every session with speech
-  produces a file.
 - **Recording stops automatically** in two situations (microphone lost,
   recognition backlog of more than 20 minutes). Both are explained, and no
   data is lost, but the user did not initiate the stop.

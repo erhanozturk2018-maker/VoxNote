@@ -13,7 +13,7 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.5.1, pre-release.** The application and its Windows
+> **Project status: 0.6.0, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
 > machine. The installer is **not code-signed**, so Windows blocks or warns
 > about it on other computers; see
@@ -63,6 +63,9 @@ your choice.
   continuous paragraph; with or without timestamps, language headings, title
   and each metadata row (date, languages, duration, session ID, model). The
   choice can be changed at any time, also during a recording.
+- **Automatic saving, or ask first:** by default the transcript is saved when
+  the recording ends; switch this off and VoxNote asks whether to save, save
+  elsewhere or discard.
 - **You decide where files go:** selectable save folder, configurable file
   name template with live preview, and automatic handling of name collisions
   (existing files are never overwritten).

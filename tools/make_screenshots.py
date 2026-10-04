@@ -121,6 +121,12 @@ def main() -> int:
         window._on_state_changed(AppState.COMPLETED)
         window._on_saved(str(controller.saved_path))
         grab(window, f"main-completed{suffix}.png")
+        if language == "en" and not dark:
+            controller._unsaved = True
+            window._ask_to_save()
+            grab(window, "main-save-prompt.png")
+            controller._unsaved = False
+            window._on_saved(str(controller.saved_path))
 
         if language == "en" and not dark:
             dialog = SettingsDialog(settings, controller, window)

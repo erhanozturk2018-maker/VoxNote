@@ -294,4 +294,10 @@ STRINGS = {
     "settings.completeness": "Completezza:",
     "settings.keep_uncertain": "Scrivi anche il parlato poco chiaro",
     "settings.keep_uncertain.hint": "Attivo: tutto ciò che è stato sentito viene scritto, anche se il riconoscimento è incerto, così nessuna parte della frase va persa. Disattivo: le parti incerte vengono omesse.",
+
+    "main.autosave": "Salva automaticamente",
+    "main.autosave.tip": "Attivo: la trascrizione viene salvata appena termina una registrazione. Disattivo: ti viene chiesto se salvarla.",
+    "notice.save_prompt": "La registrazione è terminata. Vuoi salvare la trascrizione?",
+    "main.discard": "Non salvare",
+    "notice.discarded": "La trascrizione è stata eliminata.",
 }

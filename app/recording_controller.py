@@ -317,6 +317,12 @@ class RecordingController(QObject):
             self._set_state(AppState.COMPLETED)
             self.notice.emit("no_speech")
             return
+        if not self.settings.auto_save:
+            # The user decides. The transcript stays in memory and in the
+            # recovery journal until it is saved or discarded.
+            self._set_state(AppState.COMPLETED)
+            self.notice.emit("save_prompt")
+            return
         self.save()
 
     # -- saving ----------------------------------------------------------
@@ -390,6 +396,17 @@ class RecordingController(QObject):
             delete_journal(self._journal_path)
             self._journal_path = None
         self._unsaved = False
+
+    def discard_transcript(self) -> bool:
+        """Throw the current transcript away on the user's request."""
+        if self.is_busy:
+            return False
+        self.discard_session()
+        self.session = Session()
+        self.saved_path = None
+        self.session_reset.emit()
+        self._set_state(AppState.READY)
+        return True
 
     # -- crash recovery --------------------------------------------------
 

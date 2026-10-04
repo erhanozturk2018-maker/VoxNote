@@ -10,6 +10,7 @@
 - [Changing the save folder](#changing-the-save-folder)
 - [Changing the file name](#changing-the-file-name)
 - [Selecting the export format](#selecting-the-export-format)
+- [Saving automatically or on request](#saving-automatically-or-on-request)
 - [Choosing what a document contains](#choosing-what-a-document-contains)
 - [The edge bar](#the-edge-bar)
 - [Shortcuts that work everywhere](#shortcuts-that-work-everywhere)
@@ -258,6 +259,23 @@ been saved*, which opens the file with the program Windows associates with
 its type.
 
 See [EXPORT_FORMATS.md](EXPORT_FORMATS.md) for what each format looks like.
+
+## Saving automatically or on request
+
+The **Save automatically** box in the Output section decides what happens
+when a recording ends.
+
+| Setting | Behaviour |
+| --- | --- |
+| Ticked (default) | The transcript is saved to the save folder as soon as it has been processed. |
+| Not ticked | Nothing is written. A message asks "Do you want to save the transcript?" with three choices: **Save** (to the save folder), **Save As…** (choose place and format) and **Don't Save** (discard the transcript). |
+
+![Save prompt](images/main-save-prompt.png)
+
+The box can be changed at any time, also during a recording. While you have
+not decided, the transcript stays in the window; if VoxNote is closed in that
+state, it is offered for recovery at the next start. **Don't Save** removes
+it permanently.
 
 ## Choosing what a document contains
 

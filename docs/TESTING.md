@@ -35,11 +35,11 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders; introduction shown once; theme cycling and persistence |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`204 passed`.
+`207 passed`.
 
 ## Verification status
 
-Honest status of each area at version 0.5.0. "Verified" means it was actually
+Honest status of each area at version 0.6.0. "Verified" means it was actually
 exercised on the development computer (Windows 11, Intel laptop with NVIDIA
 RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 
@@ -210,6 +210,7 @@ observed.
 | C12 | Disable timestamps in **Document Content** and record | No `[00:00:00]` prefixes in preview and file |
 | C13 | Choose *One continuous paragraph*, untick everything under *Include*, record three sentences | The file contains exactly the three sentences as one paragraph |
 | C14 | Open **Document Content** during a recording and change options | The panel opens; the saved file follows the new options |
+| C16 | Untick **Save automatically**, record, then try Save, Save As… and Don't Save in turn | No file until you choose; each choice does what it says |
 | C15 | Untick only *Session ID* | Every format except JSON lacks the session ID |
 
 ### D. Devices and failures
