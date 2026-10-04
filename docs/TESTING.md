@@ -35,7 +35,7 @@ folder, so your settings and transcripts are not touched.
 | `tests/test_controller_and_gui.py` | State machine guards; automatic save; empty session; failed save keeps the transcript and allows saving elsewhere; crash recovery; main window controls per state; language switching; settings dialog validation, cancel and defaults; dialog height per tab; language chooser; help window; every icon renders; introduction shown once; theme cycling and persistence |
 
 **Result of the last run by the developer** (Windows 11, Python 3.11.9):
-`202 passed`.
+`204 passed`.
 
 ## Verification status
 
@@ -77,6 +77,7 @@ RTX 3060 Laptop GPU 6 GB, built-in microphone array, Python 3.11.9).
 | Edge bar | Partly verified | Shown on the real desktop; sliding in and out was triggered from code and the positions checked; hovering with a real pointer was not tested |
 | Start key of the shortcut (`Ctrl+Alt+V`) | **Not verified** | The property is written into the shortcut; pressing it was not tested |
 | Longer pause, context and keeping uncertain text | Verified with synthetic speech | Two long sentences with one-second pauses were split into six segments before and two after; the words were identical in both runs, so this test shows the changed segmentation but not a gain in accuracy |
+| Large v3 model | Verified with synthetic speech | Ran on the 6 GB GPU in `float16`. In one run it wrote a place name correctly that Turbo got wrong, but failed on two one-word Turkish utterances that Turbo got right, at about twice the processing time. Not enough to prefer it over Turbo |
 | **Medium model** | **Not verified** | Was not downloaded |
 | **Screen readers, high contrast** | **Not verified** | |
 

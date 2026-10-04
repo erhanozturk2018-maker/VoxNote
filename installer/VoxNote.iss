@@ -9,7 +9,7 @@
 ; to dist\installer. See docs\RELEASE.md.
 
 #ifndef AppVersion
-  #define AppVersion "0.5.0"
+  #define AppVersion "0.5.1"
 #endif
 #define AppName "VoxNote"
 #define AppExe "VoxNote.exe"

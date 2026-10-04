@@ -177,8 +177,8 @@ STRINGS = {
     "main.help": "Help",
     "main.help.tip": "Questions, answers and information about VoxNote ({shortcut})",
     "main.languages.tip": "Languages detected in this session",
-    "main.languages.limited": "· limited to {languages}",
-    "main.languages.limited.tip": "Recognition is limited to these languages (Settings › Recognition › Spoken languages). Speech in any other language is written in one of them.",
+    "main.languages.limited": "· preferring {languages}",
+    "main.languages.limited.tip": "Short or unclear phrases are assigned to these languages (Settings › Recognition › Spoken languages). Clearly spoken speech in another language is still recognised as that language.",
 
     "settings.tab.recognition": "Recognition",
     "settings.model.option.small": "Small · fastest, least accurate (0.5 GB)",
@@ -190,7 +190,7 @@ STRINGS = {
     "settings.spoken": "Spoken languages:",
     "settings.spoken.all": "All languages (detected automatically)",
     "settings.spoken.choose": "Choose…",
-    "settings.spoken.hint": "Limit recognition to the languages you actually speak. Short phrases are then no longer mistaken for other languages.",
+    "settings.spoken.hint": "Tick the languages you actually speak. Short or unclear phrases are then assigned to one of them instead of an unrelated language. A clearly spoken sentence in another language is still recognised as that language.",
 
     "dialog.languages.title": "Spoken languages",
     "dialog.languages.text": "Tick the languages you speak. Leave everything unticked to allow all languages.",

@@ -177,8 +177,8 @@ STRINGS = {
     "main.help": "Hilfe",
     "main.help.tip": "Fragen, Antworten und Informationen zu VoxNote ({shortcut})",
     "main.languages.tip": "In dieser Sitzung erkannte Sprachen",
-    "main.languages.limited": "· beschränkt auf {languages}",
-    "main.languages.limited.tip": "Die Erkennung ist auf diese Sprachen beschränkt (Einstellungen › Erkennung › Gesprochene Sprachen). Äußerungen in anderen Sprachen werden in einer dieser Sprachen geschrieben.",
+    "main.languages.limited": "· bevorzugt: {languages}",
+    "main.languages.limited.tip": "Kurze oder undeutliche Äußerungen werden diesen Sprachen zugeordnet (Einstellungen › Erkennung › Gesprochene Sprachen). Deutlich in einer anderen Sprache Gesprochenes wird weiterhin als diese Sprache erkannt.",
 
     "settings.tab.recognition": "Erkennung",
     "settings.model.option.small": "Small · am schnellsten, am ungenauesten (0,5 GB)",
@@ -190,7 +190,7 @@ STRINGS = {
     "settings.spoken": "Gesprochene Sprachen:",
     "settings.spoken.all": "Alle Sprachen (automatisch erkannt)",
     "settings.spoken.choose": "Auswählen…",
-    "settings.spoken.hint": "Beschränken Sie die Erkennung auf die Sprachen, die Sie tatsächlich sprechen. Kurze Äußerungen werden dann nicht mehr mit anderen Sprachen verwechselt.",
+    "settings.spoken.hint": "Markieren Sie die Sprachen, die Sie tatsächlich sprechen. Kurze oder undeutliche Äußerungen werden dann einer davon zugeordnet statt einer fremden Sprache. Ein deutlich gesprochener Satz in einer anderen Sprache wird weiterhin als diese Sprache erkannt.",
 
     "dialog.languages.title": "Gesprochene Sprachen",
     "dialog.languages.text": "Markieren Sie die Sprachen, die Sie sprechen. Ohne Markierung sind alle Sprachen zugelassen.",

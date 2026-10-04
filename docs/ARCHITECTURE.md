@@ -361,9 +361,13 @@ audio of that utterance.
 
 `LanguageTracker.decide(probabilities, duration)`:
 
-0. If the user ticked spoken languages (`LanguageTracker.allowed`), all other
-   languages are removed and the remaining probabilities are rescaled to sum
-   to one. Choosing between two or three languages is far more reliable than
+0. If the user ticked spoken languages (`LanguageTracker.allowed`) and the
+   top language is outside them, it is still accepted when its probability
+   is at least 0.90 and the utterance is not short. Forcing clear speech
+   into an allowed language made Whisper write, for example, a German
+   sentence in German but file it under "English". In every other case all
+   non-allowed languages are removed and the remaining probabilities are
+   rescaled to sum to one. Choosing between two or three languages is far more reliable than
    choosing between a hundred. With one allowed language the decision is
    fixed.
 1. If the top language is **confident** — probability at least 0.70, or at

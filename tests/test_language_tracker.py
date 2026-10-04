@@ -131,3 +131,21 @@ def test_restriction_with_unknown_codes_is_ignored():
     tracker = LanguageTracker()
     tracker.allowed = frozenset({"xx"})
     assert tracker.decide([("en", 0.9)], 3.0).language == "en"
+
+def test_clearly_spoken_other_language_is_not_forced_into_an_allowed_one():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"en", "tr"})
+    decision = tracker.decide([("de", 0.97), ("en", 0.02), ("tr", 0.01)], 3.0)
+    assert (decision.language, decision.confident) == ("de", True)
+    tracker.record(decision)
+    assert tracker.languages == ["de"]
+
+
+def test_only_turkish_allowed_but_clear_english_is_labelled_english():
+    tracker = LanguageTracker()
+    tracker.allowed = frozenset({"tr"})
+    assert tracker.decide([("en", 0.98), ("tr", 0.01)], 2.5).language == "en"
+    # A dialect that is only moderately "English" stays Turkish.
+    assert tracker.decide([("en", 0.60), ("tr", 0.35)], 2.5).language == "tr"
+    # A short phrase is never enough to leave the allowed languages.
+    assert tracker.decide([("en", 0.98), ("tr", 0.01)], 1.0).language == "tr"

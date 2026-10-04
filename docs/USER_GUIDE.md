@@ -160,12 +160,15 @@ Three settings in **Settings › Recognition** have the largest effect.
 speak, for example English and Turkish. Without a selection the model picks
 from about a hundred languages for every utterance, and a short phrase can
 land in an unrelated one (Arabic, Swedish, Portuguese …). With a selection it
-only decides between the ticked languages, and the main window shows
-"· limited to …" next to the detected languages as a reminder. **Anything
-you say in a language that is not ticked is written in one of the ticked
-languages**, so add every language you use. Leave everything unticked if you
-want every language to be possible. With a single language ticked, everything
-is transcribed in that language.
+decides between the ticked languages for short and unclear phrases, and the
+main window shows "· preferring …" next to the detected languages as a
+reminder. A sentence that is clearly spoken in another language (the model
+is at least 90 % sure and the utterance is longer than 1.5 seconds) is still
+recognised and labelled as that language, so nothing is filed under the
+wrong heading. Add every language you use regularly anyway: short phrases in
+a language that is not ticked are assigned to a ticked one. Leave everything unticked if you
+want every language to be possible. With a single language ticked, short and unclear speech is always
+transcribed in that language.
 
 **Speech model.** Large v3 Turbo is the default: fast and accurate. Large v3
 is the full-size model; published comparisons report it as more accurate for

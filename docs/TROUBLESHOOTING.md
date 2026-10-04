@@ -259,12 +259,14 @@ written as the nearest word the model knows.
 
 ### Something I said in another language was written in English or Turkish
 
-Recognition is limited to the languages ticked in **Settings › Recognition ›
-Spoken languages**. The main window shows this next to the detected
-languages ("· limited to English, Turkish"). Anything said in a language
-that is not ticked is forced into one of the ticked ones, which produces
-wrong or translated text. Tick the additional language, or untick everything
-to allow all languages.
+The languages ticked in **Settings › Recognition › Spoken languages** are
+preferred; the main window shows this next to the detected languages
+("· preferring English, Turkish"). A clearly spoken sentence in another
+language is recognised as that language, but a short or unclear phrase is
+assigned to one of the ticked languages, which can produce wrong or
+translated text. Tick the additional language, or untick everything to allow
+all languages. Versions before 0.5.1 forced every utterance into a ticked
+language and labelled it accordingly.
 
 ### Parts of a sentence are missing
 
@@ -290,7 +292,9 @@ the README.
 ### A dialect or accent is taken for another language
 
 Tick only the language you are speaking in **Settings › Recognition › Spoken
-languages**. With a single language ticked, the language is never guessed.
+languages**. Unclear speech is then always treated as that language; only a
+sentence the model is at least 90 % sure about is recognised as another
+language.
 
 ### The wrong language is detected
 

@@ -177,8 +177,8 @@ STRINGS = {
     "main.help": "Yardım",
     "main.help.tip": "VoxNote hakkında sorular, yanıtlar ve bilgiler ({shortcut})",
     "main.languages.tip": "Bu oturumda algılanan diller",
-    "main.languages.limited": "· {languages} ile sınırlı",
-    "main.languages.limited.tip": "Tanıma bu dillerle sınırlı (Ayarlar › Tanıma › Konuşulan diller). Başka bir dilde söylenenler bu dillerden biriyle yazılır.",
+    "main.languages.limited": "· tercih: {languages}",
+    "main.languages.limited.tip": "Kısa veya belirsiz ifadeler bu dillere atanır (Ayarlar › Tanıma › Konuşulan diller). Açıkça başka bir dilde söylenenler yine o dil olarak tanınır.",
 
     "settings.tab.recognition": "Tanıma",
     "settings.model.option.small": "Small · en hızlı, en az doğru (0,5 GB)",
@@ -190,7 +190,7 @@ STRINGS = {
     "settings.spoken": "Konuşulan diller:",
     "settings.spoken.all": "Tüm diller (otomatik algılanır)",
     "settings.spoken.choose": "Seç…",
-    "settings.spoken.hint": "Tanımayı gerçekten konuştuğunuz dillerle sınırlayın. Böylece kısa ifadeler başka dillerle karıştırılmaz.",
+    "settings.spoken.hint": "Gerçekten konuştuğunuz dilleri işaretleyin. Kısa veya belirsiz ifadeler alakasız bir dil yerine bunlardan birine atanır. Açıkça başka bir dilde söylenen cümle yine o dil olarak tanınır.",
 
     "dialog.languages.title": "Konuşulan diller",
     "dialog.languages.text": "Konuştuğunuz dilleri işaretleyin. Tüm dillere izin vermek için hiçbirini işaretlemeyin.",

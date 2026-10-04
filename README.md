@@ -13,7 +13,7 @@ not correct grammar, translate, paraphrase or analyse the text. If you want
 feedback on your speaking, export the transcript and give it to the tool of
 your choice.
 
-> **Project status: 0.5.0, pre-release.** The application and its Windows
+> **Project status: 0.5.1, pre-release.** The application and its Windows
 > installer have been built and tested by the developer on one Windows 11
 > machine. The installer is **not code-signed**, so Windows blocks or warns
 > about it on other computers; see

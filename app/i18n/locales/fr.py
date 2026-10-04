@@ -177,8 +177,8 @@ STRINGS = {
     "main.help": "Aide",
     "main.help.tip": "Questions, réponses et informations sur VoxNote ({shortcut})",
     "main.languages.tip": "Langues détectées pendant cette session",
-    "main.languages.limited": "· limité à : {languages}",
-    "main.languages.limited.tip": "La reconnaissance est limitée à ces langues (Paramètres › Reconnaissance › Langues parlées). Ce qui est dit dans une autre langue est écrit dans l'une d'elles.",
+    "main.languages.limited": "· de préférence : {languages}",
+    "main.languages.limited.tip": "Les phrases courtes ou peu claires sont attribuées à ces langues (Paramètres › Reconnaissance › Langues parlées). Ce qui est dit clairement dans une autre langue reste reconnu dans cette langue.",
 
     "settings.tab.recognition": "Reconnaissance",
     "settings.model.option.small": "Small · le plus rapide, le moins précis (0,5 Go)",
@@ -190,7 +190,7 @@ STRINGS = {
     "settings.spoken": "Langues parlées :",
     "settings.spoken.all": "Toutes les langues (détection automatique)",
     "settings.spoken.choose": "Choisir…",
-    "settings.spoken.hint": "Limitez la reconnaissance aux langues que vous parlez réellement. Les phrases courtes ne sont alors plus confondues avec d'autres langues.",
+    "settings.spoken.hint": "Cochez les langues que vous parlez réellement. Les phrases courtes ou peu claires sont alors attribuées à l'une d'elles plutôt qu'à une langue sans rapport. Une phrase dite clairement dans une autre langue reste reconnue dans cette langue.",
 
     "dialog.languages.title": "Langues parlées",
     "dialog.languages.text": "Cochez les langues que vous parlez. Ne cochez rien pour autoriser toutes les langues.",

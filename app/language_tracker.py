@@ -35,6 +35,7 @@ class LanguageTracker:
         short_utterance_seconds: float = 1.5,
         short_utterance_probability: float = 0.90,
         sticky_ratio: float = 0.5,
+        override_probability: float = 0.90,
     ) -> None:
         # Minimum probability for a decision to count as confident.
         self.confident_probability = confident_probability
@@ -44,9 +45,15 @@ class LanguageTracker:
         # An already used language is preferred over an unconfident new one
         # when its probability is at least ``sticky_ratio`` times the top one.
         self.sticky_ratio = sticky_ratio
+        # A language outside ``allowed`` is still accepted when the recogniser
+        # is at least this sure about it and the utterance is not short.
+        self.override_probability = override_probability
         self._confident: list[str] = []
         self._tentative: list[str] = []
         # Languages the user said they speak. Empty means "any language".
+        # They settle short and unclear utterances; clearly spoken speech in
+        # another language is still recognised as what it is, because forcing
+        # it into an allowed language would label it wrongly.
         self.allowed: frozenset[str] = frozenset()
 
     def _restrict(self, ranked: list[tuple[str, float]]) -> list[tuple[str, float]]:
@@ -79,15 +86,21 @@ class LanguageTracker:
         ``probabilities`` is the list of ``(language_code, probability)``
         pairs reported by the recogniser. Returns ``None`` when it is empty.
         """
-        ranked: Sequence[tuple[str, float]] = self._restrict(
-            sorted(
-                ((code, float(prob)) for code, prob in probabilities),
-                key=lambda item: item[1],
-                reverse=True,
-            )
+        raw = sorted(
+            ((code, float(prob)) for code, prob in probabilities),
+            key=lambda item: item[1],
+            reverse=True,
         )
-        if not ranked:
+        if not raw:
             return None
+        if (
+            self.allowed
+            and raw[0][0] not in self.allowed
+            and raw[0][1] >= self.override_probability
+            and duration_seconds >= self.short_utterance_seconds
+        ):
+            return LanguageDecision(raw[0][0], raw[0][1], True)
+        ranked: Sequence[tuple[str, float]] = self._restrict(raw)
 
         top_language, top_probability = ranked[0]
         required = (
